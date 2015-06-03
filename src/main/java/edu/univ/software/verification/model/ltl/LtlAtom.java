@@ -7,7 +7,6 @@ package edu.univ.software.verification.model.ltl;
 
 import edu.univ.software.verification.model.LtlFormula;
 import java.util.Objects;
-
 /**
  *
  * @author Pocomaxa
@@ -95,7 +94,12 @@ public class LtlAtom implements LtlFormula {
 
     @Override
     public LtlFormula invert() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        switch(type){
+            case _0 : return _1;
+            case _1 : return _0;
+            case VAR : return LtlUnaryOp.build(LtlUnaryOp.UnaryOp.NEG, this);
+        }
+        return this;
     }
 
     @Override
@@ -106,4 +110,10 @@ public class LtlAtom implements LtlFormula {
             return this;
         }
     }
+
+    @Override
+    public String toString() {
+        return "LtlAtom{" + "name=" + name + ", type=" + type + '}';
+    }
+    
 }

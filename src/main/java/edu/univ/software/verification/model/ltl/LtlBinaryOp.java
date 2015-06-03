@@ -77,7 +77,13 @@ public class LtlBinaryOp implements LtlFormula {
 
     @Override
     public LtlFormula invert() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        switch(opType){
+            case R : return build(opType.U,opLeft.invert(),opRight.invert());
+            case U : return build(opType.R,opLeft.invert(),opRight.invert());
+            case AND : return build(opType.OR,opLeft.invert(),opRight.invert());
+            case OR : return build(opType.AND,opLeft.invert(),opRight.invert());
+        }
+        return this;
     }
 
     @Override
@@ -117,4 +123,10 @@ public class LtlBinaryOp implements LtlFormula {
 //        }
 //        return true;
     }
+
+    @Override
+    public String toString() {
+        return "LtlBinaryOp{" + "opType=" + opType + ", opLeft=" + opLeft.toString() + ", opRight=" + opRight.toString() + '}';
+    }
+    
 }

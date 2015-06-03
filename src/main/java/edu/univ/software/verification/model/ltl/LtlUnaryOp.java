@@ -33,6 +33,8 @@ public class LtlUnaryOp implements LtlFormula {
         this.opType = opType;
         this.operand = operand;
     }   
+
+
     
     /**
      * @return the opType
@@ -62,7 +64,13 @@ public class LtlUnaryOp implements LtlFormula {
 
     @Override
     public LtlFormula invert() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        switch(opType){
+            case F : return build(UnaryOp.G, operand.invert());
+            case G : return build(UnaryOp.F, operand.invert());
+            case X : return build(UnaryOp.X, operand.invert());
+            case NEG : return operand;
+        }
+        return this;
     }
 
     @Override
@@ -100,5 +108,9 @@ public class LtlUnaryOp implements LtlFormula {
 //        return true;
     }
     
+    @Override
+    public String toString() {
+        return "LtlUnaryOp{" + "opType=" + opType + ", operand=" + operand.toString() + '}';
+    }
     
 }
