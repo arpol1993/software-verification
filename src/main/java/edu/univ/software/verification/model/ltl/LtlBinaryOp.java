@@ -6,6 +6,7 @@
 package edu.univ.software.verification.model.ltl;
 
 import edu.univ.software.verification.model.LtlFormula;
+import java.util.Objects;
 
 /**
  *
@@ -32,9 +33,8 @@ public class LtlBinaryOp implements LtlFormula {
         this.opType = opType;
         this.opLeft = opLeft;
         this.opRight = opRight;
-    }    
-    
-    
+    }
+
     /**
      * @return the opType
      */
@@ -68,16 +68,11 @@ public class LtlBinaryOp implements LtlFormula {
      */
     public void setOpRight(LtlFormula opRight) {
         this.opRight = opRight;
-    }    
-        
-    @Override
-    public boolean isAtomic() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean isRedundant(boolean value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean isAtomic() {
+        return false;
     }
 
     @Override
@@ -87,7 +82,39 @@ public class LtlBinaryOp implements LtlFormula {
 
     @Override
     public LtlFormula clone() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return build(opType, opLeft.clone(), opRight.clone());
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 53 * hash + Objects.hashCode(this.opType);
+        hash = 53 * hash + Objects.hashCode(this.opLeft);
+        hash = 53 * hash + Objects.hashCode(this.opRight);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        throw new UnsupportedOperationException("Not supported yet.");
+        //TODO: Proper equality check
+//        final LtlBinaryOp other = (LtlBinaryOp) obj;
+//        if (this.opType != other.opType) {
+//            return false;
+//        }
+//        if (!Objects.equals(this.opLeft, other.opLeft)) {
+//            return false;
+//        }
+//        if (!Objects.equals(this.opRight, other.opRight)) {
+//            return false;
+//        }
+//        return true;
+    }
 }

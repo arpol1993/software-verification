@@ -13,16 +13,42 @@ import java.util.Objects;
  * @author Pocomaxa
  */
 public class LtlAtom implements LtlFormula {
+
+    public static enum AtomType {
+
+        VAR,
+        _0,
+        _1
+    }
+    
+    //Special case Atoms
+    public final static LtlAtom _0 = new LtlAtom(AtomType._0);    
+    public final static LtlAtom _1 = new LtlAtom(AtomType._1);
+
     private String name;
+    private final AtomType type;
 
     public static LtlAtom forName(String name) {
         return new LtlAtom(name);
     }
-    
+
     public LtlAtom(String name) {
         this.name = name;
-    }    
+        this.type = AtomType.VAR;
+    }
     
+    private LtlAtom(AtomType type) {
+        this.type = type;
+        this.name = type.toString();
+    }
+
+    /**
+     * @return the type
+     */
+    public AtomType getType() {
+        return type;
+    }
+
     /**
      * @return the name
      */
@@ -40,7 +66,8 @@ public class LtlAtom implements LtlFormula {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 83 * hash + Objects.hashCode(this.name);
+        hash = 83 * hash + Objects.hashCode(this.name)
+                + Objects.hashCode(this.type);
         return hash;
     }
 
@@ -52,21 +79,18 @@ public class LtlAtom implements LtlFormula {
         if (getClass() != obj.getClass()) {
             return false;
         }
+
         final LtlAtom other = (LtlAtom) obj;
-        if (!Objects.equals(this.name, other.name)) {
+
+        if (!Objects.equals(this.type, other.type)) {
             return false;
         }
-        return true;
+        return Objects.equals(this.name, other.name);
     }
 
     @Override
     public boolean isAtomic() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean isRedundant(boolean value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return true;
     }
 
     @Override
@@ -76,8 +100,10 @@ public class LtlAtom implements LtlFormula {
 
     @Override
     public LtlFormula clone() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (type == AtomType.VAR) {
+            return new LtlAtom(name);
+        } else {
+            return this;
+        }
     }
-    
-    
 }

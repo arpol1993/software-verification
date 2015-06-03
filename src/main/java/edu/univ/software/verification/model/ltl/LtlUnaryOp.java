@@ -6,6 +6,7 @@
 package edu.univ.software.verification.model.ltl;
 
 import edu.univ.software.verification.model.LtlFormula;
+import java.util.Objects;
 
 /**
  *
@@ -56,12 +57,7 @@ public class LtlUnaryOp implements LtlFormula {
     
     @Override
     public boolean isAtomic() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean isRedundant(boolean value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return opType == UnaryOp.NEG && operand instanceof LtlAtom;
     }
 
     @Override
@@ -71,6 +67,38 @@ public class LtlUnaryOp implements LtlFormula {
 
     @Override
     public LtlFormula clone() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return build(opType, operand.clone());
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 53 * hash + Objects.hashCode(this.opType);
+        hash = 53 * hash + Objects.hashCode(this.operand);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        
+        throw new UnsupportedOperationException("Not supported yet.");
+        
+        //TODO: Proper equality check
+//        final LtlUnaryOp other = (LtlUnaryOp) obj;
+//        if (this.opType != other.opType) {
+//            return false;
+//        }
+//        if (!Objects.equals(this.operand, other.operand)) {
+//            return false;
+//        }
+//        return true;
+    }
+    
+    
 }

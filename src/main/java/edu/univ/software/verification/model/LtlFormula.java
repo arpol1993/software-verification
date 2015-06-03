@@ -9,7 +9,6 @@ public interface LtlFormula extends Cloneable {
     public int hashCode();
     
     public boolean isAtomic();
-    public boolean isRedundant(boolean value);
     
     public LtlFormula invert();
     public LtlFormula clone();
