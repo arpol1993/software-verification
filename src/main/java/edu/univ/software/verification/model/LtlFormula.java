@@ -1,10 +1,20 @@
 
 package edu.univ.software.verification.model;
 
-/**
- *
- * @author arthur
- */
-public class LtlFormula {
-    // TODO
+public interface LtlFormula extends Cloneable {
+    @Override
+    public boolean equals(Object o);
+
+    @Override
+    public int hashCode();
+    
+    public boolean isAtomic();
+    public boolean isRedundant(boolean value);
+    
+    public LtlFormula invert();
+    public LtlFormula clone();
 }
+
+
+
+
