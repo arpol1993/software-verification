@@ -161,15 +161,15 @@ class GraphNode {
     }
     
     private void setNewFormulas(Collection<? extends LtlFormula> newFormulas) {
-        this.newFormulas = Sets.newLinkedHashSet(newFormulas);
+        this.newFormulas = ImmutableSet.copyOf(newFormulas);
     }
     
     private void setOldFormulas(Collection<? extends LtlFormula> oldFormulas) {
-        this.oldFormulas = Sets.newLinkedHashSet(oldFormulas);
+        this.oldFormulas = ImmutableSet.copyOf(oldFormulas);
     }
     
     private void setNextFormulas(Collection<? extends LtlFormula> nextFormulas) {
-        this.nextFormulas = Sets.newLinkedHashSet(nextFormulas);
+        this.nextFormulas = ImmutableSet.copyOf(nextFormulas);
     }
     //</editor-fold>
 
