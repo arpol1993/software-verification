@@ -22,6 +22,7 @@ public class LtlBinaryOp implements LtlFormula {
 
         OR, // logical or
         AND, // logical and
+        IMPL, 
         U, // Untill
         R
     }
@@ -119,24 +120,34 @@ public class LtlBinaryOp implements LtlFormula {
             return false;
         }
 
-        throw new UnsupportedOperationException("Not supported yet.");
-        //TODO: Proper equality check
-//        final LtlBinaryOp other = (LtlBinaryOp) obj;
-//        if (this.opType != other.opType) {
-//            return false;
-//        }
-//        if (!Objects.equals(this.opLeft, other.opLeft)) {
-//            return false;
-//        }
-//        if (!Objects.equals(this.opRight, other.opRight)) {
-//            return false;
-//        }
-//        return true;
+        final LtlBinaryOp other = (LtlBinaryOp) obj;
+        if (this.opType != other.opType) {
+            return false;
+        }
+        if (!Objects.equals(this.opLeft, other.opLeft)) {
+            return false;
+        }
+        return Objects.equals(this.opRight, other.opRight);
     }
 
     @Override
     public String toString() {
-        return "LtlBinaryOp{" + "opType=" + opType + ", opLeft=" + opLeft.toString() + ", opRight=" + opRight.toString() + '}';
+        switch (opType) {
+            case OR:
+                return "(" + opLeft.toString() + ")" + " OR " + "(" + opRight.toString() + ")";
+            case AND:
+                return "(" + opLeft.toString() + ")" + " AND " + "(" + opRight.toString() + ")";
+            case U:
+                return "(" + opLeft.toString() + ")" + " U " + "(" + opRight.toString() + ")";
+            case R:
+                return "(" + opLeft.toString() + ")" + " R " + "(" + opRight.toString() + ")";
+            case IMPL:
+                return "(" + opLeft.toString() + ")" + " -> " + "(" + opRight.toString() + ")";
+            default:
+                throw new AssertionError(opType.name());
+            
+        }
+        //return "LtlBinaryOp{" + "opType=" + opType + ", opLeft=" + opLeft.toString() + ", opRight=" + opRight.toString() + '}';
     }
 
 }

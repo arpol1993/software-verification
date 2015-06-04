@@ -7,6 +7,7 @@ package edu.univ.software.verification.model.ltl;
 
 import edu.univ.software.verification.model.LtlFormula;
 import java.util.Objects;
+
 /**
  *
  * @author Pocomaxa
@@ -19,9 +20,9 @@ public class LtlAtom implements LtlFormula {
         _0,
         _1
     }
-    
+
     //Special case Atoms
-    public final static LtlAtom _0 = new LtlAtom(AtomType._0);    
+    public final static LtlAtom _0 = new LtlAtom(AtomType._0);
     public final static LtlAtom _1 = new LtlAtom(AtomType._1);
 
     private String name;
@@ -35,7 +36,7 @@ public class LtlAtom implements LtlFormula {
         this.name = name;
         this.type = AtomType.VAR;
     }
-    
+
     private LtlAtom(AtomType type) {
         this.type = type;
         this.name = type.toString();
@@ -94,14 +95,17 @@ public class LtlAtom implements LtlFormula {
 
     @Override
     public LtlFormula invert() {
-        switch(type){
-            case _0 : return _1;
-            case _1 : return _0;
-            case VAR : return LtlUnaryOp.build(LtlUnaryOp.UnaryOp.NEG, this.clone());
+        switch (type) {
+            case _0:
+                return _1;
+            case _1:
+                return _0;
+            case VAR:
+                return LtlUnaryOp.build(LtlUnaryOp.UnaryOp.NEG, this.clone());
         }
         return this.clone();
     }
-    
+
     @Override
     public LtlFormula normalized() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -118,6 +122,15 @@ public class LtlAtom implements LtlFormula {
 
     @Override
     public String toString() {
+        switch (type) {
+            case _0:
+                return "0";
+            case _1:
+                return "1";
+            case VAR:
+                return name;
+        }
+        
         return "LtlAtom{" + "name=" + name + ", type=" + type + '}';
     }
 }

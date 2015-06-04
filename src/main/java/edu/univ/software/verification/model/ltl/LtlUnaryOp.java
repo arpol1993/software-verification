@@ -101,23 +101,31 @@ public class LtlUnaryOp implements LtlFormula {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
-        throw new UnsupportedOperationException("Not supported yet.");
-        
-        //TODO: Proper equality check
-//        final LtlUnaryOp other = (LtlUnaryOp) obj;
-//        if (this.opType != other.opType) {
-//            return false;
-//        }
-//        if (!Objects.equals(this.operand, other.operand)) {
-//            return false;
-//        }
-//        return true;
+                
+        final LtlUnaryOp other = (LtlUnaryOp) obj;
+        if (this.opType != other.opType) {
+            return false;
+        }
+        return Objects.equals(this.operand, other.operand);
     }
     
     @Override
     public String toString() {
-        return "LtlUnaryOp{" + "opType=" + opType + ", operand=" + operand.toString() + '}';
+        switch (opType) {
+            case NEG:
+                return "!" + operand.toString();
+            case X:
+                return "X" + operand.toString();
+            case G:
+                return "G" + operand.toString();
+            case F:
+                return "F" + operand.toString();
+            default:
+                throw new AssertionError(opType.name());
+            
+        }       
+        
+        //return "LtlUnaryOp{" + "opType=" + opType + ", operand=" + operand.toString() + '}';
     }
     
 }
