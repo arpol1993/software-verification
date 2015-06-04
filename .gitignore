@@ -6,3 +6,5 @@ nb-configuration.xml
 
 .settings/
 target/
+
+**.log
