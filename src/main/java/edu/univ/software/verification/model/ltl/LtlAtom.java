@@ -97,9 +97,14 @@ public class LtlAtom implements LtlFormula {
         switch(type){
             case _0 : return _1;
             case _1 : return _0;
-            case VAR : return LtlUnaryOp.build(LtlUnaryOp.UnaryOp.NEG, this);
+            case VAR : return LtlUnaryOp.build(LtlUnaryOp.UnaryOp.NEG, this.clone());
         }
-        return this;
+        return this.clone();
+    }
+    
+    @Override
+    public LtlFormula normalized() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -115,5 +120,4 @@ public class LtlAtom implements LtlFormula {
     public String toString() {
         return "LtlAtom{" + "name=" + name + ", type=" + type + '}';
     }
-    
 }

@@ -68,10 +68,17 @@ public class LtlUnaryOp implements LtlFormula {
             case F : return build(UnaryOp.G, operand.invert());
             case G : return build(UnaryOp.F, operand.invert());
             case X : return build(UnaryOp.X, operand.invert());
-            case NEG : return operand;
+            case NEG : return operand.clone();
         }
-        return this;
+        
+        return this.clone();
     }
+
+    @Override
+    public LtlFormula normalized() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+        
 
     @Override
     public LtlFormula clone() {

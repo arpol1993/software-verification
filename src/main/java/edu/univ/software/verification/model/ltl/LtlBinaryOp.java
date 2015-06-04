@@ -77,14 +77,24 @@ public class LtlBinaryOp implements LtlFormula {
 
     @Override
     public LtlFormula invert() {
-        switch(opType){
-            case R : return build(opType.U,opLeft.invert(),opRight.invert());
-            case U : return build(opType.R,opLeft.invert(),opRight.invert());
-            case AND : return build(opType.OR,opLeft.invert(),opRight.invert());
-            case OR : return build(opType.AND,opLeft.invert(),opRight.invert());
+        switch (opType) {
+            case R:
+                return build(BinaryOp.U, opLeft.invert(), opRight.invert());
+            case U:
+                return build(BinaryOp.R, opLeft.invert(), opRight.invert());
+            case AND:
+                return build(BinaryOp.OR, opLeft.invert(), opRight.invert());
+            case OR:
+                return build(BinaryOp.AND, opLeft.invert(), opRight.invert());
         }
-        return this;
+
+        return this.clone();
     }
+
+    @Override
+    public LtlFormula normalized() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    } 
 
     @Override
     public LtlFormula clone() {
@@ -128,5 +138,5 @@ public class LtlBinaryOp implements LtlFormula {
     public String toString() {
         return "LtlBinaryOp{" + "opType=" + opType + ", opLeft=" + opLeft.toString() + ", opRight=" + opRight.toString() + '}';
     }
-    
+
 }
