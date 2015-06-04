@@ -76,7 +76,11 @@ public class LtlUnaryOp implements LtlFormula {
 
     @Override
     public LtlFormula normalized() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        switch(opType){
+            case G : return LtlBinaryOp.build(LtlBinaryOp.BinaryOp.R, LtlAtom._0, operand.normalized());
+            case F : return LtlBinaryOp.build(LtlBinaryOp.BinaryOp.U, LtlAtom._1, operand.normalized());
+            default: return this.clone();
+        }
     }
         
 

@@ -108,7 +108,7 @@ public class LtlAtom implements LtlFormula {
 
     @Override
     public LtlFormula normalized() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.clone();
     }
 
     @Override

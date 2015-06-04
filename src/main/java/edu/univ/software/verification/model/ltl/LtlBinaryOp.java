@@ -22,7 +22,7 @@ public class LtlBinaryOp implements LtlFormula {
 
         OR, // logical or
         AND, // logical and
-        IMPL, 
+        IMPL,
         U, // Untill
         R
     }
@@ -87,6 +87,8 @@ public class LtlBinaryOp implements LtlFormula {
                 return build(BinaryOp.OR, opLeft.invert(), opRight.invert());
             case OR:
                 return build(BinaryOp.AND, opLeft.invert(), opRight.invert());
+            case IMPL:
+                return build(BinaryOp.AND, opLeft.clone(), opRight.invert());
         }
 
         return this.clone();
@@ -94,8 +96,13 @@ public class LtlBinaryOp implements LtlFormula {
 
     @Override
     public LtlFormula normalized() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    } 
+        switch (opType) {
+            case IMPL:
+                return build(BinaryOp.OR, opLeft.invert().normalized(), opRight.normalized());
+            default:
+                return this.clone();
+        }
+    }
 
     @Override
     public LtlFormula clone() {
@@ -145,7 +152,7 @@ public class LtlBinaryOp implements LtlFormula {
                 return "(" + opLeft.toString() + ")" + " -> " + "(" + opRight.toString() + ")";
             default:
                 throw new AssertionError(opType.name());
-            
+
         }
         //return "LtlBinaryOp{" + "opType=" + opType + ", opLeft=" + opLeft.toString() + ", opRight=" + opRight.toString() + '}';
     }
