@@ -5,19 +5,20 @@ public interface LtlFormula extends Cloneable {
     /**
      * Check the syntax equality of two formulas
      * @param o other formula
-     * @return 
+     * @return result of the check
      */
     @Override
     public boolean equals(Object o);
 
-    @Override
     /**
      * Get the hash code of the formula
      */
+    @Override
     public int hashCode();
     
     /**
      * Check wether this formula is atomic preposition or its negation
+     * @return result of the check
      */
     public boolean isAtomic();
     

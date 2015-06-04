@@ -4,7 +4,7 @@ package edu.univ.software.verification.model.kripke;
 import com.google.common.collect.ImmutableSet;
 
 import edu.univ.software.verification.model.KripkeState;
-import edu.univ.software.verification.model.ltl.LtlAtom;
+import edu.univ.software.verification.model.ltl.Atom;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -24,7 +24,7 @@ public class BasicState implements KripkeState {
     /**
      * Set of atomic formulas, that are true in this state
      */
-    protected Set<LtlAtom> atoms = DEFAULT_ATOMS;
+    protected Set<Atom> atoms = DEFAULT_ATOMS;
     
     /**
      * Unique formula identifier
@@ -38,11 +38,11 @@ public class BasicState implements KripkeState {
         this(label, DEFAULT_ATOMS);
     }
     
-    public BasicState(String label, Collection<? extends LtlAtom> atoms) {
+    public BasicState(String label, Collection<? extends Atom> atoms) {
         this(label, atoms, DEFAULT_INITIAL);
     }
     
-    public BasicState(String label, Collection<? extends LtlAtom> atoms, boolean intital) {
+    public BasicState(String label, Collection<? extends Atom> atoms, boolean intital) {
         this.label = label;
         this.atoms = ImmutableSet.copyOf(atoms);
         this.initial = intital;
@@ -60,11 +60,11 @@ public class BasicState implements KripkeState {
     }
     
     @Override
-    public Set<LtlAtom> getAtoms() {
+    public Set<Atom> getAtoms() {
         return atoms;
     }
     
-    public void setAtoms(Set<LtlAtom> atoms) {
+    public void setAtoms(Set<Atom> atoms) {
         this.atoms = atoms;
     }
     

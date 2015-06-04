@@ -5,9 +5,9 @@ import com.google.common.collect.ImmutableList;
 
 import edu.univ.software.verification.model.KripkeStructure;
 import edu.univ.software.verification.model.kripke.BasicStructure;
-import edu.univ.software.verification.model.ltl.LtlAtom;
-import edu.univ.software.verification.model.ltl.LtlBinaryOp;
-import edu.univ.software.verification.model.ltl.LtlUnaryOp;
+import edu.univ.software.verification.model.ltl.Atom;
+import edu.univ.software.verification.model.ltl.BinaryOp;
+import edu.univ.software.verification.model.ltl.UnaryOp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,15 +22,15 @@ public class Application {
     private static void kripkeStructureDemo() {
         // demonstrates creation of kripke model for p. 265
         KripkeStructure ks = BasicStructure.builder()
-                .withState("0", ImmutableList.of(LtlAtom.forName("p"), LtlAtom.forName("q")))
-                .withState("1", ImmutableList.of(LtlAtom.forName("r"), LtlAtom.forName("q")))
-                .withState("2", ImmutableList.of(LtlAtom.forName("p"), LtlAtom.forName("u")))
-                .withState("3", ImmutableList.of(LtlAtom.forName("r"), LtlAtom.forName("u")))
-                .withState("4", ImmutableList.of(LtlAtom.forName("w"), LtlAtom.forName("q")))
-                .withState("5", ImmutableList.of(LtlAtom.forName("r"), LtlAtom.forName("u")))
-                .withState("6", ImmutableList.of(LtlAtom.forName("p"), LtlAtom.forName("z")))
-                .withState("7", ImmutableList.of(LtlAtom.forName("w"), LtlAtom.forName("u")))
-                .withState("8", ImmutableList.of(LtlAtom.forName("r"), LtlAtom.forName("z")))
+                .withState("0", ImmutableList.of(Atom.forName("p"), Atom.forName("q")))
+                .withState("1", ImmutableList.of(Atom.forName("r"), Atom.forName("q")))
+                .withState("2", ImmutableList.of(Atom.forName("p"), Atom.forName("u")))
+                .withState("3", ImmutableList.of(Atom.forName("r"), Atom.forName("u")))
+                .withState("4", ImmutableList.of(Atom.forName("w"), Atom.forName("q")))
+                .withState("5", ImmutableList.of(Atom.forName("r"), Atom.forName("u")))
+                .withState("6", ImmutableList.of(Atom.forName("p"), Atom.forName("z")))
+                .withState("7", ImmutableList.of(Atom.forName("w"), Atom.forName("u")))
+                .withState("8", ImmutableList.of(Atom.forName("r"), Atom.forName("z")))
                 .withTransition("0", "0")
                 .withTransition("0", "1")
                 .withTransition("0", "2")
@@ -53,14 +53,14 @@ public class Application {
     }
     
     private static void ltlInvertionDemo() {
-        LtlAtom atomB = new LtlAtom("B");
-        LtlAtom atomA = new LtlAtom("A");
-        LtlAtom atomZero = LtlAtom._0;
-        LtlAtom atomOne = LtlAtom._1;
-        LtlBinaryOp implication = LtlBinaryOp.build(LtlBinaryOp.BinaryOp.IMPL,atomA,atomB);
-        LtlBinaryOp union = LtlBinaryOp.build(LtlBinaryOp.BinaryOp.OR,atomZero,atomOne);
-        LtlBinaryOp release = LtlBinaryOp.build(LtlBinaryOp.BinaryOp.R,implication,union);
-        LtlUnaryOp f = LtlUnaryOp.build(LtlUnaryOp.UnaryOp.F,release);
+        Atom atomB = new Atom("B");
+        Atom atomA = new Atom("A");
+        Atom atomZero = Atom._0;
+        Atom atomOne = Atom._1;
+        BinaryOp implication = BinaryOp.build(BinaryOp.OpType.IMPL,atomA,atomB);
+        BinaryOp union = BinaryOp.build(BinaryOp.OpType.OR,atomZero,atomOne);
+        BinaryOp release = BinaryOp.build(BinaryOp.OpType.R,implication,union);
+        UnaryOp f = UnaryOp.build(UnaryOp.OpType.F,release);
         
         logger.info("---LTL invertion test---");
         logger.info("Formula: {}", f);

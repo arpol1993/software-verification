@@ -1,7 +1,7 @@
 
 package edu.univ.software.verification.model;
 
-import edu.univ.software.verification.model.ltl.LtlAtom;
+import edu.univ.software.verification.model.ltl.Atom;
 
 import java.util.Collection;
 import java.util.Set;
@@ -44,8 +44,8 @@ public interface KripkeStructure {
      */
     public static interface Builder {
         public Builder withState(String label);
-        public Builder withState(String label, Collection<? extends LtlAtom> atoms);
-        public Builder withState(String label, Collection<? extends LtlAtom> atoms, boolean initial);
+        public Builder withState(String label, Collection<? extends Atom> atoms);
+        public Builder withState(String label, Collection<? extends Atom> atoms, boolean initial);
         public Builder withTransition(String from, String to);
         public KripkeStructure build();
     }

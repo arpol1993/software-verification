@@ -8,34 +8,32 @@ import java.util.Objects;
  *
  * @author Pocomaxa
  */
-public class LtlUnaryOp implements LtlFormula {
+public class UnaryOp implements LtlFormula {
 
-    public static LtlUnaryOp build(UnaryOp opType, LtlFormula operand) {
-        return new LtlUnaryOp(opType, operand);
+    public static UnaryOp build(OpType opType, LtlFormula operand) {
+        return new UnaryOp(opType, operand);
     }
 
-    public static enum UnaryOp {
+    public static enum OpType {
 
         NEG, // logical negation
         X, // neXt
         G, // Globally (always)
         F // in Future (eventually)
     }
-    private UnaryOp opType;
-    private LtlFormula operand;
+    private final OpType opType;
+    private final LtlFormula operand;
     
 
-    private LtlUnaryOp(UnaryOp opType, LtlFormula operand) {
+    private UnaryOp(OpType opType, LtlFormula operand) {
         this.opType = opType;
         this.operand = operand;
     }   
-
-
     
     /**
      * @return the opType
      */
-    public UnaryOp getOpType() {
+    public OpType getOpType() {
         return opType;
     }
 
@@ -46,24 +44,17 @@ public class LtlUnaryOp implements LtlFormula {
         return operand;
     }
 
-    /**
-     * @param operand the operand to set
-     */
-    public void setOperand(LtlFormula operand) {
-        this.operand = operand;
-    }    
-    
     @Override
     public boolean isAtomic() {
-        return opType == UnaryOp.NEG && operand instanceof LtlAtom;
+        return opType == OpType.NEG && operand instanceof Atom;
     }
 
     @Override
     public LtlFormula invert() {
         switch(opType){
-            case F : return build(UnaryOp.G, operand.invert());
-            case G : return build(UnaryOp.F, operand.invert());
-            case X : return build(UnaryOp.X, operand.invert());
+            case F : return build(OpType.G, operand.invert());
+            case G : return build(OpType.F, operand.invert());
+            case X : return build(OpType.X, operand.invert());
             case NEG : return operand.clone();
         }
         
@@ -73,16 +64,16 @@ public class LtlUnaryOp implements LtlFormula {
     @Override
     public LtlFormula normalized() {
         switch(opType){
-            case G : return LtlBinaryOp.build(LtlBinaryOp.BinaryOp.R, LtlAtom._0, operand.normalized());
-            case F : return LtlBinaryOp.build(LtlBinaryOp.BinaryOp.U, LtlAtom._1, operand.normalized());
+            case G : return BinaryOp.build(BinaryOp.OpType.R, Atom._0, operand.normalized());
+            case F : return BinaryOp.build(BinaryOp.OpType.U, Atom._1, operand.normalized());
             default: return this.clone();
         }
     }
         
 
     @Override
-    public LtlFormula clone() {
-        return build(opType, operand.clone());
+    public LtlFormula clone() {        
+        return this;
     }
 
     @Override
@@ -102,7 +93,7 @@ public class LtlUnaryOp implements LtlFormula {
             return false;
         }
                 
-        final LtlUnaryOp other = (LtlUnaryOp) obj;
+        final UnaryOp other = (UnaryOp) obj;
         if (this.opType != other.opType) {
             return false;
         }

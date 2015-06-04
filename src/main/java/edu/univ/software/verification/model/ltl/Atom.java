@@ -8,7 +8,7 @@ import java.util.Objects;
  *
  * @author Pocomaxa
  */
-public class LtlAtom implements LtlFormula {
+public class Atom implements LtlFormula {
 
     public static enum AtomType {
 
@@ -18,22 +18,22 @@ public class LtlAtom implements LtlFormula {
     }
 
     //Special case Atoms
-    public final static LtlAtom _0 = new LtlAtom(AtomType._0);
-    public final static LtlAtom _1 = new LtlAtom(AtomType._1);
+    public final static Atom _0 = new Atom(AtomType._0);
+    public final static Atom _1 = new Atom(AtomType._1);
 
-    private String name;
+    private final String name;
     private final AtomType type;
 
-    public static LtlAtom forName(String name) {
-        return new LtlAtom(name);
+    public static Atom forName(String name) {
+        return new Atom(name);
     }
 
-    public LtlAtom(String name) {
+    public Atom(String name) {
         this.name = name;
         this.type = AtomType.VAR;
     }
 
-    private LtlAtom(AtomType type) {
+    private Atom(AtomType type) {
         this.type = type;
         this.name = type.toString();
     }
@@ -50,13 +50,6 @@ public class LtlAtom implements LtlFormula {
      */
     public String getName() {
         return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override
@@ -76,7 +69,7 @@ public class LtlAtom implements LtlFormula {
             return false;
         }
 
-        final LtlAtom other = (LtlAtom) obj;
+        final Atom other = (Atom) obj;
 
         if (!Objects.equals(this.type, other.type)) {
             return false;
@@ -97,7 +90,7 @@ public class LtlAtom implements LtlFormula {
             case _1:
                 return _0;
             case VAR:
-                return LtlUnaryOp.build(LtlUnaryOp.UnaryOp.NEG, this.clone());
+                return UnaryOp.build(UnaryOp.OpType.NEG, this.clone());
         }
         return this.clone();
     }
@@ -109,11 +102,7 @@ public class LtlAtom implements LtlFormula {
 
     @Override
     public LtlFormula clone() {
-        if (type == AtomType.VAR) {
-            return new LtlAtom(name);
-        } else {
-            return this;
-        }
+        return this;
     }
 
     @Override

@@ -2,7 +2,7 @@
 package edu.univ.software.verification.model;
 
 import com.google.common.collect.ImmutableSet;
-import edu.univ.software.verification.model.ltl.LtlAtom;
+import edu.univ.software.verification.model.ltl.Atom;
 import java.util.Set;
 
 /**
@@ -19,7 +19,7 @@ public interface KripkeState {
     /**
      * Default atoms set
      */
-    public static final Set<LtlAtom> DEFAULT_ATOMS = ImmutableSet.of();
+    public static final Set<Atom> DEFAULT_ATOMS = ImmutableSet.of();
     
     /**
      * Unique state identifier
@@ -33,7 +33,7 @@ public interface KripkeState {
      * 
      * @return set of true atom expressions
      */
-    public Set<LtlAtom> getAtoms();
+    public Set<Atom> getAtoms();
     
     /**
      * Checks whether state is initial

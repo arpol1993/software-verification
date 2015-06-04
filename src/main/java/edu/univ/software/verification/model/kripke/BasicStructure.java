@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableSet;
 
 import edu.univ.software.verification.model.KripkeState;
 import edu.univ.software.verification.model.KripkeStructure;
-import edu.univ.software.verification.model.ltl.LtlAtom;
+import edu.univ.software.verification.model.ltl.Atom;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -70,12 +70,12 @@ public class BasicStructure implements KripkeStructure {
         }
         
         @Override
-        public BasicBuilder withState(String label, Collection<? extends LtlAtom> atoms) {
+        public BasicBuilder withState(String label, Collection<? extends Atom> atoms) {
             return withState(label, atoms, KripkeState.DEFAULT_INITIAL);
         }
         
         @Override
-        public BasicBuilder withState(String label, Collection<? extends LtlAtom> atoms, boolean initial) {
+        public BasicBuilder withState(String label, Collection<? extends Atom> atoms, boolean initial) {
             this.states.put(label, new BasicState(label, atoms, initial));
             
             return this;

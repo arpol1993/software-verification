@@ -8,13 +8,13 @@ import java.util.Objects;
  *
  * @author Pocomaxa
  */
-public class LtlBinaryOp implements LtlFormula {
+public class BinaryOp implements LtlFormula {
 
-    public static LtlBinaryOp build(BinaryOp opType, LtlFormula opLeft, LtlFormula opRight) {
-        return new LtlBinaryOp(opType, opLeft, opRight);
+    public static BinaryOp build(OpType opType, LtlFormula opLeft, LtlFormula opRight) {
+        return new BinaryOp(opType, opLeft, opRight);
     }
 
-    public static enum BinaryOp {
+    public static enum OpType {
 
         OR, // logical or
         AND, // logical and
@@ -22,11 +22,11 @@ public class LtlBinaryOp implements LtlFormula {
         U, // Untill
         R
     }
-    private BinaryOp opType;
-    private LtlFormula opLeft;
-    private LtlFormula opRight;
+    private final OpType opType;
+    private final LtlFormula opLeft;
+    private final LtlFormula opRight;
 
-    private LtlBinaryOp(BinaryOp opType, LtlFormula opLeft, LtlFormula opRight) {
+    private BinaryOp(OpType opType, LtlFormula opLeft, LtlFormula opRight) {
         this.opType = opType;
         this.opLeft = opLeft;
         this.opRight = opRight;
@@ -35,7 +35,7 @@ public class LtlBinaryOp implements LtlFormula {
     /**
      * @return the opType
      */
-    public BinaryOp getOpType() {
+    public OpType getOpType() {
         return opType;
     }
 
@@ -47,24 +47,10 @@ public class LtlBinaryOp implements LtlFormula {
     }
 
     /**
-     * @param opLeft the opLeft to set
-     */
-    public void setOpLeft(LtlFormula opLeft) {
-        this.opLeft = opLeft;
-    }
-
-    /**
      * @return the opRight
      */
     public LtlFormula getOpRight() {
         return opRight;
-    }
-
-    /**
-     * @param opRight the opRight to set
-     */
-    public void setOpRight(LtlFormula opRight) {
-        this.opRight = opRight;
     }
 
     @Override
@@ -76,15 +62,15 @@ public class LtlBinaryOp implements LtlFormula {
     public LtlFormula invert() {
         switch (opType) {
             case R:
-                return build(BinaryOp.U, opLeft.invert(), opRight.invert());
+                return build(OpType.U, opLeft.invert(), opRight.invert());
             case U:
-                return build(BinaryOp.R, opLeft.invert(), opRight.invert());
+                return build(OpType.R, opLeft.invert(), opRight.invert());
             case AND:
-                return build(BinaryOp.OR, opLeft.invert(), opRight.invert());
+                return build(OpType.OR, opLeft.invert(), opRight.invert());
             case OR:
-                return build(BinaryOp.AND, opLeft.invert(), opRight.invert());
+                return build(OpType.AND, opLeft.invert(), opRight.invert());
             case IMPL:
-                return build(BinaryOp.AND, opLeft.clone(), opRight.invert());
+                return build(OpType.AND, opLeft.clone(), opRight.invert());
         }
 
         return this.clone();
@@ -94,7 +80,7 @@ public class LtlBinaryOp implements LtlFormula {
     public LtlFormula normalized() {
         switch (opType) {
             case IMPL:
-                return build(BinaryOp.OR, opLeft.invert().normalized(), opRight.normalized());
+                return build(OpType.OR, opLeft.invert().normalized(), opRight.normalized());
             default:
                 return this.clone();
         }
@@ -102,7 +88,7 @@ public class LtlBinaryOp implements LtlFormula {
 
     @Override
     public LtlFormula clone() {
-        return build(opType, opLeft.clone(), opRight.clone());
+        return this;
     }
 
     @Override
@@ -123,7 +109,7 @@ public class LtlBinaryOp implements LtlFormula {
             return false;
         }
 
-        final LtlBinaryOp other = (LtlBinaryOp) obj;
+        final BinaryOp other = (BinaryOp) obj;
         if (this.opType != other.opType) {
             return false;
         }
@@ -137,15 +123,15 @@ public class LtlBinaryOp implements LtlFormula {
     public String toString() {
         switch (opType) {
             case OR:
-                return "(" + opLeft.toString() + ")" + " OR " + "(" + opRight.toString() + ")";
+                return "(" + opLeft.toString() + " || " + opRight.toString() + ")";
             case AND:
-                return "(" + opLeft.toString() + ")" + " AND " + "(" + opRight.toString() + ")";
+                return "(" + opLeft.toString() + " && " + opRight.toString() + ")";
             case U:
-                return "(" + opLeft.toString() + ")" + " U " + "(" + opRight.toString() + ")";
+                return "(" + opLeft.toString() + " U " + opRight.toString() + ")";
             case R:
-                return "(" + opLeft.toString() + ")" + " R " + "(" + opRight.toString() + ")";
+                return "(" + opLeft.toString() + " R " + opRight.toString() + ")";
             case IMPL:
-                return "(" + opLeft.toString() + ")" + " -> " + "(" + opRight.toString() + ")";
+                return "(" + opLeft.toString() + " -> " + opRight.toString() + ")";
             default:
                 throw new AssertionError(opType.name());
 
