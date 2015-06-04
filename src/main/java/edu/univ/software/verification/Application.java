@@ -8,6 +8,7 @@ import edu.univ.software.verification.model.kripke.BasicStructure;
 import edu.univ.software.verification.model.ltl.Atom;
 import edu.univ.software.verification.model.ltl.BinaryOp;
 import edu.univ.software.verification.model.ltl.UnaryOp;
+import edu.univ.software.verification.utils.LtlParser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,7 @@ public class Application {
         logger.info("---------------------------");
     }
     
-    private static void ltlInvertionDemo() {
+    private static void ltlDemo() {
         Atom atomB = new Atom("B");
         Atom atomA = new Atom("A");
         Atom atomZero = Atom._0;
@@ -67,10 +68,16 @@ public class Application {
         logger.info("Inverted: {}", f.invert());
         logger.info("Inverted & normalized: {}", f.invert().normalized());
         logger.info("------------------------");
+        
+        logger.info("---LTL parser test------");
+        logger.info("Formula(REP): {}", LtlParser.parseString(f.toString()));        
+        logger.info("Inverted(REP): {}", LtlParser.parseString(f.invert().toString()));
+        logger.info("Inv. & Norm.(REP): {}", LtlParser.parseString(f.invert().normalized().toString()));
+        logger.info("------------------------");
     }
     
     public static void main(String[] args) {
         kripkeStructureDemo();
-        ltlInvertionDemo();
+        ltlDemo();
     }
 }

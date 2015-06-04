@@ -29,7 +29,7 @@ public class Atom implements LtlFormula {
     }
 
     public Atom(String name) {
-        this.name = name;
+        this.name = name.toLowerCase();
         this.type = AtomType.VAR;
     }
 
