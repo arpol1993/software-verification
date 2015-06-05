@@ -13,6 +13,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import edu.univ.software.verification.model.ltl.Atom;
+import edu.univ.software.verification.model.ltl.BinaryOp;
+import edu.univ.software.verification.model.ltl.UnaryOp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,9 +88,135 @@ public enum LtlUtils {
     }
     
     private void processFormula(LtlFormula formula, GraphNode node, Set<GraphNode> nodes, AtomicInteger idGen) {
-        // TODO
+        if(formula instanceof BinaryOp) {
+            if (BinaryOp.OpType.U.equals(((BinaryOp) formula).getOpType())) {
+                //in this case two nodes are created and processed instead of the current one
+
+                //define new sets of old, new and next formulas
+                Set<LtlFormula> oldFormulas = node.getOldFormulas();
+                oldFormulas.add(formula);
+
+                Set<LtlFormula> q1NewFormulas = node.getNewFormulas();
+                q1NewFormulas.add(((BinaryOp) formula).getOpLeft());
+
+                Set<LtlFormula> q1NextFormulas = node.getNextFormulas();
+                q1NewFormulas.add(formula);
+
+                Set<LtlFormula> q2NewFormulas = node.getNextFormulas();
+                q2NewFormulas.add(((BinaryOp) formula).getOpRight());
+
+                GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()))
+                        .addIncoming(node.getIncoming())
+                        .addOldFormulas(oldFormulas)
+                        .addNewFormulas(q1NewFormulas)
+                        .addNextFormulas(q1NextFormulas)
+                        .build();
+
+                GraphNode q2 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()))
+                        .addIncoming(node.getIncoming())
+                        .addOldFormulas(oldFormulas)
+                        .addNewFormulas(q2NewFormulas)
+                        .addNewFormulas(node.getNextFormulas())
+                        .build();
+
+                processNode(q1, nodes, idGen);
+                processNode(q2, nodes, idGen);
+            } else
+                if(BinaryOp.OpType.R.equals(((BinaryOp) formula).getOpType())) {
+                    //also two nodes are created and processed
+
+                    Set<LtlFormula> qNewFormulas = node.getNewFormulas();
+                    qNewFormulas.add(((BinaryOp) formula).getOpRight());
+
+                    Set<LtlFormula> q2NextFormulas = node.getNextFormulas();
+                    q2NextFormulas.add(formula);
+
+                    GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()))
+                            .addIncoming(node.getIncoming())
+                            .addOldFormulas(node.getOldFormulas())
+                            .addNewFormulas(qNewFormulas)
+                            .addNextFormulas(node.getNextFormulas())
+                            .build();
+
+                    GraphNode q2 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()))
+                            .addIncoming(node.getIncoming())
+                            .addOldFormulas(node.getOldFormulas())
+                            .addNewFormulas(qNewFormulas)
+                            .addNextFormulas(q2NextFormulas)
+                            .build();
+
+                    processNode(q1, nodes, idGen);
+                    processNode(q2, nodes, idGen);
+                } else
+                    if(BinaryOp.OpType.AND.equals(((BinaryOp) formula).getOpType())) {
+                        Set<LtlFormula> oldFormulas = node.getOldFormulas();
+                        oldFormulas.add(formula);
+
+                        Set<LtlFormula> newFormulas = node.getNewFormulas();
+                        newFormulas.add(((BinaryOp) formula).getOpRight());
+                        newFormulas.add(((BinaryOp) formula).getOpLeft());
+
+                        GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()))
+                                .addIncoming(node.getIncoming())
+                                .addOldFormulas(oldFormulas)
+                                .addNewFormulas(newFormulas)
+                                .addNextFormulas(node.getNextFormulas())
+                                .build();
+
+                        processNode(q1, nodes, idGen);
+                    } else
+                        if(BinaryOp.OpType.OR.equals(((BinaryOp) formula).getOpType())) {
+                            Set<LtlFormula> oldFormulas = node.getOldFormulas();
+                            oldFormulas.add(formula);
+
+                            Set<LtlFormula> q1NewFormulas = node.getNewFormulas();
+                            q1NewFormulas.add(((BinaryOp) formula).getOpLeft());
+
+                            Set<LtlFormula> q2NewFormulas = node.getNewFormulas();
+                            q2NewFormulas.add(((BinaryOp) formula).getOpRight());
+
+                            GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()))
+                                    .addIncoming(node.getIncoming())
+                                    .addOldFormulas(oldFormulas)
+                                    .addNewFormulas(q1NewFormulas)
+                                    .addNextFormulas(node.getNextFormulas())
+                                    .build();
+
+                            GraphNode q2 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()))
+                                    .addIncoming(node.getIncoming())
+                                    .addOldFormulas(oldFormulas)
+                                    .addNewFormulas(q2NewFormulas)
+                                    .addNextFormulas(node.getNextFormulas())
+                                    .build();
+
+                            processNode(q1, nodes, idGen);
+                            processNode(q2, nodes, idGen);
+                        }
+        } else
+            if(formula instanceof UnaryOp) {
+                if(UnaryOp.OpType.X.equals(((UnaryOp) formula).getOpType())) {
+
+                    Set<LtlFormula> oldFormulas = node.getOldFormulas();
+                    oldFormulas.add(formula);
+
+                    Set<LtlFormula> nextFormulas = node.getNextFormulas();
+                    nextFormulas.add(((UnaryOp) formula).getOperand());
+
+                    GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()))
+                            .addIncoming(node.getIncoming())
+                            .addOldFormulas(oldFormulas)
+                            .addNewFormulas(node.getNewFormulas())
+                            .addNextFormulas(nextFormulas)
+                            .build();
+
+                    processNode(q1, nodes, idGen);
+                }
+            }
+
     }
-    
+
+
+
     private /* Automata Type Here */ void nodesToAutomata(Set<GraphNode> nodes) {
         // TODO
     }
