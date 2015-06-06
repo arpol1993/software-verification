@@ -3,6 +3,7 @@ package edu.univ.software.verification.utils;
 import com.google.common.collect.ImmutableSet;
 
 import edu.univ.software.verification.model.LtlFormula;
+import edu.univ.software.verification.model.ltl.Atom;
 import edu.univ.software.verification.model.ltl.BinaryOp;
 import edu.univ.software.verification.model.ltl.UnaryOp;
 
@@ -157,7 +158,22 @@ public enum LtlUtils {
                         .build();
 
                 processNode(q1, nodes, idGen);
+            } else if (node.getOldFormulas().contains(formula.invert().normalized())) {
+                nodes.remove(node);
             }
+        } else if (formula instanceof Atom) {
+            Atom atom = (Atom) formula;
+
+            if(Atom.AtomType._0.equals(atom.getType())) {
+                nodes.remove(node);
+            } else {
+                GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()), node)
+                        .addOldFormula(formula)
+                        .build();
+                nodes.add(node);
+                processNode(q1, nodes, idGen);
+            }
+
         }
 
     }
