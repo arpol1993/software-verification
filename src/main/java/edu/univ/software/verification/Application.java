@@ -3,7 +3,11 @@ package edu.univ.software.verification;
 
 import com.google.common.collect.ImmutableList;
 
+import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.KripkeStructure;
+import edu.univ.software.verification.model.MullerAutomaton;
+import edu.univ.software.verification.model.fa.BasicBuchiAutomaton;
+import edu.univ.software.verification.model.fa.BasicMullerAutomaton;
 import edu.univ.software.verification.model.kripke.BasicStructure;
 import edu.univ.software.verification.model.ltl.Atom;
 import edu.univ.software.verification.model.ltl.BinaryOp;
@@ -53,6 +57,47 @@ public class Application {
         logger.info("---------------------------");
     }
     
+    private static void buchiAutomatonDemo() {
+        // demonstrates creation of Buchi automaton for p. 234a
+        BuchiAutomaton<?> buchiAutomaton = BasicBuchiAutomaton.builder()
+                .withState("1", true)
+                .withState("2")
+                .withState("3")
+                .withState("4")
+                .withTransition("1", "2", "x")
+                .withTransition("1", "4", "y")
+                .withTransition("2", "2", "x")
+                .withTransition("2", "3", "y")
+                .withTransition("3", "4", "x", "y")
+                .withTransition("4", "4", "x", "y")
+                .build();
+        
+        logger.info("---Buchi automaton test---");
+        logger.info("Transition between {} and {}: {}", 2, 3, buchiAutomaton.hasTransition("2", "3"));
+        logger.info("Transition between {} and {}: {}", 3, 1, buchiAutomaton.hasTransition("3", "1"));
+        logger.info("Ingoing edges for state {}: {}", 4, buchiAutomaton.getTransitionsTo("4"));
+        logger.info("---------------------------");
+    }
+    
+    private static void mullerAutomatonDemo() {
+        // demonstrates creation of Muller automaton for p. 253
+        MullerAutomaton<?> mullerAutomaton = BasicMullerAutomaton.builder()
+                .withState("0", true)
+                .withState("1")
+                .withTransition("0", "0", "x")
+                .withTransition("0", "1", "y")
+                .withTransition("1", "1", "y")
+                .withTransition("1", "0", "x")
+                .withFinalStateSet("1")
+                .build();
+        
+        logger.info("---Muller automaton test---");
+        logger.info("Transition between {} and {}: {}", 1, 0, mullerAutomaton.hasTransition("1", "0"));
+        logger.info("Transition between {} and {}: {}", 2, 1, mullerAutomaton.hasTransition("2", "1"));
+        logger.info("Outgoing edges for state {}: {}", 0, mullerAutomaton.getTransitionsFrom("0"));
+        logger.info("---------------------------");
+    }
+    
     private static void ltlDemo() {
         Atom atomB = new Atom("B");
         Atom atomA = new Atom("A");
@@ -79,5 +124,7 @@ public class Application {
     public static void main(String[] args) {
         kripkeStructureDemo();
         ltlDemo();
+        buchiAutomatonDemo();
+        mullerAutomatonDemo();
     }
 }

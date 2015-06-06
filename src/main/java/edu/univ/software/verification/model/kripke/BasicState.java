@@ -65,7 +65,7 @@ public class BasicState implements KripkeState {
     }
     
     public void setAtoms(Set<Atom> atoms) {
-        this.atoms = atoms;
+        this.atoms = ImmutableSet.copyOf(atoms);
     }
     
     @Override
