@@ -1,7 +1,7 @@
-
 package edu.univ.software.verification.model.ltl;
 
 import edu.univ.software.verification.model.LtlFormula;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -96,6 +96,24 @@ public class Atom implements LtlFormula {
     }
 
     @Override
+    public boolean evaluate(Map<Character, Boolean> values) {
+        switch (type) {
+            case _0:
+                return false;
+            case _1:
+                return true;
+            case VAR:
+                if (values.containsKey(name.charAt(0))) {
+                    return values.get(name.charAt(0));
+                } else {
+                    throw new IllegalArgumentException("Label {" + name + "} value is not defined!");
+                }
+            default:
+                throw new AssertionError(type.toString());
+        }
+    }
+
+    @Override
     public LtlFormula normalized() {
         return this.clone();
     }
@@ -115,7 +133,7 @@ public class Atom implements LtlFormula {
             case VAR:
                 return name;
         }
-        
+
         return "LtlAtom{" + "name=" + name + ", type=" + type + '}';
     }
 }

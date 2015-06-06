@@ -33,7 +33,7 @@ public class LtlParser {
     private final static char IMPL = '-';
     private final static char IMPL2 = '>';
 
-    public static LtlFormula parseString(String formula) throws IllegalArgumentException {
+    public static LtlFormula parseString(String formula) {
         LtlParser parser = new LtlParser(formula);
 
         return parser.parse();
@@ -45,7 +45,7 @@ public class LtlParser {
         this.formulaString = formulaString;
     }
 
-    public LtlFormula parse() throws IllegalArgumentException {
+    public LtlFormula parse() {
 
         Builder builder = new Builder();
         try {

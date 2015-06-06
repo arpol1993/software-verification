@@ -1,6 +1,8 @@
 
 package edu.univ.software.verification.model;
 
+import java.util.Map;
+
 public interface LtlFormula extends Cloneable {
     /**
      * Check the syntax equality of two formulas
@@ -33,6 +35,8 @@ public interface LtlFormula extends Cloneable {
      * @return normalized LTL formula
      */
     public LtlFormula normalized();
+    
+    public boolean evaluate(Map<Character, Boolean> values);
     
     /**
      * Create clone of LTL formula

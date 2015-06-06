@@ -144,7 +144,7 @@ public class Builder {
 
         depthOrder = new LinkedList<>();
         current = -1;
-    }
+    }  
 
     public Builder startBinary() {
         BinaryOpStub stub = new BinaryOpStub();

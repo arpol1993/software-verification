@@ -2,6 +2,7 @@
 package edu.univ.software.verification.model.ltl;
 
 import edu.univ.software.verification.model.LtlFormula;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -69,7 +70,17 @@ public class UnaryOp implements LtlFormula {
             default: return this.clone();
         }
     }
+
+    @Override
+    public boolean evaluate(Map<Character, Boolean> values) {
+        if (opType != OpType.NEG) {
+            throw new IllegalArgumentException("Invalid unary operator!");
+        }
         
+        return !operand.evaluate(values);
+    }
+    
+            
 
     @Override
     public LtlFormula clone() {        

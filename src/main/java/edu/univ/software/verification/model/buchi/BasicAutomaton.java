@@ -27,7 +27,7 @@ public class BasicAutomaton implements BuchiAutomaton {
     public BasicAutomaton() {}
     
     public BasicAutomaton(Map<String, BuchiState> states) {
-        states = ImmutableMap.copyOf(states);
+        this.states = ImmutableMap.copyOf(states);
     }
     
     public static Builder builder() {

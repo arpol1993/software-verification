@@ -1,7 +1,8 @@
-
 package edu.univ.software.verification.model.ltl;
 
 import edu.univ.software.verification.model.LtlFormula;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -12,6 +13,27 @@ public class BinaryOp implements LtlFormula {
 
     public static BinaryOp build(OpType opType, LtlFormula opLeft, LtlFormula opRight) {
         return new BinaryOp(opType, opLeft, opRight);
+    }
+
+    public LtlFormula concat(OpType opType, List<LtlFormula> formulas) {
+
+        BinaryOp current;
+        while (formulas.size() > 1) {
+            current = build(opType,
+                    formulas.get(formulas.size() - 1),
+                    formulas.get(formulas.size() - 2));
+
+            formulas.remove(current.opLeft);
+            formulas.remove(current.opRight);
+
+            formulas.add(current);
+        }
+
+        if (formulas.size() < 1) {
+            throw new IllegalArgumentException("Concat elements count must be greater that 1");
+        }
+
+        return formulas.get(0);
     }
 
     public static enum OpType {
@@ -83,6 +105,20 @@ public class BinaryOp implements LtlFormula {
                 return build(OpType.OR, opLeft.invert().normalized(), opRight.normalized());
             default:
                 return this.clone();
+        }
+    }
+
+    @Override
+    public boolean evaluate(Map<Character, Boolean> values) {
+        switch (opType) {
+            case OR:
+                return opLeft.evaluate(values) || opRight.evaluate(values);
+            case AND:
+                return opLeft.evaluate(values) && opRight.evaluate(values);
+            case IMPL:
+                return !opLeft.evaluate(values) || opRight.evaluate(values);
+            default:
+                throw new IllegalArgumentException("Invalid binary optype - " + opType.name());
         }
     }
 
