@@ -33,7 +33,7 @@ public interface BuchiAutomaton<T extends Serializable> extends Automaton<T> {
         public Builder<T> withTransition(String from, String to, String symbol) throws IllegalArgumentException;
         public Builder<T> withTransition(String from, String to, String... symbols) throws IllegalArgumentException;
         public Builder<T> withTransition(String from, String to, Collection<String> symbols) throws IllegalArgumentException;
-        public Builder<T> importTransitions(Table<String, String, Set<String>> states);
+        public Builder<T> importTransitions(Table<String, String, Set<String>> transitions);
         public Builder<T> withFinalState(String label) throws IllegalArgumentException;
         public BuchiAutomaton<T> build();
     }

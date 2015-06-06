@@ -90,7 +90,6 @@ public class Application {
                 .withFinalStateSet("1")
                 .withFinalStateSet("0")
                 .build();
-              
         
         logger.info("---Muller automaton test---");
         logger.info("Transition between {} and {}: {}", 1, 0, mullerAutomaton.hasTransition("1", "0"));

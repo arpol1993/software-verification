@@ -33,7 +33,7 @@ public interface MullerAutomaton<T extends Serializable> extends Automaton<T> {
         public Builder<T> withTransition(String from, String to, String symbol) throws IllegalArgumentException;
         public Builder<T> withTransition(String from, String to, String... symbols) throws IllegalArgumentException;
         public Builder<T> withTransition(String from, String to, Collection<String> symbols) throws IllegalArgumentException;
-        public Builder<T> importTransitions(Table<String, String, Set<String>> states);
+        public Builder<T> importTransitions(Table<String, String, Set<String>> transitions);
         public Builder<T> withFinalStateSet(String... states);
         public Builder<T> withFinalStateSet(Collection<? extends String> states) throws IllegalArgumentException;
         public MullerAutomaton<T> build();

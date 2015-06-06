@@ -190,8 +190,8 @@ public abstract class AbstractAutomaton<T extends Serializable> implements Autom
             return getBuilder();
         }
         
-        public S importTransitions(Table<String, String, Set<String>> states) {
-            states.cellSet().stream().forEach(cell -> {
+        public S importTransitions(Table<String, String, Set<String>> transitions) {
+            transitions.cellSet().stream().forEach(cell -> {
                 withTransition(cell.getRowKey(), cell.getColumnKey(), cell.getValue());
             });
             
