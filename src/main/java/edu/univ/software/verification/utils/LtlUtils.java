@@ -158,13 +158,11 @@ public enum LtlUtils {
                         .build();
 
                 processNode(q1, nodes, idGen);
-            } else if (node.getOldFormulas().contains(formula.invert().normalized())) {
-                nodes.remove(node);
             }
         } else if (formula instanceof Atom) {
             Atom atom = (Atom) formula;
 
-            if(Atom.AtomType._0.equals(atom.getType())) {
+            if (Atom.AtomType._0.equals(atom.getType()) || node.getOldFormulas().contains(formula.invert().normalized())) {
                 nodes.remove(node);
             } else {
                 GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()), node)
