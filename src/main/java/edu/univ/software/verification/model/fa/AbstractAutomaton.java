@@ -143,6 +143,32 @@ public abstract class AbstractAutomaton<T extends Serializable> implements Autom
             return getBuilder();
         }
         
+        public S withStates(String... labels) {
+            return withStates(AutomatonState.DEFAULT_INITIAL, labels);
+        }
+        
+        public S withStates(boolean initial, String... labels) {
+            return withStates(initial, ImmutableSet.copyOf(labels));
+        }
+        
+        public S withStates(Collection<String> labels) {
+            return withStates(AutomatonState.DEFAULT_INITIAL, labels);
+        }
+        
+        public S withStates(boolean initial, Collection<String> labels) {
+            labels.stream().forEach(s -> withState(s, initial));
+            
+            return getBuilder();
+        }
+        
+        public S importStates(Collection<? extends AutomatonState<T>> states) {
+            states.stream().forEach((AutomatonState<T> s) -> {
+                withState(s.getLabel(), s.isInitial(), (s instanceof BasicState<?>) ? ((BasicState<T>) s).getData() : null);
+            });
+            
+            return getBuilder();
+        }
+        
         public S withTransition(String from, String to, String symbol) throws IllegalArgumentException {
             return withTransition(from, to, ImmutableSet.of(symbol));
         }
@@ -158,8 +184,16 @@ public abstract class AbstractAutomaton<T extends Serializable> implements Autom
             }
             
             if (transitions.put(from, to, ImmutableSet.copyOf(symbols)) != null) {
-                logger.info("Transition from '{}' to '{}' updated to use '{}' symbol", from, to, symbols);
+                logger.info("Transition from '{}' to '{}' updated to use '{}' symbols", from, to, symbols);
             }
+            
+            return getBuilder();
+        }
+        
+        public S importTransitions(Table<String, String, Set<String>> transitions) {
+            transitions.cellSet().stream().forEach(cell -> {
+                withTransition(cell.getRowKey(), cell.getColumnKey(), cell.getValue());
+            });
             
             return getBuilder();
         }

@@ -67,6 +67,18 @@ public class BasicBuchiAutomaton<T extends Serializable> extends AbstractAutomat
         }
         
         @Override
+        public BasicBuilder<T> withFinalStates(String... labels) throws IllegalArgumentException {
+            return withFinalStates(ImmutableSet.copyOf(labels));
+        }
+        
+        @Override
+        public BasicBuilder<T> withFinalStates(Collection<String> labels) throws IllegalArgumentException {
+            labels.stream().forEach(this::withFinalState);
+            
+            return getBuilder();
+        }
+        
+        @Override
         public BuchiAutomaton<T> build() {
             return new BasicBuchiAutomaton<>(states, finalStates, transitions);
         }

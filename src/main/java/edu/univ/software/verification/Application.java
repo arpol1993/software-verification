@@ -62,9 +62,7 @@ public class Application {
         // demonstrates creation of Buchi automaton for p. 234a
         BuchiAutomaton<?> buchiAutomaton = BasicBuchiAutomaton.builder()
                 .withState("1", true)
-                .withState("2")
-                .withState("3")
-                .withState("4")
+                .withStates("2", "3", "4")
                 .withTransition("1", "2", "x")
                 .withTransition("1", "4", "y")
                 .withTransition("2", "2", "x")
@@ -99,29 +97,26 @@ public class Application {
                 .withFinalStateSet("1")
                 .withFinalStateSet("0")
                 .build();
-              
         
         logger.info("---Muller automaton test---");
         logger.info("Transition between {} and {}: {}", 1, 0, mullerAutomaton.hasTransition("1", "0"));
         logger.info("Transition between {} and {}: {}", 2, 1, mullerAutomaton.hasTransition("2", "1"));
         logger.info("Outgoing edges for state {}: {}", 0, mullerAutomaton.getTransitionsFrom("0"));        
         logger.info("---------------------------");
-        
-        
-        BuchiAutomaton<?> buchi = AutomataUtils.INSTANCE.convert(mullerAutomaton);
-        
-        
+                
+        BuchiAutomaton<?> buchiAutomaton = AutomataUtils.INSTANCE.convert(mullerAutomaton);
+                
         logger.info("---Degeneralization (LGBA -> BA) automaton test---");
-        logger.info("Transition between {} and {}: {}", 1, 0, buchi.hasTransition("(1, 0)", "(0, 1)"));
-        logger.info("Transition between {} and {}: {}", 2, 1, buchi.hasTransition("(2, 0)", "(1, 0)"));
-        logger.info("Outgoing edges for state {}: {}", "(1, 0)", buchi.getTransitionsFrom("(1, 0)"));
-        logger.info("Outgoing edges for state {}: {}", "(0, 1)", buchi.getTransitionsFrom("(0, 1)"));
-        logger.info("Outgoing edges for state {}: {}", "(0, 0)", buchi.getTransitionsFrom("(0, 0)"));
-        logger.info("Outgoing edges for state {}: {}", "(1, 1)", buchi.getTransitionsFrom("(1, 1)"));
+        logger.info("Transition between {} and {}: {}", 1, 0, buchiAutomaton.hasTransition("(1, 0)", "(0, 1)"));
+        logger.info("Transition between {} and {}: {}", 2, 1, buchiAutomaton.hasTransition("(2, 0)", "(1, 0)"));
+        logger.info("Outgoing edges for state {}: {}", "(1, 0)", buchiAutomaton.getTransitionsFrom("(1, 0)"));
+        logger.info("Outgoing edges for state {}: {}", "(0, 1)", buchiAutomaton.getTransitionsFrom("(0, 1)"));
+        logger.info("Outgoing edges for state {}: {}", "(0, 0)", buchiAutomaton.getTransitionsFrom("(0, 0)"));
+        logger.info("Outgoing edges for state {}: {}", "(1, 1)", buchiAutomaton.getTransitionsFrom("(1, 1)"));
         logger.info("---------------------------");
         
         
-        logger.info("Is that automaton accepts only empty language : {}", AutomataUtils.INSTANCE.isEmptyLanguage(buchi));
+        logger.info("Is that automaton accepts only empty language : {}", AutomataUtils.INSTANCE.isEmptyLanguage(buchiAutomaton));
     }
     
     private static void ltlDemo() {

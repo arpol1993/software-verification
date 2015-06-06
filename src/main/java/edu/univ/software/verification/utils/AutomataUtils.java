@@ -61,9 +61,16 @@ public enum AutomataUtils {
 
     }
 
+    /**
+     * Check wether specified Buchi automata accepts only empty language. Prints
+     * counter expamples into the logfile
+     *
+     * @param buchi Buchi automaton to check
+     * @return true if only empty, false otherwise
+     */
     public boolean isEmptyLanguage(BuchiAutomaton<?> buchi) {
 
-        //Some additional data
+        //Some additional junk init (XXX: rewrite this)
         Circuit.totalCircuits.clear();
 
         //Stage 1. Find all circular routes that includes all final states
@@ -80,7 +87,7 @@ public enum AutomataUtils {
             if (route == null) {
                 continue;
             }
-            
+
             Circuit.totalCircuits.stream().filter((circuit) -> (circuit.path.contains(route.path.get(route.path.size() - 1)))).map((circuit) -> {
                 StringBuilder counter = new StringBuilder("Counterexpample: L = ");
                 printRoute(route, counter, buchi);
@@ -98,70 +105,6 @@ public enum AutomataUtils {
         return true;
     }
 
-    private void printRoute(Circuit route, StringBuilder strbuilder, BuchiAutomaton<?> buchi) {
-        for (int i = 0; i < route.path.size() - 1; i++) {
-            strbuilder.append(buchi.getTransitionSymbols(route.path.get(i), route.path.get(i + 1)).iterator().next());
-        }
-    }
-
-    private Circuit buildRoute(BuchiAutomaton<?> buchi,
-            Set<String> target, Circuit cpath, String current,
-            Set<String> totalVisited, boolean findCycle, boolean findTotal) {
-
-        for (String dest : buchi.getTransitionsFrom(current).keySet()) {
-
-            boolean isCycling = false, isClosed = false;
-            if (cpath.path.contains(dest)) {
-                isCycling = true;
-                if (cpath.path.get(0).equals(dest)) {
-                    isClosed = true;
-                }
-            } else {
-                cpath = cpath.enter(dest);
-            }
-
-            if ((findCycle && isClosed && containsStates(target, cpath.path))
-                    || (!findTotal && containsTarget(target, cpath.path))) {
-
-                if (findCycle && isClosed) {
-                    cpath = cpath.enter(dest);
-                }
-
-                if (findTotal) {
-                    union(totalVisited, cpath.path);
-                }
-                return cpath;
-            }
-
-            if (!isCycling) {
-                Circuit cr = buildRoute(buchi, target, cpath, dest, totalVisited, findCycle, findTotal);
-                if (cr != null) {
-                    if (!findTotal) {
-                        return cr;
-                    } else {
-                        Circuit.totalCircuits.add(cr);
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private void union(Set<String> dest, List<String> source) {
-        source.stream().forEach((src) -> {
-            dest.add(src);
-        });
-    }
-
-    private boolean containsStates(Set<String> targets, List<String> path) {
-        return targets.stream().noneMatch((target) -> (!path.contains(target)));
-    }
-
-    private boolean containsTarget(Set<String> targets, List<String> path) {
-        return targets.stream().anyMatch((target) -> (path.contains(target)));
-    }
-
     /**
      * Converts specified Buchi automaton into Generalized Buchi (Muller)
      * automaton
@@ -171,19 +114,13 @@ public enum AutomataUtils {
      * @return LGBA (Muller) automaton
      */
     public <T extends Serializable> MullerAutomaton<T> convert(BuchiAutomaton<T> buchi) {
-        MullerAutomaton.Builder<T> builder = BasicMullerAutomaton.builder();
+        MullerAutomaton<T> mullerAutomaton = BasicMullerAutomaton.<T>builder()
+                .importStates(buchi.getStates())
+                .importTransitions(buchi.getTransitions())
+                .withFinalStateSet(buchi.getFinalStates())
+                .build();
 
-        for (Table.Cell<String, String, Set<String>> trans : buchi.getTransitions().cellSet()) {
-            builder.withTransition(trans.getRowKey(), trans.getColumnKey(), trans.getValue());
-        }
-
-        buchi.getStates().stream().forEach((state) -> {
-            builder.withState(state.getLabel(), state.isInitial(), ((BasicState<T>) state).getData());
-        });
-
-        builder.withFinalStateSet(buchi.getFinalStates());
-
-        return builder.build();
+        return mullerAutomaton;
     }
 
     /**
@@ -243,6 +180,7 @@ public enum AutomataUtils {
 
     private int finalIndexOf(Set<Set<String>> finalStates, String state) {
         int i = 0;
+
         for (Set<String> finalStateSet : finalStates) {
             if (finalStateSet.contains(state)) {
                 return i;
@@ -252,5 +190,70 @@ public enum AutomataUtils {
         }
 
         return -1;
+    }   
+
+    private Circuit buildRoute(BuchiAutomaton<?> buchi,
+            Set<String> target, Circuit cpath, String current,
+            Set<String> totalVisited, boolean findCycle, boolean findTotal) {
+
+        for (String dest : buchi.getTransitionsFrom(current).keySet()) {
+
+            boolean isCycling = false, isClosed = false;
+            if (cpath.path.contains(dest)) {
+                isCycling = true;
+                if (cpath.path.get(0).equals(dest)) {
+                    isClosed = true;
+                }
+            } else {
+                cpath = cpath.enter(dest);
+            }
+
+            if ((findCycle && isClosed && containsStates(target, cpath.path))
+                    || (!findTotal && containsTarget(target, cpath.path))) {
+
+                if (findCycle && isClosed) {
+                    cpath = cpath.enter(dest);
+                }
+
+                if (findTotal) {
+                    union(totalVisited, cpath.path);
+                }
+                return cpath;
+            }
+
+            if (!isCycling) {
+                Circuit cr = buildRoute(buchi, target, cpath, dest, totalVisited, findCycle, findTotal);
+                if (cr != null) {
+                    if (!findTotal) {
+                        return cr;
+                    } else {
+                        Circuit.totalCircuits.add(cr);
+                    }
+                }
+            }
+        }
+
+        return null;
     }
+    
+    private void printRoute(Circuit route, StringBuilder strbuilder, BuchiAutomaton<?> buchi) {
+        for (int i = 0; i < route.path.size() - 1; i++) {
+            strbuilder.append(buchi.getTransitionSymbols(route.path.get(i), route.path.get(i + 1)).iterator().next());
+        }
+    }
+    
+    private void union(Set<String> dest, List<String> source) {
+        source.stream().forEach((src) -> {
+            dest.add(src);
+        });
+    }
+
+    private boolean containsStates(Set<String> targets, List<String> path) {
+        return targets.stream().noneMatch((target) -> (!path.contains(target)));
+    }
+
+    private boolean containsTarget(Set<String> targets, List<String> path) {
+        return targets.stream().anyMatch((target) -> (path.contains(target)));
+    }
+
 }
