@@ -59,7 +59,7 @@ public class BasicMullerAutomaton<T extends Serializable> extends AbstractAutoma
         }
         
         @Override
-        public BasicBuilder<T> withFinalStateSet(Collection<? extends String> stateSet) throws IllegalArgumentException {
+        public BasicBuilder<T> withFinalStateSet(Collection<String> stateSet) throws IllegalArgumentException {
             Set<String> finalStateSet = ImmutableSet.copyOf(stateSet);
             Sets.SetView<String> missingStates = Sets.difference(finalStateSet, this.states.keySet());
             
@@ -70,6 +70,13 @@ public class BasicMullerAutomaton<T extends Serializable> extends AbstractAutoma
             if (!finalStateSets.add(finalStateSet)) {
                 logger.warn("Attempt to add duplicate final state set '{}'", finalStateSet);
             }
+            
+            return getBuilder();
+        }
+        
+        @Override
+        public BasicBuilder<T> importFinalStateSets(Collection<Collection<String>> finalStateSets) {
+            finalStateSets.stream().forEach(this::withFinalStateSet);
             
             return getBuilder();
         }

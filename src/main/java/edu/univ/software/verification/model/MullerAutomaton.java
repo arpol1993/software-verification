@@ -35,7 +35,8 @@ public interface MullerAutomaton<T extends Serializable> extends Automaton<T> {
         public Builder<T> withTransition(String from, String to, Collection<String> symbols) throws IllegalArgumentException;
         public Builder<T> importTransitions(Table<String, String, Set<String>> transitions);
         public Builder<T> withFinalStateSet(String... states);
-        public Builder<T> withFinalStateSet(Collection<? extends String> states) throws IllegalArgumentException;
+        public Builder<T> withFinalStateSet(Collection<String> states) throws IllegalArgumentException;
+        public Builder<T> importFinalStateSets(Collection<Collection<String>> finalStateSets);
         public MullerAutomaton<T> build();
     }
 }
