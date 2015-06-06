@@ -71,13 +71,20 @@ public class Application {
                 .withTransition("2", "3", "y")
                 .withTransition("3", "4", "x", "y")
                 .withTransition("4", "4", "x", "y")
+                .withTransition("4", "3", "y")
+                .withFinalState("3")
+                .withFinalState("4")
                 .build();
         
         logger.info("---Buchi automaton test---");
         logger.info("Transition between {} and {}: {}", 2, 3, buchiAutomaton.hasTransition("2", "3"));
         logger.info("Transition between {} and {}: {}", 3, 1, buchiAutomaton.hasTransition("3", "1"));
         logger.info("Ingoing edges for state {}: {}", 4, buchiAutomaton.getTransitionsTo("4"));
-        logger.info("---------------------------");
+        logger.info("---------------------------");       
+        
+        logger.info("Is that automaton accepts only empty language : {}",
+                AutomataUtils.INSTANCE.isEmptyLanguage(buchiAutomaton));
+         logger.info("---------------------------");      
     }
     
     private static void mullerAutomatonDemo() {
@@ -97,7 +104,7 @@ public class Application {
         logger.info("---Muller automaton test---");
         logger.info("Transition between {} and {}: {}", 1, 0, mullerAutomaton.hasTransition("1", "0"));
         logger.info("Transition between {} and {}: {}", 2, 1, mullerAutomaton.hasTransition("2", "1"));
-        logger.info("Outgoing edges for state {}: {}", 0, mullerAutomaton.getTransitionsFrom("0"));
+        logger.info("Outgoing edges for state {}: {}", 0, mullerAutomaton.getTransitionsFrom("0"));        
         logger.info("---------------------------");
         
         
@@ -112,6 +119,9 @@ public class Application {
         logger.info("Outgoing edges for state {}: {}", "(0, 0)", buchi.getTransitionsFrom("(0, 0)"));
         logger.info("Outgoing edges for state {}: {}", "(1, 1)", buchi.getTransitionsFrom("(1, 1)"));
         logger.info("---------------------------");
+        
+        
+        logger.info("Is that automaton accepts only empty language : {}", AutomataUtils.INSTANCE.isEmptyLanguage(buchi));
     }
     
     private static void ltlDemo() {

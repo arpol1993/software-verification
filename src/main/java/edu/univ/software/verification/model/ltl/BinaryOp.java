@@ -16,7 +16,7 @@ public class BinaryOp implements LtlFormula {
         return new BinaryOp(opType, opLeft, opRight);
     }
 
-    public LtlFormula concat(OpType opType, List<LtlFormula> formulas) {
+    public static LtlFormula concat(OpType opType, List<LtlFormula> formulas) {
 
         BinaryOp current;
         while (formulas.size() > 1) {
