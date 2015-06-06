@@ -1,9 +1,8 @@
-
 package edu.univ.software.verification.model.ltl;
 
 import edu.univ.software.verification.model.LtlFormula;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  *
@@ -24,13 +23,12 @@ public class UnaryOp implements LtlFormula {
     }
     private final OpType opType;
     private final LtlFormula operand;
-    
 
     private UnaryOp(OpType opType, LtlFormula operand) {
         this.opType = opType;
         this.operand = operand;
-    }   
-    
+    }
+
     /**
      * @return the opType
      */
@@ -52,38 +50,43 @@ public class UnaryOp implements LtlFormula {
 
     @Override
     public LtlFormula invert() {
-        switch(opType){
-            case F : return build(OpType.G, operand.invert());
-            case G : return build(OpType.F, operand.invert());
-            case X : return build(OpType.X, operand.invert());
-            case NEG : return operand.clone();
+        switch (opType) {
+            case F:
+                return build(OpType.G, operand.invert());
+            case G:
+                return build(OpType.F, operand.invert());
+            case X:
+                return build(OpType.X, operand.invert());
+            case NEG:
+                return operand.clone();
         }
-        
+
         return this.clone();
     }
 
     @Override
     public LtlFormula normalized() {
-        switch(opType){
-            case G : return BinaryOp.build(BinaryOp.OpType.R, Atom._0, operand.normalized());
-            case F : return BinaryOp.build(BinaryOp.OpType.U, Atom._1, operand.normalized());
-            default: return this.clone();
+        switch (opType) {
+            case G:
+                return BinaryOp.build(BinaryOp.OpType.R, Atom._0, operand.normalized());
+            case F:
+                return BinaryOp.build(BinaryOp.OpType.U, Atom._1, operand.normalized());
+            default:
+                return this.clone();
         }
     }
 
     @Override
-    public boolean evaluate(Map<Character, Boolean> values) {
+    public boolean evaluate(Set<String> values) {
         if (opType != OpType.NEG) {
             throw new IllegalArgumentException("Invalid unary operator!");
         }
-        
+
         return !operand.evaluate(values);
     }
-    
-            
 
     @Override
-    public LtlFormula clone() {        
+    public LtlFormula clone() {
         return this;
     }
 
@@ -103,14 +106,14 @@ public class UnaryOp implements LtlFormula {
         if (getClass() != obj.getClass()) {
             return false;
         }
-                
+
         final UnaryOp other = (UnaryOp) obj;
         if (this.opType != other.opType) {
             return false;
         }
         return Objects.equals(this.operand, other.operand);
     }
-    
+
     @Override
     public String toString() {
         switch (opType) {
@@ -124,10 +127,10 @@ public class UnaryOp implements LtlFormula {
                 return "F" + operand.toString();
             default:
                 throw new AssertionError(opType.name());
-            
-        }       
-        
+
+        }
+
         //return "LtlUnaryOp{" + "opType=" + opType + ", operand=" + operand.toString() + '}';
     }
-    
+
 }

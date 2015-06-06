@@ -4,6 +4,7 @@ import edu.univ.software.verification.model.LtlFormula;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  *
@@ -109,7 +110,7 @@ public class BinaryOp implements LtlFormula {
     }
 
     @Override
-    public boolean evaluate(Map<Character, Boolean> values) {
+    public boolean evaluate(Set<String> values) {
         switch (opType) {
             case OR:
                 return opLeft.evaluate(values) || opRight.evaluate(values);

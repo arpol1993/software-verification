@@ -12,6 +12,7 @@ import edu.univ.software.verification.model.kripke.BasicStructure;
 import edu.univ.software.verification.model.ltl.Atom;
 import edu.univ.software.verification.model.ltl.BinaryOp;
 import edu.univ.software.verification.model.ltl.UnaryOp;
+import edu.univ.software.verification.utils.AutomataUtils;
 import edu.univ.software.verification.utils.LtlParser;
 
 import org.slf4j.Logger;
@@ -89,12 +90,27 @@ public class Application {
                 .withTransition("1", "1", "y")
                 .withTransition("1", "0", "x")
                 .withFinalStateSet("1")
+                .withFinalStateSet("0")
                 .build();
+              
         
         logger.info("---Muller automaton test---");
         logger.info("Transition between {} and {}: {}", 1, 0, mullerAutomaton.hasTransition("1", "0"));
         logger.info("Transition between {} and {}: {}", 2, 1, mullerAutomaton.hasTransition("2", "1"));
         logger.info("Outgoing edges for state {}: {}", 0, mullerAutomaton.getTransitionsFrom("0"));
+        logger.info("---------------------------");
+        
+        
+        BuchiAutomaton<?> buchi = AutomataUtils.INSTANCE.convert(mullerAutomaton);
+        
+        
+        logger.info("---Degeneralization (LGBA -> BA) automaton test---");
+        logger.info("Transition between {} and {}: {}", 1, 0, buchi.hasTransition("(1, 0)", "(0, 1)"));
+        logger.info("Transition between {} and {}: {}", 2, 1, buchi.hasTransition("(2, 0)", "(1, 0)"));
+        logger.info("Outgoing edges for state {}: {}", "(1, 0)", buchi.getTransitionsFrom("(1, 0)"));
+        logger.info("Outgoing edges for state {}: {}", "(0, 1)", buchi.getTransitionsFrom("(0, 1)"));
+        logger.info("Outgoing edges for state {}: {}", "(0, 0)", buchi.getTransitionsFrom("(0, 0)"));
+        logger.info("Outgoing edges for state {}: {}", "(1, 1)", buchi.getTransitionsFrom("(1, 1)"));
         logger.info("---------------------------");
     }
     

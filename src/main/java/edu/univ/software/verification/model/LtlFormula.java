@@ -1,8 +1,12 @@
 
 package edu.univ.software.verification.model;
 
-import java.util.Map;
+import java.util.Set;
 
+/**
+ * Linear-time logic formula representations
+ * @author Pocomaxa
+ */
 public interface LtlFormula extends Cloneable {
     /**
      * Check the syntax equality of two formulas
@@ -36,7 +40,12 @@ public interface LtlFormula extends Cloneable {
      */
     public LtlFormula normalized();
     
-    public boolean evaluate(Map<Character, Boolean> values);
+    /**
+     * Evaluate formula's value. Doesn't compute temporal logic modal operators
+     * @param values map of conrete values of labeled variables
+     * @return result of the formula evaluation
+     */    
+    public boolean evaluate(Set<String> values);
     
     /**
      * Create clone of LTL formula
