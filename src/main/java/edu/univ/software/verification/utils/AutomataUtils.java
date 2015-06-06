@@ -35,19 +35,13 @@ public enum AutomataUtils {
      * @return LGBA (Muller) automaton
      */
     public <T extends Serializable> MullerAutomaton<T> convert(BuchiAutomaton<T> buchi) {
-        MullerAutomaton.Builder<T> builder = BasicMullerAutomaton.builder();
+        MullerAutomaton<T> mullerAutomaton = BasicMullerAutomaton.<T>builder()
+                .importStates(buchi.getStates())
+                .importTransitions(buchi.getTransitions())
+                .withFinalStateSet(buchi.getFinalStates())
+                .build();
 
-        for (Table.Cell<String, String, Set<String>> trans : buchi.getTransitions().cellSet()) {
-            builder.withTransition(trans.getRowKey(), trans.getColumnKey(), trans.getValue());
-        }
-
-        buchi.getStates().stream().forEach((state) -> {
-            builder.withState(state.getLabel(), state.isInitial(), ((BasicState<T>) state).getData());
-        });
-
-        builder.withFinalStateSet(buchi.getFinalStates());
-
-        return builder.build();
+        return mullerAutomaton;
     }
 
     /**
@@ -107,6 +101,7 @@ public enum AutomataUtils {
 
     private int finalIndexOf(Set<Set<String>> finalStates, String state) {
         int i = 0;
+        
         for (Set<String> finalStateSet : finalStates) {
             if (finalStateSet.contains(state)) {
                 return i;
