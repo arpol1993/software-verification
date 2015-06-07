@@ -2,6 +2,7 @@
 package edu.univ.software.verification.model;
 
 import com.google.common.collect.Table;
+import edu.univ.software.verification.model.fa.BasicState;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -33,10 +34,10 @@ public interface MullerAutomaton<T extends Serializable> extends Automaton<T> {
         public Builder<T> withTransition(String from, String to, String symbol) throws IllegalArgumentException;
         public Builder<T> withTransition(String from, String to, String... symbols) throws IllegalArgumentException;
         public Builder<T> withTransition(String from, String to, Collection<String> symbols) throws IllegalArgumentException;
-        public Builder<T> importTransitions(Table<String, String, Set<String>> transitions);
+        public Builder<T> withTransitions(Table<String, String, Set<String>> transitions);
         public Builder<T> withFinalStateSet(String... states);
         public Builder<T> withFinalStateSet(Collection<String> states) throws IllegalArgumentException;
-        public Builder<T> importFinalStateSets(Collection<Collection<String>> finalStateSets);
+        public Builder<T> withFinalStateSets(Collection<Collection<String>> finalStateSets);
         public MullerAutomaton<T> build();
     }
 }

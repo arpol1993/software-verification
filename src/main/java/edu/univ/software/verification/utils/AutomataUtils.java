@@ -123,7 +123,7 @@ public enum AutomataUtils {
     public <T extends Serializable> MullerAutomaton<T> convert(BuchiAutomaton<T> buchi) {
         MullerAutomaton<T> mullerAutomaton = BasicMullerAutomaton.<T>builder()
                 .importStates(buchi.getStates())
-                .importTransitions(buchi.getTransitions())
+                .withTransitions(buchi.getTransitions())
                 .withFinalStateSet(buchi.getFinalStates())
                 .build();
 

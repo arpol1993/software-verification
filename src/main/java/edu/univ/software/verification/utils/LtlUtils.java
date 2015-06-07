@@ -1,18 +1,19 @@
 package edu.univ.software.verification.utils;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.*;
 
 import edu.univ.software.verification.model.LtlFormula;
+import edu.univ.software.verification.model.MullerAutomaton;
+import edu.univ.software.verification.model.fa.BasicMullerAutomaton;
+import edu.univ.software.verification.model.fa.BasicState;
 import edu.univ.software.verification.model.ltl.Atom;
 import edu.univ.software.verification.model.ltl.BinaryOp;
 import edu.univ.software.verification.model.ltl.UnaryOp;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.io.Serializable;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,13 +172,54 @@ public enum LtlUtils {
                 nodes.add(node);
                 processNode(q1, nodes, idGen);
             }
-
+        } else if (formula.invert().normalized() instanceof Atom) {
+            //unfortunately !formula is not Atom, so one more condition should be added
+            nodes.remove(node);
         }
 
     }
 
-    private /* Automata Type Here */ void nodesToAutomata(Set<GraphNode> nodes) {
-        // TODO
+    private <T extends Serializable> MullerAutomaton<T> nodesToAutomata(Set<GraphNode> nodes) {
+        //states definition
+        //set of states is the set of node ids from Nodes
+        List<String> stateNames = new ArrayList<>();
+        nodes.forEach(node -> stateNames.add(node.getId()));
+
+        //transitions definition
+        //transition exist in case incoming list contains new formula
+        // and expression from X satisfies evaluation condition for old formulas
+        Table<String, String, Set<String>> transitions = HashBasedTable.create();
+        for(GraphNode currentNode : nodes) {
+            for(String incoming : currentNode.getIncoming()) {
+                Set<String> filteredAtomicSymbols = currentNode.getNewFormulas().stream().filter(newFormula -> newFormula instanceof Atom
+                        && Atom.AtomType.VAR.equals((((Atom) newFormula).getType()))
+                        && currentNode.getIncoming().contains(incoming))
+                        .map(newFormula -> ((((Atom) newFormula).getName())))
+                        .collect(Collectors.toSet());
+
+                for(String symbol:filteredAtomicSymbols) {
+                    Atom formula = Atom.forName(symbol);
+                    if(formula.evaluate(BinaryOp.concat(BinaryOp.OpType.AND, Lists.newArrayList(currentNode.getOldFormulas())).fetchSymbols())) {
+                        transitions.put(currentNode.getId(), incoming, filteredAtomicSymbols);
+                    }
+                }
+
+            }
+
+        }
+
+        //final states set definition
+        //the state is final if old list doesn't contain AUB or contains B
+        //TODO investigate the origin of AUB formula
+        List<String> finalStates = new ArrayList<>();
+
+        MullerAutomaton<T> mullerAutomaton = BasicMullerAutomaton.<T>builder()
+                .withStates(stateNames)
+                .withTransitions(transitions)
+                .withFinalStateSet(finalStates)
+                .build();
+
+        return  mullerAutomaton;
     }
 }
 
