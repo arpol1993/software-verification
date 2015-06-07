@@ -118,7 +118,37 @@ public class Application {
         
         logger.info("Is that automaton accepts only empty language : {}", AutomataUtils.INSTANCE.isEmptyLanguage(buchiAutomaton));
     }
-    
+        private static void kripkeStructureToBuchiAutomataDemo(){
+        // demonstrates convertation (kripke model --> Buchi automaton) for p. 270
+        KripkeStructure ks = BasicStructure.builder()
+                .withState("0", ImmutableList.of(Atom.forName("p")), true)
+                .withState("1", ImmutableList.of(Atom.forName("p"), Atom.forName("q")),true)
+                .withState("2", ImmutableList.of(Atom.forName("q")))
+                .withTransition("0", "1")
+                .withTransition("1", "0")
+                .withTransition("2", "0")
+                .withTransition("1", "2")
+                .build();
+        
+        BuchiAutomaton buchiAutomaton = AutomataUtils.INSTANCE.convert(ks);
+        logger.info("---Kripke model --> Buchi automaton test---");
+        logger.info("Transition between {} and {}: {}", 0, 1, buchiAutomaton.hasTransition("0", "1"));
+        logger.info("Transition between {} and {}: {}", 0, 2, buchiAutomaton.hasTransition("0", "2"));
+        logger.info("Transition between {} and {}: {}", 1, 2, buchiAutomaton.hasTransition("1", "2"));
+        logger.info("Transition between {} and {}: {}", 2, 1, buchiAutomaton.hasTransition("2", "1"));
+        logger.info("Transition between {} and {}: {}", 2, 3, buchiAutomaton.hasTransition("2", "3"));
+        logger.info("Transition between {} and {}: {}", 3, 1, buchiAutomaton.hasTransition("3", "1"));
+        logger.info("Transition between {} and {}: {}", 3, 1, buchiAutomaton.hasTransition("3", "2"));
+        logger.info("Transition between {} and {}: {}", 3, 1, buchiAutomaton.hasTransition("1", "3"));
+        logger.info("Transition formula between {}: is {}", "(0, 1)", buchiAutomaton.getTransitionSymbols("0", "1"));
+        logger.info("Transition formula between {}: is {}", "(0, 2)", buchiAutomaton.getTransitionSymbols("0", "2"));
+        logger.info("Transition formula between {}: is {}", "(1, 2)", buchiAutomaton.getTransitionSymbols("1", "2"));
+        logger.info("Transition formula between {}: is {}", "(2, 1)", buchiAutomaton.getTransitionSymbols("2", "1"));
+        logger.info("Transition formula between {}: is {}", "(2, 3)", buchiAutomaton.getTransitionSymbols("2", "3"));
+        logger.info("Transition formula between {}: is {}", "(3, 1)", buchiAutomaton.getTransitionSymbols("3", "1"));
+        logger.info("---------------------------");
+    }
+        
     private static void ltlDemo() {
         Atom atomB = new Atom("boss");
         Atom atomA = new Atom("_aAa");
@@ -147,5 +177,6 @@ public class Application {
         ltlDemo();
         buchiAutomatonDemo();
         mullerAutomatonDemo();
+        kripkeStructureToBuchiAutomataDemo();
     }
 }
