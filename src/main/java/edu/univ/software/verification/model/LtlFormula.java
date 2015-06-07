@@ -48,6 +48,12 @@ public interface LtlFormula extends Cloneable {
     public boolean evaluate(Set<String> values);
     
     /**
+     * Fetch all used propositional symbols in formula
+     * @return 
+     */
+    public Set<String> fetchSymbols();
+    
+    /**
      * Create clone of LTL formula
      * @return cloned LTL tree
      */

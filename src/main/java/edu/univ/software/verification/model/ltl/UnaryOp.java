@@ -86,6 +86,12 @@ public class UnaryOp implements LtlFormula {
     }
 
     @Override
+    public Set<String> fetchSymbols() {
+        return operand.fetchSymbols();
+    }
+       
+
+    @Override
     public LtlFormula clone() {
         return this;
     }

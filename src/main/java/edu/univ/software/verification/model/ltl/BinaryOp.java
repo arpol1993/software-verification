@@ -124,6 +124,18 @@ public class BinaryOp implements LtlFormula {
     }
 
     @Override
+    public Set<String> fetchSymbols() {
+        Set<String> left = opLeft.fetchSymbols();
+        Set<String> right = opRight.fetchSymbols();
+        
+        right.stream().forEach((symbol) -> {
+            left.add(symbol);
+        });
+        
+        return left;
+    }
+    
+    @Override
     public LtlFormula clone() {
         return this;
     }

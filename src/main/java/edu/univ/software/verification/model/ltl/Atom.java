@@ -1,6 +1,7 @@
 package edu.univ.software.verification.model.ltl;
 
 import edu.univ.software.verification.model.LtlFormula;
+import java.util.HashSet;
 
 import java.util.Objects;
 import java.util.Set;
@@ -108,6 +109,17 @@ public class Atom implements LtlFormula {
             default:
                 throw new AssertionError(type.toString());
         }
+    }
+
+    @Override
+    public Set<String> fetchSymbols() {
+        Set<String> res = new HashSet<>();
+        
+        if (type == AtomType.VAR) {
+            res.add(name);
+        }
+        
+        return res;
     }
 
     @Override

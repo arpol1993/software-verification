@@ -33,7 +33,7 @@ public enum AutomataUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(LtlUtils.class);
 
-    private static class Circuit implements Serializable {
+    private static class Circuit {
 
         private static List<Circuit> totalCircuits = new LinkedList<>();
 
@@ -79,6 +79,11 @@ public enum AutomataUtils {
         Set<String> acceptingCStates = new HashSet<>();
         buildRoute(buchi, finalStates, Circuit.empty().enter(finalStates.iterator().next()),
                 finalStates.iterator().next(), acceptingCStates, true, true);
+        
+        //Any mathing circuit found
+        if (Circuit.totalCircuits.isEmpty()) {
+            return true;
+        }
 
         //Stage 2. Find initial circuit for the some of accepting circuit state's set
         for (AutomatonState<?> ist : buchi.getInitialStates()) {
@@ -208,7 +213,7 @@ public enum AutomataUtils {
                 cpath = cpath.enter(dest);
             }
 
-            if ((findCycle && isClosed && containsStates(target, cpath.path))
+            if ((findCycle && isClosed && containsTarget(target, cpath.path))
                     || (!findTotal && containsTarget(target, cpath.path))) {
 
                 if (findCycle && isClosed) {
@@ -246,10 +251,6 @@ public enum AutomataUtils {
         source.stream().forEach((src) -> {
             dest.add(src);
         });
-    }
-
-    private boolean containsStates(Set<String> targets, List<String> path) {
-        return targets.stream().noneMatch((target) -> (!path.contains(target)));
     }
 
     private boolean containsTarget(Set<String> targets, List<String> path) {
