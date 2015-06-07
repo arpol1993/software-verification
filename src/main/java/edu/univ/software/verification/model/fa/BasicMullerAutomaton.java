@@ -75,7 +75,7 @@ public class BasicMullerAutomaton<T extends Serializable> extends AbstractAutoma
         }
         
         @Override
-        public BasicBuilder<T> importFinalStateSets(Collection<Collection<String>> finalStateSets) {
+        public BasicBuilder<T> withFinalStateSets(Collection<Collection<String>> finalStateSets) {
             finalStateSets.stream().forEach(this::withFinalStateSet);
             
             return getBuilder();

@@ -4,6 +4,8 @@ import com.google.common.collect.Table;
 import edu.univ.software.verification.model.AutomatonState;
 
 import edu.univ.software.verification.model.BuchiAutomaton;
+import edu.univ.software.verification.model.KripkeState;
+import edu.univ.software.verification.model.KripkeStructure;
 import edu.univ.software.verification.model.MullerAutomaton;
 import edu.univ.software.verification.model.fa.BasicBuchiAutomaton;
 import edu.univ.software.verification.model.fa.BasicMullerAutomaton;
@@ -121,7 +123,7 @@ public enum AutomataUtils {
     public <T extends Serializable> MullerAutomaton<T> convert(BuchiAutomaton<T> buchi) {
         MullerAutomaton<T> mullerAutomaton = BasicMullerAutomaton.<T>builder()
                 .importStates(buchi.getStates())
-                .importTransitions(buchi.getTransitions())
+                .withTransitions(buchi.getTransitions())
                 .withFinalStateSet(buchi.getFinalStates())
                 .build();
 
@@ -183,6 +185,40 @@ public enum AutomataUtils {
         return builder.build();
     }
 
+       /**
+     * Converts Kripke structure into Generalized Buchi automaton
+     *
+     * @param <T> Type of special state's data
+     * @param kripke Kripke structure to convert into Buchi automaton
+     * @return Buchi automaton
+     */
+    public <T extends Serializable> BuchiAutomaton<T> convert(KripkeStructure kripke) {
+        BuchiAutomaton.Builder<T> builder = BasicBuchiAutomaton.<T>builder();
+        String initStateForBuchiAutomaton = "0";
+        Integer stateCounter = 1;
+        builder.withState(initStateForBuchiAutomaton, true).withFinalState(initStateForBuchiAutomaton);
+        for (KripkeState state : kripke.getStates()) {
+            builder.withState(stateCounter.toString())
+                    .withFinalState(stateCounter.toString());
+            if (state.isInitial()) {
+                builder.withTransition(initStateForBuchiAutomaton, stateCounter.toString(), state.getAtoms().toString());
+            }
+            stateCounter++;
+        }
+        
+        for (KripkeState stateFrom : kripke.getStates()) {
+            for (KripkeState stateTo : kripke.getStates()) {
+                if (kripke.hasTransition(stateFrom.getLabel(), stateTo.getLabel())) {
+                    builder.withTransition(Integer.toString(Integer.parseInt(stateFrom.getLabel()) + 1), 
+                            Integer.toString(Integer.parseInt(stateTo.getLabel()) + 1), 
+                            stateTo.getAtoms().toString());
+                }
+            }
+        }
+        
+        return builder.build();
+    }
+    
     private int finalIndexOf(Set<Set<String>> finalStates, String state) {
         int i = 0;
 
