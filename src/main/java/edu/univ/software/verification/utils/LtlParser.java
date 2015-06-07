@@ -49,23 +49,32 @@ public class LtlParser {
 
         Builder builder = new Builder();
         try {
+            
+            boolean isCurrId = false;
+            int idStart = 0;
 
             for (int i = 0; i < formulaString.length(); i++) {
                 char token = formulaString.charAt(i);
                 boolean isLast = i == formulaString.length() - 1;
+                
+                if (isCurrId && !isId(token)) {
+                    isCurrId = false;                    
+                    
+                    builder.placeAtom(Atom.AtomType.VAR, formulaString.substring(idStart, i));
+                }
 
                 switch (token) {
                     case LB:
-                        builder.startBinary();
+                        builder.withBinary();
                         break;
                     case RB:
-                        builder.endBinary();
+                        //builder.endBinary();
                         break;
                     case _0:
-                        builder.withAtom(Atom.AtomType._0, "0");
+                        builder.placeAtom(Atom.AtomType._0, "0");
                         break;
                     case _1:
-                        builder.withAtom(Atom.AtomType._1, "1");
+                        builder.placeAtom(Atom.AtomType._1, "1");
                         break;
                     case F:
                         builder.withUnary(UnaryOp.OpType.F);
@@ -80,29 +89,30 @@ public class LtlParser {
                         builder.withUnary(UnaryOp.OpType.NEG);
                         break;
                     case U:
-                        builder.withBinaryOpType(BinaryOp.OpType.U);
+                        builder.placeBinaryOperator(BinaryOp.OpType.U);
                         break;
                     case R:
-                        builder.withBinaryOpType(BinaryOp.OpType.R);
+                        builder.placeBinaryOperator(BinaryOp.OpType.R);
                         break;
                     case OR:
                         if (!isLast && formulaString.charAt(i + 1) == OR) {
-                            builder.withBinaryOpType(BinaryOp.OpType.OR);
+                            builder.placeBinaryOperator(BinaryOp.OpType.OR);
                         }
                         break;
                     case AND:
                         if (!isLast && formulaString.charAt(i + 1) == AND) {
-                            builder.withBinaryOpType(BinaryOp.OpType.AND);
+                            builder.placeBinaryOperator(BinaryOp.OpType.AND);
                         }
                         break;
                     case IMPL:
                         if (!isLast && formulaString.charAt(i + 1) == IMPL2) {
-                            builder.withBinaryOpType(BinaryOp.OpType.IMPL);
+                            builder.placeBinaryOperator(BinaryOp.OpType.IMPL);
                         }
                         break;
                     default:
-                        if (token >= 'a' && token <= 'z') {
-                            builder.withAtom(Atom.AtomType.VAR, String.valueOf(token));
+                        if (!isCurrId && isId(token)) {
+                            isCurrId = true;
+                            idStart = i;
                         }
                 }
             }
@@ -111,6 +121,10 @@ public class LtlParser {
         }
 
         return builder.build();
+    }
+
+    private static boolean isId(char token) {
+        return (token >= 'a' && token <= 'z') || token == '_';
     }
 
 }

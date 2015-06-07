@@ -146,7 +146,7 @@ public class Builder {
         current = -1;
     }  
 
-    public Builder startBinary() {
+    public Builder withBinary() {
         BinaryOpStub stub = new BinaryOpStub();
 
         if (root == null) {
@@ -155,26 +155,6 @@ public class Builder {
 
         depthOrder.offer(stub);
         current++;
-
-        return this;
-    }
-
-    public Builder endBinary() throws InvalidBuilderUsage {
-        if (current < 0) {
-            throw new InvalidBuilderUsage("Invalid builder usage order!");
-        }
-
-        if (!depthOrder.get(current).isCompleted()) {
-            throw new InvalidBuilderUsage("Binary operator initialization is not finished!");
-        }
-
-        current--;
-
-        if (current >= 0) {
-            if (!depthOrder.get(current).tryPassOperand(depthOrder.pollLast())) {
-                throw new InvalidBuilderUsage("Invalid formula structure!");
-            }
-        }
 
         return this;
     }
@@ -192,7 +172,7 @@ public class Builder {
         return this;
     }
 
-    public Builder withAtom(Atom.AtomType atype, String name) throws InvalidBuilderUsage {
+    public Builder placeAtom(Atom.AtomType atype, String name) throws InvalidBuilderUsage {
         AtomOpStub stub = new AtomOpStub(atype, name);
         if (root == null) {
             root = stub;
@@ -205,21 +185,15 @@ public class Builder {
 
         depthOrder.get(current).tryPassOperand(stub);
 
-        //Descrease counter of unary
-        if (depthOrder.get(current) instanceof UnaryOpStub) {
-            current--;
-
-            if (current >= 0) {
-                if (!depthOrder.get(current).tryPassOperand(depthOrder.pollLast())) {
-                    throw new InvalidBuilderUsage("Invalid formula structure!");
-                }
-            }
+        //Push tree if operator is completed
+        if (depthOrder.get(current).isCompleted()) {
+            pushTree();
         }
 
         return this;
     }
 
-    public Builder withBinaryOpType(BinaryOp.OpType op) throws InvalidBuilderUsage {
+    public Builder placeBinaryOperator(BinaryOp.OpType op) throws InvalidBuilderUsage {
 
         if (current < 0) {
             throw new InvalidBuilderUsage("Invalid builder usage order!");
@@ -239,6 +213,20 @@ public class Builder {
             return Atom._0;
         } else {
             return root.build();
+        }
+    }
+
+    private void pushTree() throws InvalidBuilderUsage {
+        current--;
+        
+        if (current >= 0) {
+            if (!depthOrder.get(current).tryPassOperand(depthOrder.pollLast())) {
+                throw new InvalidBuilderUsage("Invalid formula structure!");
+            }
+            
+            if (depthOrder.get(current).isCompleted()) {
+                pushTree();
+            }
         }
     }
 }

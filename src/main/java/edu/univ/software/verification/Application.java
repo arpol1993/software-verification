@@ -120,8 +120,8 @@ public class Application {
     }
     
     private static void ltlDemo() {
-        Atom atomB = new Atom("B");
-        Atom atomA = new Atom("A");
+        Atom atomB = new Atom("boss");
+        Atom atomA = new Atom("_aAa");
         Atom atomZero = Atom._0;
         Atom atomOne = Atom._1;
         BinaryOp implication = BinaryOp.build(BinaryOp.OpType.IMPL,atomA,atomB);
