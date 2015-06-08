@@ -7,7 +7,6 @@ import edu.univ.software.verification.model.KripkeStructure;
 import edu.univ.software.verification.model.MullerAutomaton;
 import edu.univ.software.verification.model.fa.BasicBuchiAutomaton;
 import edu.univ.software.verification.model.fa.BasicMullerAutomaton;
-import edu.univ.software.verification.model.fa.ProductsAutomatonClass;
 import edu.univ.software.verification.model.kripke.BasicStructure;
 import edu.univ.software.verification.model.ltl.Atom;
 import edu.univ.software.verification.model.ltl.BinaryOp;
@@ -84,7 +83,7 @@ public class Application {
         logger.info("---------------------------");
 
         logger.info("Is that automaton accepts only empty language : {}",
-                AutomataUtils.INSTANCE.isEmptyLanguage(buchiAutomaton));
+                AutomataUtils.INSTANCE.emptinessCheck(buchiAutomaton));
         logger.info("---------------------------");
     }
 
@@ -108,7 +107,7 @@ public class Application {
                 .withFinalState("2")
                 .build();
 
-        BuchiAutomaton<?> buchiAutomatonResult = DirectProduct.product(buchiAutomatonA, buchiAutomatonB);
+        BuchiAutomaton<?> buchiAutomatonResult = AutomataUtils.INSTANCE.product(buchiAutomatonA, buchiAutomatonB);
 
         logger.info("---Buchi product A automaton test---");
         logger.info("States: {}", buchiAutomatonA.getStates());
@@ -147,7 +146,7 @@ public class Application {
                 .withFinalState("3")
                 .build();
 
-        buchiAutomatonResult = DirectProduct.product(buchiAutomatonA, buchiAutomatonB);
+        buchiAutomatonResult = AutomataUtils.INSTANCE.product(buchiAutomatonA, buchiAutomatonB);
 
         logger.info("---Buchi product A automaton test---");
         logger.info("States: {}", buchiAutomatonA.getStates());
@@ -194,7 +193,7 @@ public class Application {
         logger.info("Outgoing edges for state {}: {}", "(1, 1)", buchiAutomaton.getTransitionsFrom("(1, 1)"));
         logger.info("---------------------------");
 
-        logger.info("Is that automaton accepts only empty language : {}", AutomataUtils.INSTANCE.isEmptyLanguage(buchiAutomaton));
+        logger.info("Is that automaton accepts only empty language : {}", AutomataUtils.INSTANCE.emptinessCheck(buchiAutomaton));
     }
 
     private static void kripkeStructureToBuchiAutomataDemo() {
@@ -229,8 +228,8 @@ public class Application {
     }
 
     private static void ltlDemo() {
-        Atom atomB = new Atom("boss");
-        Atom atomA = new Atom("_aAa");
+        Atom atomB = new Atom("b");
+        Atom atomA = new Atom("a");
         Atom atomZero = Atom._0;
         Atom atomOne = Atom._1;
         BinaryOp implication = BinaryOp.build(BinaryOp.OpType.IMPL, atomA, atomB);
