@@ -179,7 +179,7 @@ public class DirectProduct {
              * create new initial state (0,0,0) and connect this state with old
              * initial
              */
-            String superInit = String.format("(%s,%s,%d)", "0", "0", 0);
+            String superInit = "(SuperInit(0,0,0))";
             resultBuilder.withState(superInit, true);
             for (String current : allInitial) {
                 for (String vertexTo : allSaveTansitins.get(current).keySet()) {
