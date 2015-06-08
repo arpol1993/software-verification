@@ -1,17 +1,25 @@
 package edu.univ.software.verification.utils;
 
-import com.google.common.collect.*;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Table;
 
 import edu.univ.software.verification.model.LtlFormula;
 import edu.univ.software.verification.model.MullerAutomaton;
 import edu.univ.software.verification.model.fa.BasicMullerAutomaton;
-import edu.univ.software.verification.model.fa.BasicState;
 import edu.univ.software.verification.model.ltl.Atom;
 import edu.univ.software.verification.model.ltl.BinaryOp;
 import edu.univ.software.verification.model.ltl.UnaryOp;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -32,12 +40,18 @@ public enum LtlUtils {
      * ID for extra initial graph node
      */
     public static final String INITIAL_GRAPH_NODE_ID = "init";
+    
+    /**
+     * Maximum number of predicate symbols allowed in single
+     * LTL formula for Boolean (set of all subsets) calculation
+     */
+    public static final int MAX_PREDICATE_SYMBOLS_ALLOWED = 31;
 
     public static LtlUtils getInstance() {
         return INSTANCE;
     }
 
-    public /* Automata Type Here */ void convertToAutomata(LtlFormula formula) {
+    public <T extends Serializable> MullerAutomaton<T> convertToAutomata(LtlFormula formula) {
         Set<GraphNode> nodes = new LinkedHashSet<>();
         AtomicInteger idGen = new AtomicInteger(0);
 
@@ -48,7 +62,7 @@ public enum LtlUtils {
                 .build(), nodes, idGen);
 
         // convert nodes graph to automata
-        /* return */ nodesToAutomata(nodes);
+        return nodesToAutomata(nodes);
     }
 
     private void processNode(GraphNode node, Set<GraphNode> nodes, AtomicInteger idGen) {
@@ -170,6 +184,7 @@ public enum LtlUtils {
                         .addOldFormula(formula)
                         .build();
                 nodes.add(node);
+                
                 processNode(q1, nodes, idGen);
             }
         } else if (formula.invert().normalized() instanceof Atom) {
@@ -220,6 +235,31 @@ public enum LtlUtils {
                 .build();
 
         return  mullerAutomaton;
+    }
+    
+    private Set<Set<String>> getSymbolsBoolean(LtlFormula formula) throws IllegalArgumentException {
+        List<String> symbols = Lists.newArrayList(formula.fetchSymbols());
+        
+        if (symbols.size() > MAX_PREDICATE_SYMBOLS_ALLOWED) {
+            throw new IllegalArgumentException(String.format(
+                    "Formula '%s' contains too many predicate symbols (%d > %d)", formula, symbols.size(), MAX_PREDICATE_SYMBOLS_ALLOWED));
+        }
+        
+        Set<Set<String>> symbolsBoolean = new LinkedHashSet<>();
+        
+        for (int i = 0; i < (2 << Math.max(0, symbols.size() - 1)); i++) {
+            Set<String> subset = new LinkedHashSet<>();
+            
+            for (int j = 0; j < symbols.size(); j++) {
+                if ((i & (1 << j)) != 0) {
+                    subset.add(symbols.get(j));
+                }
+            }
+            
+            symbolsBoolean.add(subset);
+        }
+        
+        return symbolsBoolean;
     }
 }
 
