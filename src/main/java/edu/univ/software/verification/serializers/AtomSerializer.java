@@ -12,7 +12,7 @@ public class AtomSerializer implements JsonSerializer<Atom>, JsonDeserializer<At
     public Atom deserialize( JsonElement jsonElement, Type type,
                              JsonDeserializationContext jsonDeserializationContext ) throws JsonParseException
     {
-        return null;
+        return new Atom(jsonElement.getAsString());
     }
 
     @Override

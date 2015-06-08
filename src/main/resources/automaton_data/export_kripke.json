@@ -1,0 +1,47 @@
+{
+  "states": [
+    {
+      "name": "0",
+      "initial": true,
+      "atoms": [
+        "p"
+      ]
+    },
+    {
+      "name": "1",
+      "initial": true,
+      "atoms": [
+        "p",
+        "q"
+      ]
+    },
+    {
+      "name": "2",
+      "initial": false,
+      "atoms": [
+        "q"
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "source": "0",
+      "destinations": [
+        "1"
+      ]
+    },
+    {
+      "source": "1",
+      "destinations": [
+        "0",
+        "2"
+      ]
+    },
+    {
+      "source": "2",
+      "destinations": [
+        "0"
+      ]
+    }
+  ]
+}

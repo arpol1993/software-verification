@@ -43,8 +43,16 @@ public class BasicStructure implements KripkeStructure {
         return ImmutableSet.copyOf(states.values());
     }
 
+    public void setStates(Map<String, KripkeState> states) {
+        this.states = ImmutableMap.copyOf(states);
+    }
+
     public Map<String, Set<String>> getTransitions() {
         return ImmutableMap.copyOf(transitions);
+    }
+
+    public void setTransitions(Map<String, Set<String>> transitions) {
+        this.transitions = ImmutableMap.copyOf(transitions);
     }
 
     @Override

@@ -72,6 +72,30 @@ public class Application {
 
         logger.info("---Kripke structure test---");
         logger.info("JSON-serialized Kripke structure:\n" + serializer.toJson(ks));
+
+        // serialize to json-string
+//        logger.info("JSON-serialized Kripke structure:\n" + serializer.toJson(ks));
+
+        // deserialize with
+        // serializer.fromJson(serializer.toJson(ks),BasicStructure.class)
+
+        // export to file
+//        try {
+//            Path exportPath = Paths.get("src/main/resources/automaton_data/export_kripke.json");
+//            Files.write(exportPath, serializer.toJson(ks).getBytes(), StandardOpenOption.CREATE);
+//        } catch (IOException e) {
+//            throw new RuntimeException("Failed to export automaton data", e);
+//        }
+
+        //import from file
+//        try {
+//            Path importPath = Paths.get("src/main/resources/automaton_data/export_kripke.json");
+//            String data = new String(Files.readAllBytes(importPath));
+//            KripkeStructure kripkeStructure = serializer.fromJson(data, BasicStructure.class);
+//        } catch (IOException e) {
+//            throw new RuntimeException("Failed to import automaton data from file", e);
+//        }
+
         logger.info("Edge between {} and {}: {}", 0, 2, ks.hasTransition("0", "2"));
         logger.info("Edge between {} and {}: {}", 3, 8, ks.hasTransition("3", "8"));
         logger.info("---------------------------");
@@ -227,7 +251,31 @@ public class Application {
 
         BuchiAutomaton buchiAutomaton = AutomataUtils.INSTANCE.convert(ks);
         logger.info("---Kripke model --> Buchi automaton test---");
-        logger.info("JSON-serialized Kripke structure:\n" + serializer.toJson(ks));
+
+
+        // serialize to json-string
+//        logger.info("JSON-serialized Kripke structure:\n" + serializer.toJson(ks));
+
+        // deserialize with
+        // serializer.fromJson(serializer.toJson(ks),BasicStructure.class)
+
+        // export to file
+//        try {
+//            Path exportPath = Paths.get("src/main/resources/automaton_data/export_kripke.json");
+//            Files.write(exportPath, serializer.toJson(ks).getBytes(), StandardOpenOption.CREATE);
+//        } catch (IOException e) {
+//            throw new RuntimeException("Failed to export automaton data", e);
+//        }
+
+        //import from file
+//        try {
+//            Path importPath = Paths.get("src/main/resources/automaton_data/export_kripke.json");
+//            String data = new String(Files.readAllBytes(importPath));
+//            KripkeStructure kripkeStructure = serializer.fromJson(data, BasicStructure.class);
+//        } catch (IOException e) {
+//            throw new RuntimeException("Failed to import automaton data from file", e);
+//        }
+
         logger.info("Transition between {} and {}: {}", 0, 1, buchiAutomaton.hasTransition("0", "1"));
         logger.info("Transition between {} and {}: {}", 0, 2, buchiAutomaton.hasTransition("0", "2"));
         logger.info("Transition between {} and {}: {}", 1, 2, buchiAutomaton.hasTransition("1", "2"));
