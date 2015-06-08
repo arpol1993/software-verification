@@ -1,6 +1,9 @@
 package edu.univ.software.verification.model.ltl;
 
+import com.google.gson.*;
 import edu.univ.software.verification.model.LtlFormula;
+
+import java.lang.reflect.Type;
 import java.util.HashSet;
 
 import java.util.Objects;
@@ -144,5 +147,22 @@ public class Atom implements LtlFormula {
         }
 
         return "LtlAtom{" + "name=" + name + ", type=" + type + '}';
+    }
+
+    class AtomSerializer implements JsonSerializer<Atom>, JsonDeserializer<Atom>
+    {
+
+        @Override
+        public Atom deserialize( JsonElement jsonElement, Type type,
+                                 JsonDeserializationContext jsonDeserializationContext ) throws JsonParseException
+        {
+            return null;
+        }
+
+        @Override
+        public JsonElement serialize( Atom atom, Type type, JsonSerializationContext jsonSerializationContext )
+        {
+            return new JsonPrimitive( name );
+        }
     }
 }

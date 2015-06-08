@@ -1,7 +1,8 @@
 package edu.univ.software.verification;
 
 import com.google.common.collect.ImmutableList;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.KripkeStructure;
 import edu.univ.software.verification.model.MullerAutomaton;
@@ -11,13 +12,16 @@ import edu.univ.software.verification.model.kripke.BasicStructure;
 import edu.univ.software.verification.model.ltl.Atom;
 import edu.univ.software.verification.model.ltl.BinaryOp;
 import edu.univ.software.verification.model.ltl.UnaryOp;
+import edu.univ.software.verification.serializers.AtomSerializer;
+import edu.univ.software.verification.serializers.BasicStateSerializer;
+import edu.univ.software.verification.serializers.BasicStructureSerializer;
 import edu.univ.software.verification.utils.AutomataUtils;
 import edu.univ.software.verification.utils.DirectProduct;
 import edu.univ.software.verification.utils.LtlParser;
-import java.io.Serializable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
 
 /**
  *
@@ -26,6 +30,17 @@ import org.slf4j.LoggerFactory;
 public class Application {
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
+    private static final Gson serializer;
+
+    static {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Atom.class, new AtomSerializer());
+        gsonBuilder.registerTypeAdapter(BasicState.class, new BasicStateSerializer());
+        gsonBuilder.registerTypeAdapter(BasicStructure.class, new BasicStructureSerializer());
+        gsonBuilder.setPrettyPrinting();
+
+        serializer = gsonBuilder.create();
+    }
 
     private static void kripkeStructureDemo() {
         // demonstrates creation of kripke model for p. 265
@@ -55,6 +70,7 @@ public class Application {
                 .build();
 
         logger.info("---Kripke structure test---");
+        logger.info("JSON-serialized Kripke structure:\n" + serializer.toJson(ks));
         logger.info("Edge between {} and {}: {}", 0, 2, ks.hasTransition("0", "2"));
         logger.info("Edge between {} and {}: {}", 3, 8, ks.hasTransition("3", "8"));
         logger.info("---------------------------");
@@ -196,8 +212,8 @@ public class Application {
         logger.info("Is that automaton accepts only empty language : {}", AutomataUtils.INSTANCE.emptinessCheck(buchiAutomaton));
     }
 
-    private static void kripkeStructureToBuchiAutomataDemo() {
-        // demonstrates convertation (kripke model --> Buchi automaton) for p. 270
+    private static void kripkeStructureToBuchiAutomatonDemo() {
+        // demonstrates conversion (kripke model --> Buchi automaton) for p. 270
         KripkeStructure ks = BasicStructure.builder()
                 .withState("0", ImmutableList.of(Atom.forName("p")), true)
                 .withState("1", ImmutableList.of(Atom.forName("p"), Atom.forName("q")), true)
@@ -210,6 +226,7 @@ public class Application {
 
         BuchiAutomaton buchiAutomaton = AutomataUtils.INSTANCE.convert(ks);
         logger.info("---Kripke model --> Buchi automaton test---");
+        logger.info("JSON-serialized Kripke structure:\n" + serializer.toJson(ks));
         logger.info("Transition between {} and {}: {}", 0, 1, buchiAutomaton.hasTransition("0", "1"));
         logger.info("Transition between {} and {}: {}", 0, 2, buchiAutomaton.hasTransition("0", "2"));
         logger.info("Transition between {} and {}: {}", 1, 2, buchiAutomaton.hasTransition("1", "2"));
@@ -237,7 +254,7 @@ public class Application {
         BinaryOp release = BinaryOp.build(BinaryOp.OpType.R, implication, union);
         UnaryOp f = UnaryOp.build(UnaryOp.OpType.F, release);
 
-        logger.info("---LTL invertion test---");
+        logger.info("---LTL inversion test---");
         logger.info("Formula: {}", f);
         logger.info("Inverted: {}", f.invert());
         logger.info("Inverted & normalized: {}", f.invert().normalized());
@@ -255,7 +272,7 @@ public class Application {
         ltlDemo();
         buchiAutomatonDemo();
         mullerAutomatonDemo();
-        kripkeStructureToBuchiAutomataDemo();
+        kripkeStructureToBuchiAutomatonDemo();
         productBuchiAutomatonDemo();
     }
 }
