@@ -11,6 +11,8 @@ import edu.univ.software.verification.model.MullerAutomaton;
 import edu.univ.software.verification.model.fa.BasicBuchiAutomaton;
 import edu.univ.software.verification.model.fa.BasicMullerAutomaton;
 import edu.univ.software.verification.model.fa.BasicState;
+import edu.univ.software.verification.model.ltl.Atom;
+import edu.univ.software.verification.model.ltl.BinaryOp;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -193,7 +195,7 @@ public enum AutomataUtils {
             builder.withState(stateCounter.toString())
                     .withFinalState(stateCounter.toString());
             if (state.isInitial()) {
-                builder.withTransition(initStateForBuchiAutomaton, stateCounter.toString(), state.getAtoms().toString());
+                builder.withTransition(initStateForBuchiAutomaton, stateCounter.toString(), convertAtomsToFormula(state.getAtoms()));
             }
             stateCounter++;
         }
@@ -203,7 +205,7 @@ public enum AutomataUtils {
                 if (kripke.hasTransition(stateFrom.getLabel(), stateTo.getLabel())) {
                     builder.withTransition(Integer.toString(Integer.parseInt(stateFrom.getLabel()) + 1),
                             Integer.toString(Integer.parseInt(stateTo.getLabel()) + 1),
-                            stateTo.getAtoms().toString());
+                            convertAtomsToFormula(stateTo.getAtoms()));
                 }
             }
         }
@@ -211,6 +213,14 @@ public enum AutomataUtils {
         return builder.build();
     }
 
+    private String convertAtomsToFormula(Set<Atom> atoms){
+        if(atoms.isEmpty()){
+            return Atom._1.toString();
+        }
+        else{
+            return BinaryOp.concat(BinaryOp.OpType.AND, new ArrayList<>(atoms)).toString();
+        }
+    }
     /**
      * Computes direct product of two Buchi automata
      *

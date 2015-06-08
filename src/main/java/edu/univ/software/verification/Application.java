@@ -238,10 +238,11 @@ public class Application {
 
     private static void kripkeStructureToBuchiAutomatonDemo() {
         // demonstrates conversion (kripke model --> Buchi automaton) for p. 270
+        // For demo purposes state "2" doesn't have any atoms ([])
         KripkeStructure ks = BasicStructure.builder()
                 .withState("0", ImmutableList.of(Atom.forName("p")), true)
                 .withState("1", ImmutableList.of(Atom.forName("p"), Atom.forName("q")), true)
-                .withState("2", ImmutableList.of(Atom.forName("q")))
+                .withState("2", ImmutableList.of())
                 .withTransition("0", "1")
                 .withTransition("1", "0")
                 .withTransition("2", "0")
