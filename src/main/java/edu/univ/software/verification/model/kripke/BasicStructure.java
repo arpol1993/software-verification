@@ -3,19 +3,13 @@ package edu.univ.software.verification.model.kripke;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-
 import edu.univ.software.verification.model.KripkeState;
 import edu.univ.software.verification.model.KripkeStructure;
 import edu.univ.software.verification.model.ltl.Atom;
-
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * Default Kripke structure implementation
@@ -48,12 +42,16 @@ public class BasicStructure implements KripkeStructure {
     public Set<KripkeState> getStates() {
         return ImmutableSet.copyOf(states.values());
     }
-    
+
+    public Map<String, Set<String>> getTransitions() {
+        return ImmutableMap.copyOf(transitions);
+    }
+
     @Override
     public boolean hasTransition(String from, String to) {
         Set<String> outgoing = transitions.get(from);
         
-        return outgoing != null ? outgoing.contains(to) : false;
+        return outgoing != null && outgoing.contains(to);
     }
     
     public static class BasicBuilder implements Builder {
@@ -107,4 +105,27 @@ public class BasicStructure implements KripkeStructure {
             return new BasicStructure(states, transitions);
         }
     }
+
+//    class BasicStructureSerializer implements JsonSerializer<BasicStructure>, JsonDeserializer<BasicStructure>
+//    {
+//
+//        @Override
+//        public BasicStructure deserialize( JsonElement jsonElement, Type type,
+//                                           JsonDeserializationContext jsonDeserializationContext ) throws JsonParseException
+//        {
+//            return null;
+//        }
+//
+//        @Override
+//        public JsonElement serialize( BasicStructure basicStructure, Type type,
+//                                      JsonSerializationContext jsonSerializationContext )
+//        {
+//            List<JsonObject> states = new ArrayList<>(  );
+//            List<JsonObject> transitions = new ArrayList<>(  );
+//
+//            JsonObject jsonStructure = new JsonObject();
+//            jsonStructure.addProperty( "states",  );
+//            return null;
+//        }
+//    }
 }
