@@ -5,6 +5,7 @@
  */
 package edu.univ.software.verification.utils;
 
+import edu.univ.software.verification.Application;
 import edu.univ.software.verification.model.AutomatonState;
 import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.fa.BasicBuchiAutomaton;
@@ -14,10 +15,13 @@ import edu.univ.software.verification.model.fa.ProductsAutomatonClass;
 import edu.univ.software.verification.model.ltl.BinaryOp;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -32,6 +36,9 @@ public class DirectProduct {
         Integer iter = 0;
         ArrayList<ProductsAutomatonClass> stack = new ArrayList<ProductsAutomatonClass>();
         ArrayList<String> visited = new ArrayList<String>();
+        ArrayList<String> allInitial = new ArrayList<String>();
+        ArrayList<String> allFinal = new ArrayList<String>();
+        HashMap<String, HashMap<String, Set<String>>> allSaveTansitins = new HashMap<String, HashMap<String, Set<String>>>();
 
         if (initialA.size() > 0 && initialB.size() > 0) {
             ProductsAutomatonClass initial = new ProductsAutomatonClass();
@@ -55,6 +62,8 @@ public class DirectProduct {
                                         iter = 1;
                                     } else if (current.getIter() == 1 && B.getFinalStates().contains(checkVertexB)) {
                                         iter = 2;
+                                    } else {
+                                        iter = current.getIter();
                                     }
                                     ProductsAutomatonClass temp = new ProductsAutomatonClass();
                                     temp.setV1(checkVertexA);
@@ -80,6 +89,7 @@ public class DirectProduct {
                                     if (iter == 2) {
                                         resultBuilder.withFinalState(checkVertexA + "," + checkVertexB + "," + iter);
                                     }
+
                                 }
                             }
                         }

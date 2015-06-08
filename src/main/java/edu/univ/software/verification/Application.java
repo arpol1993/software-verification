@@ -90,6 +90,8 @@ public class Application {
 
     private static void productBuchiAutomatonDemo() {
 
+        
+        //example 1
         BuchiAutomaton<Serializable> buchiAutomatonA = BasicBuchiAutomaton.builder()
                 .withState("0", true)
                 .withStates("1")
@@ -111,9 +113,50 @@ public class Application {
         logger.info("---Buchi product A automaton test---");
         logger.info("States: {}", buchiAutomatonA.getStates());
         logger.info("Transitions : {}", buchiAutomatonA.getTransitions());
+        logger.info("Final : {}", buchiAutomatonA.getFinalStates());
         logger.info("---Buchi product B automaton test---");
         logger.info("States: {}", buchiAutomatonB.getStates());
         logger.info("Transitions : {}", buchiAutomatonB.getTransitions());
+        logger.info("Final : {}", buchiAutomatonB.getFinalStates());
+        logger.info("---Buchi product automaton test---");
+        logger.info("States: {}", buchiAutomatonResult.getStates());
+        logger.info("Transitions : {}", buchiAutomatonResult.getTransitions());
+        logger.info("Final : {}", buchiAutomatonResult.getFinalStates());
+
+        //example 2
+        
+        buchiAutomatonA = BasicBuchiAutomaton.builder()
+                .withState("0", true)
+                .withStates("1")
+                .withStates("2")
+                .withTransition("0", "1", "a", "b")
+                .withTransition("1", "1", "a")
+                .withTransition("1", "2", "b")
+                .withTransition("2", "2", "b")
+                .withTransition("2", "1", "a")
+                .withFinalState("2")
+                .build();
+        buchiAutomatonB = BasicBuchiAutomaton.builder()
+                .withState("0", true)
+                .withStates("1")
+                .withStates("2")
+                .withTransition("0", "1", "a", "b")
+                .withTransition("1", "1", "b")
+                .withTransition("1", "2", "a", "b")
+                .withTransition("2", "2", "a", "b")
+                .withFinalState("2")
+                .build();
+
+        buchiAutomatonResult = DirectProduct.product(buchiAutomatonA, buchiAutomatonB);
+
+        logger.info("---Buchi product A automaton test---");
+        logger.info("States: {}", buchiAutomatonA.getStates());
+        logger.info("Transitions : {}", buchiAutomatonA.getTransitions());
+        logger.info("Final : {}", buchiAutomatonA.getFinalStates());
+        logger.info("---Buchi product B automaton test---");
+        logger.info("States: {}", buchiAutomatonB.getStates());
+        logger.info("Transitions : {}", buchiAutomatonB.getTransitions());
+        logger.info("Final : {}", buchiAutomatonB.getFinalStates());
         logger.info("---Buchi product automaton test---");
         logger.info("States: {}", buchiAutomatonResult.getStates());
         logger.info("Transitions : {}", buchiAutomatonResult.getTransitions());
