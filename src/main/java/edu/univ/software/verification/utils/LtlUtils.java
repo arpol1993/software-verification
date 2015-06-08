@@ -13,13 +13,7 @@ import edu.univ.software.verification.model.ltl.BinaryOp;
 import edu.univ.software.verification.model.ltl.UnaryOp;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -45,7 +39,7 @@ public enum LtlUtils {
      * Maximum number of predicate symbols allowed in single
      * LTL formula for Boolean (set of all subsets) calculation
      */
-    public static final int MAX_PREDICATE_SYMBOLS_ALLOWED = 31;
+    public static final int MAX_PREDICATE_SYMBOLS_ALLOWED = 32;
 
     public static LtlUtils getInstance() {
         return INSTANCE;
@@ -62,7 +56,7 @@ public enum LtlUtils {
                 .build(), nodes, idGen);
 
         // convert nodes graph to automata
-        return nodesToAutomata(nodes);
+        return nodesToAutomata(nodes, formula);
     }
 
     private void processNode(GraphNode node, Set<GraphNode> nodes, AtomicInteger idGen) {
@@ -119,6 +113,8 @@ public enum LtlUtils {
                         .addNewFormula(binaryOp.getOpRight())
                         .build();
 
+                nodes.remove(node);
+
                 processNode(q1, nodes, idGen);
                 processNode(q2, nodes, idGen);
             } else if (BinaryOp.OpType.R.equals(binaryOp.getOpType())) {
@@ -133,6 +129,8 @@ public enum LtlUtils {
                         .addNextFormula(formula)
                         .build();
 
+                nodes.remove(node);
+
                 processNode(q1, nodes, idGen);
                 processNode(q2, nodes, idGen);
             } else if (BinaryOp.OpType.AND.equals(binaryOp.getOpType())) {
@@ -143,6 +141,8 @@ public enum LtlUtils {
                         .addNewFormula(binaryOp.getOpLeft())
                         .addNewFormula(binaryOp.getOpRight())
                         .build();
+
+                nodes.remove(node);
 
                 processNode(q1, nodes, idGen);
             } else if (BinaryOp.OpType.OR.equals(binaryOp.getOpType())) {
@@ -158,6 +158,8 @@ public enum LtlUtils {
                         .addNewFormula(binaryOp.getOpRight())
                         .build();
 
+                nodes.remove(node);
+
                 processNode(q1, nodes, idGen);
                 processNode(q2, nodes, idGen);
             }
@@ -171,6 +173,8 @@ public enum LtlUtils {
                         .addOldFormula(formula)
                         .addNextFormula(unaryOp.getOperand())
                         .build();
+
+                nodes.remove(node);
 
                 processNode(q1, nodes, idGen);
             }
@@ -194,44 +198,58 @@ public enum LtlUtils {
 
     }
 
-    private <T extends Serializable> MullerAutomaton<T> nodesToAutomata(Set<GraphNode> nodes) {
+    private <T extends Serializable> MullerAutomaton<T> nodesToAutomata(Set<GraphNode> nodes, LtlFormula ltlFormula) {
         //states definition
         //set of states is the set of node ids from Nodes
         List<String> stateNames = new ArrayList<>();
         nodes.forEach(node -> stateNames.add(node.getId()));
 
+        Set<Set<String>> alphabet = getSymbolsBoolean(ltlFormula);
+        Collection<Collection<String>> finalStates = new LinkedHashSet<>();
+
         //transitions definition
-        //transition exist in case incoming list contains new formula
-        // and expression from X satisfies evaluation condition for old formulas
         Table<String, String, Set<String>> transitions = HashBasedTable.create();
-        for(GraphNode currentNode : nodes) {
-            for(String incoming : currentNode.getIncoming()) {
-                Set<String> filteredAtomicSymbols = currentNode.getNewFormulas().stream().filter(newFormula -> newFormula instanceof Atom
-                        && Atom.AtomType.VAR.equals((((Atom) newFormula).getType()))
-                        && currentNode.getIncoming().contains(incoming))
-                        .map(newFormula -> ((((Atom) newFormula).getName())))
-                        .collect(Collectors.toSet());
-
-                for(String symbol:filteredAtomicSymbols) {
-                    Atom formula = Atom.forName(symbol);
-                    if(formula.evaluate(BinaryOp.concat(BinaryOp.OpType.AND, Lists.newArrayList(currentNode.getOldFormulas())).fetchSymbols())) {
-                        transitions.put(currentNode.getId(), incoming, filteredAtomicSymbols);
+        Set<String> emptyTransitionSymbolSet = new LinkedHashSet<>();
+        emptyTransitionSymbolSet.add(Atom._1.toString());
+        for(GraphNode currentNode:nodes) {
+            for(String incoming:currentNode.getIncoming()) {
+                for(Set<String> alphabetSymbols:alphabet) {
+                    Set<Atom> atoms = alphabetSymbols.stream().map(Atom::forName).collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
+                    if(atoms.isEmpty()) {
+                        transitions.put(currentNode.getId(), incoming, emptyTransitionSymbolSet);
+                    } else {
+                        Set<String> currentTransitions = new LinkedHashSet<>();
+                        atoms.stream().filter(atom -> atom.evaluate(BinaryOp
+                                .concat(BinaryOp.OpType.AND, Lists.newArrayList(currentNode.getOldFormulas())).fetchSymbols())).forEach(atom -> {
+                            String transition = BinaryOp.concat(BinaryOp.OpType.AND, Lists.newArrayList(atoms)).toString();
+                            currentTransitions.add(transition);
+                            transitions.put(currentNode.getId(), incoming, currentTransitions);
+                        });
                     }
+
                 }
-
             }
-
         }
 
-        //final states set definition
-        //the state is final if old list doesn't contain AUB or contains B
-        //TODO investigate the origin of AUB formula
-        List<String> finalStates = new ArrayList<>();
+        //final states
+        Set<LtlFormula> allNewFormulas = new LinkedHashSet<>();
+        nodes.forEach(currentNode -> allNewFormulas.addAll(currentNode.getNewFormulas()));
+
+        allNewFormulas.stream().filter(formula -> formula instanceof BinaryOp).forEach(formula -> {
+            BinaryOp binaryOp = (BinaryOp) formula;
+            if (BinaryOp.OpType.U.equals(binaryOp.getOpType())) {
+                Set<String> finalStatesForCurrentFormula = nodes.stream().filter(currentNode -> currentNode.getNewFormulas().contains(binaryOp)
+                        && (currentNode.getOldFormulas().contains(binaryOp.getOpRight())
+                        || currentNode.getOldFormulas().contains(binaryOp)))
+                        .map(GraphNode::getId).collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
+                finalStates.add(finalStatesForCurrentFormula);
+            }
+        });
 
         MullerAutomaton<T> mullerAutomaton = BasicMullerAutomaton.<T>builder()
                 .withStates(stateNames)
                 .withTransitions(transitions)
-                .withFinalStateSet(finalStates)
+                .withFinalStateSets(finalStates)
                 .build();
 
         return  mullerAutomaton;
