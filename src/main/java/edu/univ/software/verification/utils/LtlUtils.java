@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author arthur
  */
 public enum LtlUtils {
@@ -34,12 +33,17 @@ public enum LtlUtils {
      * ID for extra initial graph node
      */
     public static final String INITIAL_GRAPH_NODE_ID = "init";
-    
+
     /**
      * Maximum number of predicate symbols allowed in single
      * LTL formula for Boolean (set of all subsets) calculation
      */
     public static final int MAX_PREDICATE_SYMBOLS_ALLOWED = 32;
+
+    /**
+     * Transition by empty set
+     */
+    public static final String EMPTY_TRANSITION_SYMBOL = Atom._1.toString();
 
     public static LtlUtils getInstance() {
         return INSTANCE;
@@ -98,10 +102,10 @@ public enum LtlUtils {
     private void processFormula(LtlFormula formula, GraphNode node, Set<GraphNode> nodes, AtomicInteger idGen) {
         if (formula instanceof BinaryOp) {
             BinaryOp binaryOp = (BinaryOp) formula;
-            
+
             if (BinaryOp.OpType.U.equals(binaryOp.getOpType())) {
                 // two nodes are created and processed instead of the current one
-                
+
                 GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()), node)
                         .addOldFormula(formula)
                         .addNewFormula(binaryOp.getOpLeft())
@@ -121,12 +125,15 @@ public enum LtlUtils {
                 // two nodes are created and processed instead of the current one
 
                 GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()), node)
-                        .addNewFormula(binaryOp.getOpRight())
+                        .addNewFormula(((BinaryOp) formula).getOpRight())
+                        .addNextFormula(formula)
+                        .addOldFormula(formula)
                         .build();
 
                 GraphNode q2 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()), node)
+                        .addOldFormula(formula)
+                        .addNewFormula(binaryOp.getOpLeft())
                         .addNewFormula(binaryOp.getOpRight())
-                        .addNextFormula(formula)
                         .build();
 
                 nodes.remove(node);
@@ -135,7 +142,7 @@ public enum LtlUtils {
                 processNode(q2, nodes, idGen);
             } else if (BinaryOp.OpType.AND.equals(binaryOp.getOpType())) {
                 // replaced with single node containing both operands
-                
+
                 GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()), node)
                         .addOldFormula(formula)
                         .addNewFormula(binaryOp.getOpLeft())
@@ -147,7 +154,7 @@ public enum LtlUtils {
                 processNode(q1, nodes, idGen);
             } else if (BinaryOp.OpType.OR.equals(binaryOp.getOpType())) {
                 // two nodes for both operands are created and processed
-                
+
                 GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()), node)
                         .addOldFormula(formula)
                         .addNewFormula(binaryOp.getOpLeft())
@@ -165,10 +172,10 @@ public enum LtlUtils {
             }
         } else if (formula instanceof UnaryOp) {
             UnaryOp unaryOp = (UnaryOp) formula;
-            
+
             if (UnaryOp.OpType.X.equals(unaryOp.getOpType())) {
                 // neXt operand gets propagated
-                
+
                 GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()), node)
                         .addOldFormula(formula)
                         .addNextFormula(unaryOp.getOperand())
@@ -178,105 +185,106 @@ public enum LtlUtils {
 
                 processNode(q1, nodes, idGen);
             }
-        } else if (formula instanceof Atom) {
-            Atom atom = (Atom) formula;
-
-            if (Atom.AtomType._0.equals(atom.getType()) || node.getOldFormulas().contains(formula.invert().normalized())) {
+        } else if (formula instanceof Atom || isInvertedPredicateSymbol(formula)) {
+            if(Objects.equals(formula.toString(), Atom._0.toString()) || isInvertedFormulaProcessed(formula, node)) {
                 nodes.remove(node);
             } else {
-                GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()), node)
-                        .addOldFormula(formula)
-                        .build();
-                nodes.add(node);
-                
-                processNode(q1, nodes, idGen);
+                    GraphNode q1 = GraphNode.builder(Integer.toString(idGen.getAndIncrement()), node)
+                            .addOldFormula(formula)
+                            .build();
+                    nodes.add(node);
+
+                    processNode(q1, nodes, idGen);
             }
-        } else if (formula.invert().normalized() instanceof Atom) {
-            //unfortunately !formula is not Atom, so one more condition should be added
-            nodes.remove(node);
         }
 
     }
 
-    private <T extends Serializable> MullerAutomaton<T> nodesToAutomata(Set<GraphNode> nodes, LtlFormula ltlFormula) {
-        //states definition
-        //set of states is the set of node ids from Nodes
-        List<String> stateNames = new ArrayList<>();
-        nodes.forEach(node -> stateNames.add(node.getId()));
+    private boolean isInvertedFormulaProcessed(LtlFormula formula, GraphNode node) {
+        return (node.getOldFormulas().contains(formula.invert().normalized()));
+    }
 
-        Set<Set<String>> alphabet = getSymbolsBoolean(ltlFormula);
-        Collection<Collection<String>> finalStates = new LinkedHashSet<>();
+    private boolean isInvertedPredicateSymbol(LtlFormula formula) {
+        boolean result = false;
+
+        if(formula instanceof UnaryOp && UnaryOp.OpType.NEG.equals(((UnaryOp) formula).getOpType())) {
+            LtlFormula operand = ((UnaryOp) formula).getOperand();
+
+            if(operand instanceof Atom && Atom.AtomType.VAR.equals(((Atom) operand).getType())) {
+                result = true;
+            }
+        }
+
+        return result;
+    }
+
+    private <T extends Serializable> MullerAutomaton<T> nodesToAutomata(Set<GraphNode> nodes, LtlFormula ltlFormula) {
+
+        MullerAutomaton.Builder<T> automatonBuilder = BasicMullerAutomaton.<T>builder()
+                .withState(INITIAL_GRAPH_NODE_ID, true)
+                .withStates(nodes.stream().map(GraphNode::getId).collect(Collectors.toSet()));
+
+        Set<Set<Atom>> symbols = getSymbolsBoolean(ltlFormula).stream().map(
+                x -> x.stream().map(Atom::forName).collect(Collectors.toSet())).collect(Collectors.toSet());
 
         //transitions definition
-        Table<String, String, Set<String>> transitions = HashBasedTable.create();
-        Set<String> emptyTransitionSymbolSet = new LinkedHashSet<>();
-        emptyTransitionSymbolSet.add(Atom._1.toString());
-        for(GraphNode currentNode:nodes) {
-            for(String incoming:currentNode.getIncoming()) {
-                for(Set<String> alphabetSymbols:alphabet) {
-                    Set<Atom> atoms = alphabetSymbols.stream().map(Atom::forName).collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
-                    if(atoms.isEmpty()) {
-                        transitions.put(currentNode.getId(), incoming, emptyTransitionSymbolSet);
-                    } else {
-                        Set<String> currentTransitions = new LinkedHashSet<>();
-                        atoms.stream().filter(atom -> atom.evaluate(BinaryOp
-                                .concat(BinaryOp.OpType.AND, Lists.newArrayList(currentNode.getOldFormulas())).fetchSymbols())).forEach(atom -> {
-                            String transition = BinaryOp.concat(BinaryOp.OpType.AND, Lists.newArrayList(atoms)).toString();
-                            currentTransitions.add(transition);
-                            transitions.put(currentNode.getId(), incoming, currentTransitions);
-                        });
-                    }
+        for (GraphNode node : nodes) {
+            LtlFormula condition = BinaryOp.concat(BinaryOp.OpType.AND, Lists.newArrayList(node.getOldFormulas()));
 
+            for (String incoming : node.getIncoming()) {
+                Set<String> transitions = new LinkedHashSet<>();
+
+                for (Set<Atom> symbol : symbols) {
+                    if (condition.evaluate(symbol.stream().map(Atom::getName).collect(Collectors.toSet()))) {
+                        transitions.add(symbol.isEmpty() ? EMPTY_TRANSITION_SYMBOL : BinaryOp.concat(BinaryOp.OpType.AND,
+                                Lists.newArrayList(symbol)).toString());
+                    }
+                }
+
+                if (!transitions.isEmpty()) {
+                    automatonBuilder.withTransition(incoming, node.getId(), transitions);
                 }
             }
         }
 
         //final states
-        Set<LtlFormula> allNewFormulas = new LinkedHashSet<>();
-        nodes.forEach(currentNode -> allNewFormulas.addAll(currentNode.getNewFormulas()));
+        nodes.stream().flatMap(n -> n.getNewFormulas().stream()).distinct().filter(f -> f instanceof BinaryOp).map(f ->
+                (BinaryOp) f).filter(f -> BinaryOp.OpType.U.equals(f.getOpType())).forEach((BinaryOp f) -> {
+            Set<String> finalStateSet = nodes.stream().filter(n -> n.getNewFormulas().contains(f)
+                    && (n.getOldFormulas().contains(f.getOpRight())
+                    || !n.getOldFormulas().contains(f)))
+                    .map(GraphNode::getId).collect(Collectors.toSet());
 
-        allNewFormulas.stream().filter(formula -> formula instanceof BinaryOp).forEach(formula -> {
-            BinaryOp binaryOp = (BinaryOp) formula;
-            if (BinaryOp.OpType.U.equals(binaryOp.getOpType())) {
-                Set<String> finalStatesForCurrentFormula = nodes.stream().filter(currentNode -> currentNode.getNewFormulas().contains(binaryOp)
-                        && (currentNode.getOldFormulas().contains(binaryOp.getOpRight())
-                        || currentNode.getOldFormulas().contains(binaryOp)))
-                        .map(GraphNode::getId).collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
-                finalStates.add(finalStatesForCurrentFormula);
+            if (!finalStateSet.isEmpty()) {
+                automatonBuilder.withFinalStateSet(finalStateSet);
             }
         });
 
-        MullerAutomaton<T> mullerAutomaton = BasicMullerAutomaton.<T>builder()
-                .withStates(stateNames)
-                .withTransitions(transitions)
-                .withFinalStateSets(finalStates)
-                .build();
-
-        return  mullerAutomaton;
+        return automatonBuilder.build();
     }
-    
+
     private Set<Set<String>> getSymbolsBoolean(LtlFormula formula) throws IllegalArgumentException {
         List<String> symbols = Lists.newArrayList(formula.fetchSymbols());
-        
+
         if (symbols.size() > MAX_PREDICATE_SYMBOLS_ALLOWED) {
             throw new IllegalArgumentException(String.format(
                     "Formula '%s' contains too many predicate symbols (%d > %d)", formula, symbols.size(), MAX_PREDICATE_SYMBOLS_ALLOWED));
         }
-        
+
         Set<Set<String>> symbolsBoolean = new LinkedHashSet<>();
-        
+
         for (int i = 0; i < (2 << Math.max(0, symbols.size() - 1)); i++) {
             Set<String> subset = new LinkedHashSet<>();
-            
+
             for (int j = 0; j < symbols.size(); j++) {
                 if ((i & (1 << j)) != 0) {
                     subset.add(symbols.get(j));
                 }
             }
-            
+
             symbolsBoolean.add(subset);
         }
-        
+
         return symbolsBoolean;
     }
 }
@@ -512,3 +520,4 @@ class GraphNode {
         //</editor-fold>
     }
 }
+
