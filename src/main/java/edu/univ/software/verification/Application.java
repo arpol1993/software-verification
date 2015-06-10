@@ -293,6 +293,13 @@ public class Application {
         logger.info("---------------------------");
     }
 
+    private static void applicationRunnerDemo() {
+        logger.info("---------------------------");
+        ApplicationRunner applicationRunner = new ApplicationRunner();
+        logger.info("Is system answer the specification? " + applicationRunner.verify("src/main/resources/automaton_data/export_kripke.json", ""));
+        logger.info("---------------------------");
+    }
+
     private static void ltlDemo() {
         Atom atomB = new Atom("b");
         Atom atomA = new Atom("a");
@@ -323,5 +330,7 @@ public class Application {
         mullerAutomatonDemo();
         kripkeStructureToBuchiAutomatonDemo();
         productBuchiAutomatonDemo();
+
+        //applicationRunnerDemo();
     }
 }
