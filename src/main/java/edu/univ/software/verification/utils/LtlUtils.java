@@ -11,7 +11,6 @@ import edu.univ.software.verification.model.ltl.Atom;
 import edu.univ.software.verification.model.ltl.BinaryOp;
 import edu.univ.software.verification.model.ltl.UnaryOp;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -53,7 +52,7 @@ public enum LtlUtils {
         return INSTANCE;
     }
 
-    public <T extends Serializable> MullerAutomaton<T> convertToAutomata(LtlFormula formula) {
+    public MullerAutomaton<Set<Atom>> convertToAutomata(LtlFormula formula) {
         Set<GraphNode> nodes = new LinkedHashSet<>();
         AtomicInteger idGen = new AtomicInteger(0);
 
@@ -170,12 +169,12 @@ public enum LtlUtils {
         }
     }
 
-    private <T extends Serializable> MullerAutomaton<T> nodesToAutomata(LtlFormula formula, Set<GraphNode> nodes) {
+    private MullerAutomaton<Set<Atom>> nodesToAutomata(LtlFormula formula, Set<GraphNode> nodes) {
 
         // create automata builder and setup initial states
-        MullerAutomaton.Builder<T> automatonBuilder = BasicMullerAutomaton.<T>builder()
+        MullerAutomaton.Builder<Set<Atom>> automatonBuilder = BasicMullerAutomaton.<Set<Atom>>builder()
                 .withState(INITIAL_GRAPH_NODE_ID, true)
-                .withStates(nodes.stream().map(GraphNode::getId).collect(Collectors.toSet()));
+                .withStates(false, nodes.stream().map(GraphNode::getId).collect(Collectors.toSet()));
 
         // set of atomic propositions for given LTL formula
         Set<String> atomicPs = formula.getPropositions(null);
@@ -189,12 +188,10 @@ public enum LtlUtils {
             insignificantPs.removeAll(positivePs);
             insignificantPs.removeAll(negativePs);
 
-            Set<String> transitions = getPropositionsBoolean(insignificantPs).stream().map((Set<String> x) -> {
+            Set<Set<Atom>> transitions = getPropositionsBoolean(insignificantPs).stream().map((Set<String> x) -> {
                 x.addAll(positivePs);
 
-                return x.stream().map(s -> (LtlFormula) Atom.forName(s)).collect(Collectors.toList());
-            }).map((List<LtlFormula> x) -> {
-                return x.isEmpty() ? EMPTY_TRANSITION_SYMBOL : BinaryOp.concat(BinaryOp.OpType.AND, x).toString();
+                return x.stream().map(s -> Atom.forName(s)).collect(Collectors.toSet());
             }).collect(Collectors.toSet());
 
             // add transitions to automaton

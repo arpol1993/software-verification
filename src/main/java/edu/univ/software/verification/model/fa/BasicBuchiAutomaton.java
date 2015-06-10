@@ -7,7 +7,6 @@ import com.google.common.collect.Table;
 import edu.univ.software.verification.model.AutomatonState;
 import edu.univ.software.verification.model.BuchiAutomaton;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -15,23 +14,23 @@ import java.util.Set;
 
 /**
  *
- * @param <T> automaton state data type
+ * @param <T> automaton transition symbol data type
  * @author arthur
  */
-public class BasicBuchiAutomaton<T extends Serializable> extends AbstractAutomaton<T> implements BuchiAutomaton<T> {
+public class BasicBuchiAutomaton<T> extends AbstractAutomaton<T> implements BuchiAutomaton<T> {
     /**
      * Set of final states
      */
     protected Set<String> finalStates = ImmutableSet.of();
 
-    public static <T extends Serializable> BuchiAutomaton.Builder<T> builder() {
+    public static <T> BuchiAutomaton.Builder<T> builder() {
         return new BasicBuilder<>();
     }
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public BasicBuchiAutomaton() {}
     
-    public BasicBuchiAutomaton(Map<String, AutomatonState<T>> states, Collection<String> finalStates, Table<String, String, Set<String>> transitions) {
+    public BasicBuchiAutomaton(Map<String, AutomatonState> states, Collection<String> finalStates, Table<String, String, Set<T>> transitions) {
         super(states, transitions);
         
         this.finalStates = ImmutableSet.copyOf(finalStates);
@@ -53,7 +52,7 @@ public class BasicBuchiAutomaton<T extends Serializable> extends AbstractAutomat
         return "BasicBuchiAutomaton{" + "states=" + states + ", transitions=" + transitions + ", finalStates=" + finalStates + '}';
     }
     
-    public static class BasicBuilder<T extends Serializable> extends AbstractAutomaton.AbstractBuilder<T, BasicBuilder<T>> implements BuchiAutomaton.Builder<T> {
+    public static class BasicBuilder<T> extends AbstractAutomaton.AbstractBuilder<T, BasicBuilder<T>> implements BuchiAutomaton.Builder<T> {
 
         protected final Set<String> finalStates = new LinkedHashSet<>();
         

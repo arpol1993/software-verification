@@ -1,15 +1,12 @@
 
 package edu.univ.software.verification.model;
 
-import java.io.Serializable;
-
 /**
  * Ordinary automaton state representation
  * 
- * @param <T> type of extra state data
  * @author Oksana
  */
-public interface AutomatonState<T extends Serializable> {
+public interface AutomatonState {
     /**
      * Default state initial type
      */

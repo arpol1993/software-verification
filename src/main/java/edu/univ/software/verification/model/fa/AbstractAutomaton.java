@@ -11,7 +11,6 @@ import com.google.common.collect.Table;
 import edu.univ.software.verification.model.Automaton;
 import edu.univ.software.verification.model.AutomatonState;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,25 +22,25 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @param <T> type of data
+ * @param <T> automaton transition symbol data type
  * 
  * @author arthur
  */
-public abstract class AbstractAutomaton<T extends Serializable> implements Automaton<T> {
+public abstract class AbstractAutomaton<T> implements Automaton<T> {
     /**
      * Automaton state definitions (label to state)
      */
-    protected Map<String, AutomatonState<T>> states = ImmutableMap.of();
+    protected Map<String, AutomatonState> states = ImmutableMap.of();
     
     /**
      * Automaton transitions (from, to, symbol)
      */
-    protected Table<String, String, Set<String>> transitions = ImmutableTable.of();
+    protected Table<String, String, Set<T>> transitions = ImmutableTable.of();
 
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public AbstractAutomaton() {}
     
-    public AbstractAutomaton(Map<String, AutomatonState<T>> states, Table<String, String, Set<String>> transitions) {
+    public AbstractAutomaton(Map<String, AutomatonState> states, Table<String, String, Set<T>> transitions) {
         this.states = ImmutableMap.copyOf(states);
         this.transitions = ImmutableTable.copyOf(transitions);
     }
@@ -52,7 +51,7 @@ public abstract class AbstractAutomaton<T extends Serializable> implements Autom
      * {@inheritDoc}
      */
     @Override
-    public Table<String, String, Set<String>> getTransitions() {
+    public Table<String, String, Set<T>> getTransitions() {
         return transitions;
     }
     //</editor-fold>
@@ -61,7 +60,7 @@ public abstract class AbstractAutomaton<T extends Serializable> implements Autom
      * {@inheritDoc}
      */
     @Override
-    public AutomatonState<T> getState(String label) {
+    public AutomatonState getState(String label) {
         return states.get(label);
     }
     
@@ -77,7 +76,7 @@ public abstract class AbstractAutomaton<T extends Serializable> implements Autom
      * {@inheritDoc}
      */
     @Override
-    public Set<AutomatonState<T>> getStates() {
+    public Set<AutomatonState> getStates() {
         return Sets.newLinkedHashSet(states.values());
     }
     
@@ -85,7 +84,7 @@ public abstract class AbstractAutomaton<T extends Serializable> implements Autom
      * {@inheritDoc}
      */
     @Override
-    public Set<AutomatonState<T>> getInitialStates() {
+    public Set<AutomatonState> getInitialStates() {
         return states.values().stream().filter(s -> s.isInitial()).collect(Collectors.toSet());
     }
     
@@ -93,7 +92,7 @@ public abstract class AbstractAutomaton<T extends Serializable> implements Autom
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Set<String>> getTransitionsFrom(String from) {
+    public Map<String, Set<T>> getTransitionsFrom(String from) {
         return transitions.row(from);
     }
     
@@ -101,7 +100,7 @@ public abstract class AbstractAutomaton<T extends Serializable> implements Autom
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Set<String>> getTransitionsTo(String to) {
+    public Map<String, Set<T>> getTransitionsTo(String to) {
         return transitions.column(to);
     }
     
@@ -109,7 +108,7 @@ public abstract class AbstractAutomaton<T extends Serializable> implements Autom
      * {@inheritDoc}
      */
     @Override
-    public Set<String> getTransitionSymbols(String from, String to) {
+    public Set<T> getTransitionSymbols(String from, String to) {
         return transitions.get(from, to);
     }
     
@@ -121,22 +120,18 @@ public abstract class AbstractAutomaton<T extends Serializable> implements Autom
         return getTransitionSymbols(from, to) != null;
     }
     
-    protected static abstract class AbstractBuilder<T extends Serializable, S extends Automaton.Builder<T>> {
+    protected static abstract class AbstractBuilder<T, S extends Automaton.Builder<T>> {
         protected static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
         
-        protected final Map<String, AutomatonState<T>> states = new LinkedHashMap<>();
-        protected final Table<String, String, Set<String>> transitions = HashBasedTable.create();
+        protected final Map<String, AutomatonState> states = new LinkedHashMap<>();
+        protected final Table<String, String, Set<T>> transitions = HashBasedTable.create();
         
         public S withState(String label) {
             return withState(label, AutomatonState.DEFAULT_INITIAL);
         }
         
         public S withState(String label, boolean initial) {
-            return withState(label, initial, null);
-        }
-        
-        public S withState(String label, boolean initial, T data) {
-            if (this.states.put(label, new BasicState<>(label, initial, data)) != null) {
+            if (this.states.put(label, new BasicState(label, initial)) != null) {
                 logger.warn("Attempt to add duplicate state '{}'", label);
             }
             
@@ -151,33 +146,25 @@ public abstract class AbstractAutomaton<T extends Serializable> implements Autom
             return withStates(initial, ImmutableSet.copyOf(labels));
         }
         
-        public S withStates(Collection<String> labels) {
-            return withStates(AutomatonState.DEFAULT_INITIAL, labels);
-        }
-        
         public S withStates(boolean initial, Collection<String> labels) {
             labels.stream().forEach(s -> withState(s, initial));
             
             return getBuilder();
         }
         
-        public S importStates(Collection<? extends AutomatonState<T>> states) {
-            states.stream().forEach((AutomatonState<T> s) -> {
-                withState(s.getLabel(), s.isInitial(), (s instanceof BasicState<?>) ? ((BasicState<T>) s).getData() : null);
+        public S withStates(Collection<AutomatonState> states) {
+            states.stream().forEach((AutomatonState s) -> {
+                withState(s.getLabel(), s.isInitial());
             });
             
             return getBuilder();
         }
         
-        public S withTransition(String from, String to, String symbol) throws IllegalArgumentException {
+        public S withTransition(String from, String to, T symbol) {
             return withTransition(from, to, ImmutableSet.of(symbol));
         }
         
-        public S withTransition(String from, String to, String... symbols) throws IllegalArgumentException {
-            return withTransition(from, to, ImmutableSet.copyOf(symbols));
-        }
-        
-        public S withTransition(String from, String to, Collection<String> symbols) throws IllegalArgumentException {
+        public S withTransition(String from, String to, Collection<T> symbols) {
             if (states.get(from) == null || states.get(to) == null) {
                 throw new IllegalArgumentException(String.format(
                         "Both states '%s' and '%s' must exist to add transition", from, to));
@@ -190,7 +177,7 @@ public abstract class AbstractAutomaton<T extends Serializable> implements Autom
             return getBuilder();
         }
         
-        public S withTransitions(Table<String, String, Set<String>> transitions) {
+        public S withTransitions(Table<String, String, Set<T>> transitions) {
             transitions.cellSet().stream().forEach(cell -> {
                 withTransition(cell.getRowKey(), cell.getColumnKey(), cell.getValue());
             });

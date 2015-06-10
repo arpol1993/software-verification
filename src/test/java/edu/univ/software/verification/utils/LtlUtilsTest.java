@@ -7,6 +7,7 @@ import edu.univ.software.verification.model.ltl.Atom;
 import edu.univ.software.verification.model.ltl.BinaryOp;
 import edu.univ.software.verification.model.ltl.Builder;
 import edu.univ.software.verification.model.ltl.UnaryOp;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -26,7 +27,7 @@ public class LtlUtilsTest {
                 placeAtom(Atom.AtomType.VAR, "b").
                 build().normalized();
 
-        MullerAutomaton<?> automaton = LtlUtils.INSTANCE.convertToAutomata(formula);
+        MullerAutomaton<Set<Atom>> automaton = LtlUtils.INSTANCE.convertToAutomata(formula);
         
         //System.out.println(automaton);
     }

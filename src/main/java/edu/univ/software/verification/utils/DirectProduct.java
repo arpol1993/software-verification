@@ -4,7 +4,6 @@ import edu.univ.software.verification.model.AutomatonState;
 import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.fa.BasicBuchiAutomaton;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,11 +14,11 @@ import java.util.Set;
  * Util class for the Buchi automata's direct product
  *
  * @author Serhii Biletskij
- * @param <T> Type of internal states data
+ * @param <T> transition symbol type
  */
-public class DirectProduct<T extends Serializable> {
+public class DirectProduct<T> {
 
-    private static class CurrentProductState implements Serializable {
+    private static class CurrentProductState {
 
         private String astate;
         private String bstate;
@@ -60,7 +59,7 @@ public class DirectProduct<T extends Serializable> {
      * For saving all transitins of future automaton, using to not override
      * exiting chart betweens states
      */
-    private final HashMap<String, HashMap<String, Set<String>>> createdTransitions;
+    private final HashMap<String, HashMap<String, Set<T>>> createdTransitions;
     
     /**
      * using to not add exiting vertex into automaton and get jung once all
@@ -117,8 +116,8 @@ public class DirectProduct<T extends Serializable> {
              * save initial states for future add it to stack for looking
              * transitions
              */
-            A.getInitialStates().stream().forEach((AutomatonState<?> stateA) -> {
-                for (AutomatonState<?> stateB : B.getInitialStates()) {
+            A.getInitialStates().stream().forEach((AutomatonState stateA) -> {
+                for (AutomatonState stateB : B.getInitialStates()) {
                     CurrentProductState initial = new CurrentProductState(stateA.getLabel(), stateB.getLabel(), 0);
                     stack.add(initial);
                     String to = String.format("(%s,%s,%d)", stateA.getLabel(), stateB.getLabel(), 0);
@@ -130,8 +129,8 @@ public class DirectProduct<T extends Serializable> {
 
             while (stack.size() > 0) {
                 CurrentProductState current = stack.remove(0);
-                Map<String, Set<String>> toA = A.getTransitionsFrom(current.getAState());
-                Map<String, Set<String>> toB = B.getTransitionsFrom(current.getBState());
+                Map<String, Set<T>> toA = A.getTransitionsFrom(current.getAState());
+                Map<String, Set<T>> toB = B.getTransitionsFrom(current.getBState());
 
                 // Iterate througth all possible combinations of states
                 toA.keySet().stream().forEach((fromA) -> {
@@ -157,7 +156,7 @@ public class DirectProduct<T extends Serializable> {
                 }
             }
         } else {
-            throw new IllegalArgumentException("Automata need to have initial states!");
+            return BasicBuchiAutomaton.<T>builder().build();
         }
 
         prod = resultBuilder.build();
@@ -177,7 +176,7 @@ public class DirectProduct<T extends Serializable> {
      * state in automata B
      * @throws IllegalArgumentException
      */
-    private void processTransition(String symbolA,
+    private void processTransition(T symbolA,
             CurrentProductState current,
             String fromA, String fromB) {
 
@@ -209,14 +208,14 @@ public class DirectProduct<T extends Serializable> {
         }
 
         if (!createdTransitions.containsKey(from)) {
-            HashMap<String, Set<String>> newTransition = new HashMap<>();
-            Set<String> symbols = new HashSet<>();
+            HashMap<String, Set<T>> newTransition = new HashMap<>();
+            Set<T> symbols = new HashSet<>();
             symbols.add(symbolA);
             newTransition.put(to, symbols);
             createdTransitions.put(from, newTransition);
             resultBuilder.withTransition(from, to, symbolA);
         } else if (!createdTransitions.get(from).containsKey(to)) {
-            Set<String> symbols = new HashSet<>();
+            Set<T> symbols = new HashSet<>();
             symbols.add(symbolA);
             createdTransitions.get(from).put(to, symbols);
             resultBuilder.withTransition(from, to, symbols);

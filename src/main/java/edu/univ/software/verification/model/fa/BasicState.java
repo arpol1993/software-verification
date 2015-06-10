@@ -2,17 +2,14 @@
 package edu.univ.software.verification.model.fa;
 
 import edu.univ.software.verification.model.AutomatonState;
-
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Represents single ordinary automaton state
  * 
- * @param <T> type of extra state data
  * @author Oksana
  */
-public class BasicState<T extends Serializable> implements AutomatonState<T> {
+public class BasicState implements AutomatonState {
     /**
      * Controls whether state is initial (starting)
      */
@@ -22,12 +19,7 @@ public class BasicState<T extends Serializable> implements AutomatonState<T> {
      * Unique state identifier
      */
     protected String label;
-    
-    /**
-     * Arbitrary state data
-     */
-    protected T data;
-    
+        
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public BasicState() {}
     
@@ -36,13 +28,8 @@ public class BasicState<T extends Serializable> implements AutomatonState<T> {
     }
     
     public BasicState(String label, boolean initial) {
-        this(label, initial, null);
-    }
-    
-    public BasicState(String label, boolean initial, T data) {
         this.label = label;
         this.initial = initial;
-        this.data = data;
     }
     //</editor-fold>
 
@@ -63,14 +50,6 @@ public class BasicState<T extends Serializable> implements AutomatonState<T> {
     
     public void setLabel(String label) {
         this.label = label;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
     }
     //</editor-fold>
 
@@ -94,7 +73,7 @@ public class BasicState<T extends Serializable> implements AutomatonState<T> {
             return false;
         }
         
-        final BasicState<?> other = (BasicState) o;
+        final BasicState other = (BasicState) o;
         
         return Objects.equals(this.label, other.label);
     }

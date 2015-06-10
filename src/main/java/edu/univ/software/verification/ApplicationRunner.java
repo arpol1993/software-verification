@@ -26,6 +26,7 @@ import edu.univ.software.verification.utils.AutomataUtils;
 import edu.univ.software.verification.utils.LtlParser;
 import edu.univ.software.verification.utils.LtlUtils;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -52,13 +53,13 @@ public class ApplicationRunner {
         } catch (IOException e) {
             throw new RuntimeException("Failed to import automaton data from file", e);
         }
-        BuchiAutomaton buchiAutomatonForSystem = AutomataUtils.INSTANCE.convert(ks);
+        BuchiAutomaton<Set<Atom>> buchiAutomatonForSystem = AutomataUtils.INSTANCE.convert(ks);
 
         LtlFormula specification = LtlParser.parseString(ltlFormula);
-        MullerAutomaton<?> ma = LtlUtils.INSTANCE.convertToAutomata(specification);
-        BuchiAutomaton<?> buchiAutomatonForSpecification = AutomataUtils.INSTANCE.convert(ma);
+        MullerAutomaton<Set<Atom>> ma = LtlUtils.INSTANCE.convertToAutomata(specification);
+        BuchiAutomaton<Set<Atom>> buchiAutomatonForSpecification = AutomataUtils.INSTANCE.convert(ma);
 
-        BuchiAutomaton<?> productResult = AutomataUtils.INSTANCE.product(buchiAutomatonForSystem, 
+        BuchiAutomaton<Set<Atom>> productResult = AutomataUtils.INSTANCE.product(buchiAutomatonForSystem, 
                                                                          buchiAutomatonForSpecification);
         return AutomataUtils.INSTANCE.emptinessCheck(productResult, new HashSet<>());
 

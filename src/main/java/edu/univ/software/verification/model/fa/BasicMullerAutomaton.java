@@ -8,7 +8,6 @@ import com.google.common.collect.Table;
 import edu.univ.software.verification.model.AutomatonState;
 import edu.univ.software.verification.model.MullerAutomaton;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -16,23 +15,23 @@ import java.util.Set;
 
 /**
  *
- * @param <T> automaton state data type
+ * @param <T> automaton transition symbol data type
  * @author arthur
  */
-public class BasicMullerAutomaton<T extends Serializable> extends AbstractAutomaton<T> implements MullerAutomaton<T> {
+public class BasicMullerAutomaton<T> extends AbstractAutomaton<T> implements MullerAutomaton<T> {
     /**
      * Set of sets of final states (O_o)
      */
     protected Set<Set<String>> finalStateSets = ImmutableSet.of();
 
-    public static <T extends Serializable> MullerAutomaton.Builder<T> builder() {
+    public static <T> MullerAutomaton.Builder<T> builder() {
         return new BasicBuilder<>();
     }
     
     //<editor-fold defaultstate="collapsed" desc="Constructors">
     public BasicMullerAutomaton() {}
     
-    public BasicMullerAutomaton(Map<String, AutomatonState<T>> states, Set<Set<String>> finalStateSets, Table<String, String, Set<String>> transitions) {
+    public BasicMullerAutomaton(Map<String, AutomatonState> states, Set<Set<String>> finalStateSets, Table<String, String, Set<T>> transitions) {
         super(states, transitions);
         
         this.finalStateSets = ImmutableSet.copyOf(finalStateSets);
@@ -54,7 +53,7 @@ public class BasicMullerAutomaton<T extends Serializable> extends AbstractAutoma
         return "BasicMullerAutomaton{" + "states=" + states + ", transitions=" + transitions + ", finalStateSets=" + finalStateSets + '}';
     }
     
-    public static class BasicBuilder<T extends Serializable> extends AbstractAutomaton.AbstractBuilder<T, BasicBuilder<T>> implements MullerAutomaton.Builder<T> {
+    public static class BasicBuilder<T> extends AbstractAutomaton.AbstractBuilder<T, BasicBuilder<T>> implements MullerAutomaton.Builder<T> {
 
         protected final Set<Set<String>> finalStateSets = new LinkedHashSet<>();
         
@@ -80,7 +79,7 @@ public class BasicMullerAutomaton<T extends Serializable> extends AbstractAutoma
         }
         
         @Override
-        public BasicBuilder<T> withFinalStateSets(Collection<Collection<String>> finalStateSets) {
+        public BasicBuilder<T> withFinalStateSets(Collection<Set<String>> finalStateSets) {
             finalStateSets.stream().forEach(this::withFinalStateSet);
             
             return getBuilder();

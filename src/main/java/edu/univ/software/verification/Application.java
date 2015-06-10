@@ -1,6 +1,7 @@
 package edu.univ.software.verification;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -23,7 +24,6 @@ import edu.univ.software.verification.utils.LtlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.HashSet;
 
 /**
@@ -105,15 +105,15 @@ public class Application {
 
     private static void buchiAutomatonDemo() {
         // demonstrates creation of Buchi automaton for p. 234a
-        BuchiAutomaton<?> buchiAutomaton = BasicBuchiAutomaton.builder()
+        BuchiAutomaton<String> buchiAutomaton = BasicBuchiAutomaton.<String>builder()
                 .withState("1", true)
                 .withStates("2", "3", "4")
                 .withTransition("1", "2", "x")
                 .withTransition("1", "4", "y")
                 .withTransition("2", "2", "x")
                 .withTransition("2", "3", "y")
-                .withTransition("3", "4", "x", "y")
-                .withTransition("4", "4", "x", "y")
+                .withTransition("3", "4", Sets.newHashSet("x", "y"))
+                .withTransition("4", "4", Sets.newHashSet("x", "y"))
                 .withTransition("4", "3", "y")
                 .withFinalState("3")
                 .withFinalState("4")
@@ -134,19 +134,19 @@ public class Application {
 
         
         //example 1
-        BuchiAutomaton<Serializable> buchiAutomatonA = BasicBuchiAutomaton.builder()
+        BuchiAutomaton<String> buchiAutomatonA = BasicBuchiAutomaton.<String>builder()
                 .withState("1", true)
                 .withStates("2")
-                .withTransition("1", "2", "x", "y")
+                .withTransition("1", "2", Sets.newHashSet("x", "y"))
                 .withTransition("2", "2", "y")
                 .withTransition("2", "1", "y")
                 .withFinalState("1")
                 .build();
-        BuchiAutomaton<Serializable> buchiAutomatonB = BasicBuchiAutomaton.builder()
+        BuchiAutomaton<String> buchiAutomatonB = BasicBuchiAutomaton.<String>builder()
                 .withState("1", true)
                 .withStates("2")
-                .withTransition("1", "2", "x", "y")
-                .withTransition("2", "2", "x", "y")
+                .withTransition("1", "2", Sets.newHashSet("x", "y"))
+                .withTransition("2", "2", Sets.newHashSet("x", "y"))
                 .withFinalState("2")
                 .build();
 
@@ -167,25 +167,25 @@ public class Application {
 
         //example 2
         
-        buchiAutomatonA = BasicBuchiAutomaton.builder()
+        buchiAutomatonA = BasicBuchiAutomaton.<String>builder()
                 .withState("1", true)
                 .withStates("2")
                 .withStates("3")
-                .withTransition("1", "2", "a", "b")
+                .withTransition("1", "2", Sets.newHashSet("a", "b"))
                 .withTransition("2", "2", "a")
                 .withTransition("2", "3", "b")
                 .withTransition("3", "3", "b")
                 .withTransition("3", "2", "a")
                 .withFinalState("3")
                 .build();
-        buchiAutomatonB = BasicBuchiAutomaton.builder()
+        buchiAutomatonB = BasicBuchiAutomaton.<String>builder()
                 .withState("1", true)
                 .withStates("2")
                 .withStates("3")
-                .withTransition("1", "2", "a", "b")
+                .withTransition("1", "2", Sets.newHashSet("a", "b"))
                 .withTransition("2", "2", "b")
-                .withTransition("2", "3", "a", "b")
-                .withTransition("3", "3", "a", "b")
+                .withTransition("2", "3", Sets.newHashSet("a", "b"))
+                .withTransition("3", "3", Sets.newHashSet("a", "b"))
                 .withFinalState("3")
                 .build();
 
@@ -334,6 +334,6 @@ public class Application {
         kripkeStructureToBuchiAutomatonDemo();
         productBuchiAutomatonDemo();
 
-        //applicationRunnerDemo();
+        applicationRunnerDemo();
     }
 }

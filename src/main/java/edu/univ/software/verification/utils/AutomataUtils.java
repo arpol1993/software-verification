@@ -2,6 +2,7 @@ package edu.univ.software.verification.utils;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import edu.univ.software.verification.model.AutomatonState;
 
 import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.KripkeState;
@@ -9,11 +10,8 @@ import edu.univ.software.verification.model.KripkeStructure;
 import edu.univ.software.verification.model.MullerAutomaton;
 import edu.univ.software.verification.model.fa.BasicBuchiAutomaton;
 import edu.univ.software.verification.model.fa.BasicMullerAutomaton;
-import edu.univ.software.verification.model.fa.BasicState;
 import edu.univ.software.verification.model.ltl.Atom;
-import edu.univ.software.verification.model.ltl.BinaryOp;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -79,7 +77,7 @@ public enum AutomataUtils {
      * @param counters Already initialized set where found counters added
      * @return true if only empty, false otherwise
      */
-    public boolean emptinessCheck(BuchiAutomaton<?> buchi, Set<String> counters) {
+    public <T> boolean emptinessCheck(BuchiAutomaton<T> buchi, Set<String> counters) {
 
         //Stage 1. Find all initial circuits
         Table<String, String, Circuit> initialCircuits = HashBasedTable.create();
@@ -113,9 +111,9 @@ public enum AutomataUtils {
      * @param buchi Buchi automaton to convert into LGBA
      * @return LGBA (Muller) automaton
      */
-    public <T extends Serializable> MullerAutomaton<T> convert(BuchiAutomaton<T> buchi) {
+    public <T> MullerAutomaton<T> convert(BuchiAutomaton<T> buchi) {
         MullerAutomaton<T> mullerAutomaton = BasicMullerAutomaton.<T>builder()
-                .importStates(buchi.getStates())
+                .withStates(buchi.getStates())
                 .withTransitions(buchi.getTransitions())
                 .withFinalStateSet(buchi.getFinalStates())
                 .build();
@@ -132,7 +130,7 @@ public enum AutomataUtils {
      * (non-deterministic)
      * @return Buchi (non-deterministic) automaton
      */
-    public <T extends Serializable> BuchiAutomaton<T> convert(MullerAutomaton<T> muller) {
+    public <T> BuchiAutomaton<T> convert(MullerAutomaton<T> muller) {
         BuchiAutomaton.Builder<T> builder = BasicBuchiAutomaton.builder();
 
         Set<Set<String>> finalStates = muller.getFinalStateSets();
@@ -140,7 +138,7 @@ public enum AutomataUtils {
 
         for (int i = 0; i < finalStates.size(); i++) {
 
-            for (Table.Cell<String, String, Set<String>> trans : muller.getTransitions().cellSet()) {
+            for (Table.Cell<String, String, Set<T>> trans : muller.getTransitions().cellSet()) {
                 int j = i;
                 if (finalIndexOf(finalStates, trans.getRowKey()) == i) {
                     j = (i + 1) % finalStates.size();
@@ -150,9 +148,9 @@ public enum AutomataUtils {
                 String second = String.format("(%s, %d)", trans.getColumnKey(), j);
 
                 if (!addedStates.contains(first)) {
-                    BasicState<T> st = (BasicState<T>) muller.getState(trans.getRowKey());
+                    AutomatonState st = muller.getState(trans.getRowKey());
 
-                    builder.withState(first, i == 0 && st.isInitial(), st.getData());
+                    builder.withState(first, i == 0 && st.isInitial());
                     addedStates.add(first);
 
                     if (finalIndexOf(finalStates, trans.getRowKey()) == 0) {
@@ -161,9 +159,9 @@ public enum AutomataUtils {
                 }
 
                 if (!addedStates.contains(second)) {
-                    BasicState<T> st = (BasicState<T>) muller.getState(trans.getColumnKey());
+                    AutomatonState st = muller.getState(trans.getColumnKey());
 
-                    builder.withState(second, i == 0 && st.isInitial(), st.getData());
+                    builder.withState(second, i == 0 && st.isInitial());
                     addedStates.add(second);
 
                     if (finalIndexOf(finalStates, trans.getColumnKey()) == 0) {
@@ -185,8 +183,8 @@ public enum AutomataUtils {
      * @param kripke Kripke structure to convert into Buchi automaton
      * @return Buchi automaton
      */
-    public <T extends Serializable> BuchiAutomaton<T> convert(KripkeStructure kripke) {
-        BuchiAutomaton.Builder<T> builder = BasicBuchiAutomaton.<T>builder();
+    public BuchiAutomaton<Set<Atom>> convert(KripkeStructure kripke) {
+        BuchiAutomaton.Builder<Set<Atom>> builder = BasicBuchiAutomaton.<Set<Atom>>builder();
         String initStateForBuchiAutomaton = "0";
         Integer stateCounter = 1;
         builder.withState(initStateForBuchiAutomaton, true).withFinalState(initStateForBuchiAutomaton);
@@ -194,7 +192,7 @@ public enum AutomataUtils {
             builder.withState(stateCounter.toString())
                     .withFinalState(stateCounter.toString());
             if (state.isInitial()) {
-                builder.withTransition(initStateForBuchiAutomaton, stateCounter.toString(), convertAtomsToFormula(state.getAtoms()));
+                builder.withTransition(initStateForBuchiAutomaton, stateCounter.toString(), state.getAtoms());
             }
             stateCounter++;
         }
@@ -204,20 +202,12 @@ public enum AutomataUtils {
                 if (kripke.hasTransition(stateFrom.getLabel(), stateTo.getLabel())) {
                     builder.withTransition(Integer.toString(Integer.parseInt(stateFrom.getLabel()) + 1),
                             Integer.toString(Integer.parseInt(stateTo.getLabel()) + 1),
-                            convertAtomsToFormula(stateTo.getAtoms()));
+                            stateTo.getAtoms());
                 }
             }
         }
 
         return builder.build();
-    }
-
-    private String convertAtomsToFormula(Set<Atom> atoms) {
-        if (atoms.isEmpty()) {
-            return Atom._1.toString();
-        } else {
-            return BinaryOp.concat(BinaryOp.OpType.AND, new ArrayList<>(atoms)).toString();
-        }
     }
 
     /**
@@ -228,7 +218,7 @@ public enum AutomataUtils {
      * @param b second Buchi automaton
      * @return Buchi automaton with the result of the product
      */
-    public <T extends Serializable> BuchiAutomaton<T> product(BuchiAutomaton<T> a, BuchiAutomaton<T> b) {
+    public <T> BuchiAutomaton<T> product(BuchiAutomaton<T> a, BuchiAutomaton<T> b) {
         return new DirectProduct<>(a, b).product();
     }
 

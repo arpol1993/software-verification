@@ -3,17 +3,16 @@ package edu.univ.software.verification.model;
 
 import com.google.common.collect.Table;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
 /**
  * Muller automaton representation
  *
- * @param <T> automaton state data type
+ * @param <T> automaton transition symbol data type
  * @author arthur
  */
-public interface MullerAutomaton<T extends Serializable> extends Automaton<T> {
+public interface MullerAutomaton<T> extends Automaton<T> {
     /**
      * Retrieves all final state sets
      * 
@@ -21,22 +20,19 @@ public interface MullerAutomaton<T extends Serializable> extends Automaton<T> {
      */
     public Set<Set<String>> getFinalStateSets();
     
-    public interface Builder<T extends Serializable> extends Automaton.Builder<T> {
+    public interface Builder<T> extends Automaton.Builder<T> {
         public Builder<T> withState(String label);
         public Builder<T> withState(String label, boolean initial);
-        public Builder<T> withState(String label, boolean initial, T data);
         public Builder<T> withStates(String... labels);
         public Builder<T> withStates(boolean initial, String... labels);
-        public Builder<T> withStates(Collection<String> labels);
         public Builder<T> withStates(boolean initial, Collection<String> labels);
-        public Builder<T> importStates(Collection<? extends AutomatonState<T>> states);
-        public Builder<T> withTransition(String from, String to, String symbol) throws IllegalArgumentException;
-        public Builder<T> withTransition(String from, String to, String... symbols) throws IllegalArgumentException;
-        public Builder<T> withTransition(String from, String to, Collection<String> symbols) throws IllegalArgumentException;
-        public Builder<T> withTransitions(Table<String, String, Set<String>> transitions);
+        public Builder<T> withStates(Collection<AutomatonState> states);
+        public Builder<T> withTransition(String from, String to, T symbol);
+        public Builder<T> withTransition(String from, String to, Collection<T> symbols);
+        public Builder<T> withTransitions(Table<String, String, Set<T>> transitions);
         public Builder<T> withFinalStateSet(String... states);
         public Builder<T> withFinalStateSet(Collection<String> states) throws IllegalArgumentException;
-        public Builder<T> withFinalStateSets(Collection<Collection<String>> finalStateSets);
+        public Builder<T> withFinalStateSets(Collection<Set<String>> finalStateSets);
         public MullerAutomaton<T> build();
     }
 }
