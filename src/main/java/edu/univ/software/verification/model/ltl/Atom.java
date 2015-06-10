@@ -22,6 +22,7 @@ import java.util.Set;
 public class Atom implements LtlFormula {
 
     public static enum AtomType {
+
         VAR,
         _0,
         _1
@@ -100,9 +101,10 @@ public class Atom implements LtlFormula {
             case _1:
                 return _0;
             case VAR:
-                return UnaryOp.build(UnaryOp.OpType.NEG, this.clone());
+                return UnaryOp.build(UnaryOp.OpType.NEG, this);
+            default:
+                throw new AssertionError(type);
         }
-        return this.clone();
     }
 
     @Override
@@ -126,11 +128,6 @@ public class Atom implements LtlFormula {
 
     @Override
     public LtlFormula normalized() {
-        return this.clone();
-    }
-
-    @Override
-    public LtlFormula clone() {
         return this;
     }
 

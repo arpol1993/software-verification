@@ -35,7 +35,7 @@ public class UnaryOpTest {
     public void testInvertWithNegOperation() throws Exception {
         //given
         LtlFormula mockedLtlFormula = mock(LtlFormula.class);
-        when(mockedLtlFormula.clone()).thenReturn(mockedLtlFormula);
+        //when(mockedLtlFormula).thenReturn(mockedLtlFormula);
 
         //when
         UnaryOp unaryOp = UnaryOp.build(UnaryOp.OpType.NEG, mockedLtlFormula);
@@ -125,7 +125,7 @@ public class UnaryOpTest {
     @Test
     public void testNormalizedWithNeitherGNorF() throws Exception {
         //given
-        LtlFormula mockedLtlFormula = mock(LtlFormula.class);
+        LtlFormula mockedLtlFormula = Atom._0;//  mock(LtlFormula.class);
 
         //when
         UnaryOp unaryOp = UnaryOp.build(UnaryOp.OpType.NEG, mockedLtlFormula);

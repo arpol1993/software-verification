@@ -90,7 +90,7 @@ public class BinaryOpTest {
     @Test
     public void testInvert() throws Exception {
         LtlFormula mockedLtlFormula1 = mock(LtlFormula.class);
-        when(mockedLtlFormula1.clone()).thenReturn(mockedLtlFormula1);
+        //when(mockedLtlFormula1).thenReturn(mockedLtlFormula1);
 
         LtlFormula mockedLtlFormula2 = mock(LtlFormula.class);
         LtlFormula invertedMockedLtlFormula2 = mock(LtlFormula.class);

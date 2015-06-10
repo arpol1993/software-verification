@@ -53,12 +53,6 @@ public interface LtlFormula extends Cloneable {
      * @return Set of symbols
      */
     public Set<String> getPropositions(Boolean isPositive);    
-    
-    /**
-     * Create clone of LTL formula
-     * @return cloned LTL tree
-     */
-    public LtlFormula clone();
 }
 
 
