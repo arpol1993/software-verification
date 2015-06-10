@@ -5,27 +5,26 @@
  */
 package edu.univ.software.verification;
 
-import edu.univ.software.verification.model.kripke.BasicState;
-import edu.univ.software.verification.model.kripke.BasicStructure;
-import edu.univ.software.verification.model.ltl.Atom;
-import edu.univ.software.verification.serializers.AtomSerializer;
-import edu.univ.software.verification.serializers.BasicStateSerializer;
-import edu.univ.software.verification.serializers.BasicStructureSerializer;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.KripkeStructure;
 import edu.univ.software.verification.model.LtlFormula;
 import edu.univ.software.verification.model.MullerAutomaton;
+import edu.univ.software.verification.model.kripke.BasicState;
+import edu.univ.software.verification.model.kripke.BasicStructure;
+import edu.univ.software.verification.model.ltl.Atom;
+import edu.univ.software.verification.serializers.AtomSerializer;
+import edu.univ.software.verification.serializers.BasicStateSerializer;
+import edu.univ.software.verification.serializers.BasicStructureSerializer;
 import edu.univ.software.verification.utils.AutomataUtils;
 import edu.univ.software.verification.utils.LtlParser;
 import edu.univ.software.verification.utils.LtlUtils;
-import java.util.HashSet;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Set;
 
 /**
@@ -34,6 +33,10 @@ import java.util.Set;
  */
 public class ApplicationRunner {
     private static final Gson serializer;
+
+    private KripkeStructure kripkeStructure;
+    private BuchiAutomaton buchiAutomatonForSpecification;
+    private BuchiAutomaton buchiAutomatonForSystem;
 
     static {
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -44,25 +47,37 @@ public class ApplicationRunner {
 
         serializer = gsonBuilder.create();
     }
-    public boolean verify(String kripkeStructureFileName, String ltlFormula) {
-        KripkeStructure ks;
+
+    public void initKripkeModel(String kripkeStructureFileName) {
         try {
             Path importPath = Paths.get(kripkeStructureFileName);
             String data = new String(Files.readAllBytes(importPath));
-            ks = serializer.fromJson(data, BasicStructure.class);
+            kripkeStructure = serializer.fromJson(data, BasicStructure.class);
         } catch (IOException e) {
             throw new RuntimeException("Failed to import automaton data from file", e);
         }
-        BuchiAutomaton<Set<Atom>> buchiAutomatonForSystem = AutomataUtils.INSTANCE.convert(ks);
+    }
+
+    public boolean verify(String ltlFormula, Set<String> counterexamples) {
+        buchiAutomatonForSystem = AutomataUtils.INSTANCE.convert(kripkeStructure);
 
         LtlFormula specification = LtlParser.parseString(ltlFormula);
-        MullerAutomaton<Set<Atom>> ma = LtlUtils.INSTANCE.convertToAutomata(specification.invert().normalized());
-        BuchiAutomaton<Set<Atom>> buchiAutomatonForSpecification = AutomataUtils.INSTANCE.convert(ma);
+        MullerAutomaton<?> ma = LtlUtils.INSTANCE.convertToAutomata(specification);
+        buchiAutomatonForSpecification = AutomataUtils.INSTANCE.convert(ma);
 
-        BuchiAutomaton<Set<Atom>> productResult = AutomataUtils.INSTANCE.product(buchiAutomatonForSystem, 
-                                                                         buchiAutomatonForSpecification);
-        return AutomataUtils.INSTANCE.emptinessCheck(productResult, new HashSet<>());
-
+        BuchiAutomaton<?> productResult = AutomataUtils.INSTANCE.product(buchiAutomatonForSystem,
+                buchiAutomatonForSpecification);
+        return AutomataUtils.INSTANCE.emptinessCheck(productResult, counterexamples);
     }
+
+    public BuchiAutomaton getKripkeAutomaton(){
+        return buchiAutomatonForSystem;
+    }
+
+    public BuchiAutomaton getLastLTLAutomaton() {
+        return  buchiAutomatonForSpecification;
+    }
+
+
     
 }

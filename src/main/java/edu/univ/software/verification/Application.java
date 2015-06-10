@@ -299,7 +299,9 @@ public class Application {
 
     private static void applicationRunnerDemo() {
         logger.info("---------------------------");
-        logger.info("Is system answer the specification? " + applicationRunner.verify("src/main/resources/automaton_data/export_kripke.json", ""));
+        ApplicationRunner applicationRunner = new ApplicationRunner();
+        applicationRunner.initKripkeModel("src/main/resources/automaton_data/export_kripke.json");
+        logger.info("Is system answer the specification? " + applicationRunner.verify("", Sets.newHashSet()));
         logger.info("---------------------------");
     }
 
@@ -328,7 +330,9 @@ public class Application {
     
     private static void verificationMicrowaveOven() {
         logger.info("---------------------MICROWAVE OVEN VERIFICATION-----------------");
-        logger.info("Verification result: " + (applicationRunner.verify("src/main/resources/automaton_data/micro-oven.json", "G cooking ") ? "confirmed" : "declined"));
+        ApplicationRunner applicationRunner = new ApplicationRunner();
+        applicationRunner.initKripkeModel("src/main/resources/automaton_data/micro-oven.json");
+        logger.info("Verification result: " + (applicationRunner.verify("G cooking ", new HashSet<>()) ? "confirmed" : "declined"));
         logger.info("-----------------------------------------------------------------");
     }
 
@@ -340,7 +344,7 @@ public class Application {
         kripkeStructureToBuchiAutomatonDemo();
         productBuchiAutomatonDemo();
 
-        applicationRunnerDemo();
+        //applicationRunnerDemo();
         verificationMicrowaveOven();
     }
 }
