@@ -1,12 +1,12 @@
 package edu.univ.software.verification;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.KripkeStructure;
+import edu.univ.software.verification.model.LtlFormula;
 import edu.univ.software.verification.model.MullerAutomaton;
 import edu.univ.software.verification.model.fa.BasicBuchiAutomaton;
 import edu.univ.software.verification.model.fa.BasicMullerAutomaton;
@@ -21,9 +21,11 @@ import edu.univ.software.verification.serializers.BasicStructureSerializer;
 import edu.univ.software.verification.utils.AutomataUtils;
 import edu.univ.software.verification.utils.LtlParser;
 
+import edu.univ.software.verification.utils.LtlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.HashSet;
 
 /**
@@ -34,7 +36,6 @@ public class Application {
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private static final Gson serializer;
-    private static final ApplicationRunner applicationRunner = new ApplicationRunner();
 
     static {
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -106,15 +107,15 @@ public class Application {
 
     private static void buchiAutomatonDemo() {
         // demonstrates creation of Buchi automaton for p. 234a
-        BuchiAutomaton<String> buchiAutomaton = BasicBuchiAutomaton.<String>builder()
+        BuchiAutomaton<?> buchiAutomaton = BasicBuchiAutomaton.builder()
                 .withState("1", true)
                 .withStates("2", "3", "4")
                 .withTransition("1", "2", "x")
                 .withTransition("1", "4", "y")
                 .withTransition("2", "2", "x")
                 .withTransition("2", "3", "y")
-                .withTransition("3", "4", Sets.newHashSet("x", "y"))
-                .withTransition("4", "4", Sets.newHashSet("x", "y"))
+                .withTransition("3", "4", "x", "y")
+                .withTransition("4", "4", "x", "y")
                 .withTransition("4", "3", "y")
                 .withFinalState("3")
                 .withFinalState("4")
@@ -135,19 +136,19 @@ public class Application {
 
         
         //example 1
-        BuchiAutomaton<String> buchiAutomatonA = BasicBuchiAutomaton.<String>builder()
+        BuchiAutomaton<Serializable> buchiAutomatonA = BasicBuchiAutomaton.builder()
                 .withState("1", true)
                 .withStates("2")
-                .withTransition("1", "2", Sets.newHashSet("x", "y"))
+                .withTransition("1", "2", "x", "y")
                 .withTransition("2", "2", "y")
                 .withTransition("2", "1", "y")
                 .withFinalState("1")
                 .build();
-        BuchiAutomaton<String> buchiAutomatonB = BasicBuchiAutomaton.<String>builder()
+        BuchiAutomaton<Serializable> buchiAutomatonB = BasicBuchiAutomaton.builder()
                 .withState("1", true)
                 .withStates("2")
-                .withTransition("1", "2", Sets.newHashSet("x", "y"))
-                .withTransition("2", "2", Sets.newHashSet("x", "y"))
+                .withTransition("1", "2", "x", "y")
+                .withTransition("2", "2", "x", "y")
                 .withFinalState("2")
                 .build();
 
@@ -168,25 +169,25 @@ public class Application {
 
         //example 2
         
-        buchiAutomatonA = BasicBuchiAutomaton.<String>builder()
+        buchiAutomatonA = BasicBuchiAutomaton.builder()
                 .withState("1", true)
                 .withStates("2")
                 .withStates("3")
-                .withTransition("1", "2", Sets.newHashSet("a", "b"))
+                .withTransition("1", "2", "a", "b")
                 .withTransition("2", "2", "a")
                 .withTransition("2", "3", "b")
                 .withTransition("3", "3", "b")
                 .withTransition("3", "2", "a")
                 .withFinalState("3")
                 .build();
-        buchiAutomatonB = BasicBuchiAutomaton.<String>builder()
+        buchiAutomatonB = BasicBuchiAutomaton.builder()
                 .withState("1", true)
                 .withStates("2")
                 .withStates("3")
-                .withTransition("1", "2", Sets.newHashSet("a", "b"))
+                .withTransition("1", "2", "a", "b")
                 .withTransition("2", "2", "b")
-                .withTransition("2", "3", Sets.newHashSet("a", "b"))
-                .withTransition("3", "3", Sets.newHashSet("a", "b"))
+                .withTransition("2", "3", "a", "b")
+                .withTransition("3", "3", "a", "b")
                 .withFinalState("3")
                 .build();
 
@@ -299,6 +300,7 @@ public class Application {
 
     private static void applicationRunnerDemo() {
         logger.info("---------------------------");
+        ApplicationRunner applicationRunner = new ApplicationRunner();
         logger.info("Is system answer the specification? " + applicationRunner.verify("src/main/resources/automaton_data/export_kripke.json", ""));
         logger.info("---------------------------");
     }
@@ -325,22 +327,28 @@ public class Application {
         logger.info("Inv. & Norm.(REP): {}", LtlParser.parseString(f.invert().normalized().toString()));
         logger.info("------------------------");
     }
-    
-    private static void verificationMicrowaveOven() {
-        logger.info("---------------------MICROWAVE OVEN VERIFICATION-----------------");
-        logger.info("Verification result: " + (applicationRunner.verify("src/main/resources/automaton_data/micro-oven.json", "G cooking ") ? "confirmed" : "declined"));
-        logger.info("-----------------------------------------------------------------");
-    }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {/*
         kripkeStructureDemo();
         ltlDemo();
         buchiAutomatonDemo();
         mullerAutomatonDemo();
         kripkeStructureToBuchiAutomatonDemo();
-        productBuchiAutomatonDemo();
+        productBuchiAutomatonDemo();*/
 
-        applicationRunnerDemo();
-        verificationMicrowaveOven();
+        //applicationRunnerDemo();
+        expandAlgorythmDemo();
+    }
+
+    public static void expandAlgorythmDemo() {
+        String formula = "(!p || q) ";
+        LtlFormula ltlFormula = LtlParser.parseString(formula);
+        MullerAutomaton automaton = LtlUtils.getInstance().convertToAutomata(ltlFormula);
+
+        if(logger.isInfoEnabled()) {
+            logger.info("[expand] "+automaton.getStates());
+            logger.info("[expand] "+automaton.getTransitions());
+            logger.info("[expand] "+automaton.getFinalStateSets());
+        }
     }
 }
