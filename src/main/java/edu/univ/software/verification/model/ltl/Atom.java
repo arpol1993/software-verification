@@ -115,13 +115,13 @@ public class Atom implements LtlFormula {
     }
 
     @Override
-    public Set<String> fetchSymbols() {
+    public Set<String> getPropositions(boolean isPositive) {
         Set<String> res = new HashSet<>();
-        
-        if (type == AtomType.VAR) {
+
+        if (type == AtomType.VAR && isPositive) {
             res.add(name);
         }
-        
+
         return res;
     }
 
@@ -149,20 +149,17 @@ public class Atom implements LtlFormula {
         return "LtlAtom{" + "name=" + name + ", type=" + type + '}';
     }
 
-    class AtomSerializer implements JsonSerializer<Atom>, JsonDeserializer<Atom>
-    {
+    class AtomSerializer implements JsonSerializer<Atom>, JsonDeserializer<Atom> {
 
         @Override
-        public Atom deserialize( JsonElement jsonElement, Type type,
-                                 JsonDeserializationContext jsonDeserializationContext ) throws JsonParseException
-        {
+        public Atom deserialize(JsonElement jsonElement, Type type,
+                JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             return null;
         }
 
         @Override
-        public JsonElement serialize( Atom atom, Type type, JsonSerializationContext jsonSerializationContext )
-        {
-            return new JsonPrimitive( name );
+        public JsonElement serialize(Atom atom, Type type, JsonSerializationContext jsonSerializationContext) {
+            return new JsonPrimitive(name);
         }
     }
 }

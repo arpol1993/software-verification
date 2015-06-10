@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.HashSet;
 
 /**
  *
@@ -123,7 +124,7 @@ public class Application {
         logger.info("---------------------------");
 
         logger.info("Is that automaton accepts only empty language : {}",
-                AutomataUtils.INSTANCE.emptinessCheck(buchiAutomaton));
+                AutomataUtils.INSTANCE.emptinessCheck(buchiAutomaton, new HashSet<>()));
         logger.info("---------------------------");
     }
 
@@ -233,7 +234,7 @@ public class Application {
         logger.info("Outgoing edges for state {}: {}", "(1, 1)", buchiAutomaton.getTransitionsFrom("(1, 1)"));
         logger.info("---------------------------");
 
-        logger.info("Is that automaton accepts only empty language : {}", AutomataUtils.INSTANCE.emptinessCheck(buchiAutomaton));
+        logger.info("Is that automaton accepts only empty language : {}", AutomataUtils.INSTANCE.emptinessCheck(buchiAutomaton, new HashSet<>()));
     }
 
     private static void kripkeStructureToBuchiAutomatonDemo() {

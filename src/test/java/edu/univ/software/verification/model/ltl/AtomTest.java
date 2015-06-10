@@ -34,9 +34,9 @@ public class AtomTest {
 
     @Test
     public void testFetchSymbols() throws Exception {
-        assertEquals(Collections.<String>emptySet(), Atom._0.fetchSymbols());
-        assertEquals(Collections.<String>emptySet(), Atom._1.fetchSymbols());
-        assertEquals(Sets.newHashSet("a"), Atom.forName("a").fetchSymbols());
+        assertEquals(Collections.<String>emptySet(), Atom._0.getPropositions(true));
+        assertEquals(Collections.<String>emptySet(), Atom._1.getPropositions(true));
+        assertEquals(Sets.newHashSet("a"), Atom.forName("a").getPropositions(true));
     }
 
     @Test

@@ -180,13 +180,13 @@ public class BinaryOpTest {
     @Test
     public void testFetchSymbols() throws Exception {
         LtlFormula mockedLtlFormula1 = mock(LtlFormula.class);
-        when(mockedLtlFormula1.fetchSymbols()).thenReturn(Sets.newHashSet("a", "b"));
+        when(mockedLtlFormula1.getPropositions(true)).thenReturn(Sets.newHashSet("a", "b"));
 
         LtlFormula mockedLtlFormula2 = mock(LtlFormula.class);
-        when(mockedLtlFormula2.fetchSymbols()).thenReturn(Sets.newHashSet("a", "c"));
+        when(mockedLtlFormula2.getPropositions(true)).thenReturn(Sets.newHashSet("a", "c"));
 
         BinaryOp binaryOp = BinaryOp.build(BinaryOp.OpType.R, mockedLtlFormula1, mockedLtlFormula2);
-        Set<String> actual = binaryOp.fetchSymbols();
+        Set<String> actual = binaryOp.getPropositions(true);
         assertEquals(Sets.newHashSet("a", "b", "c"), actual);
     }
 }

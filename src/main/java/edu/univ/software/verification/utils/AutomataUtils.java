@@ -78,9 +78,10 @@ public enum AutomataUtils {
      * ALL counter expamples into the logfile
      *
      * @param buchi Buchi automaton to check
+     * @param counters Already initialized set where found counters added
      * @return true if only empty, false otherwise
      */
-    public boolean emptinessCheck(BuchiAutomaton<?> buchi) {
+    public boolean emptinessCheck(BuchiAutomaton<?> buchi, Set<String> counters) {
 
         //Stage 1. Find all initial circuits
         Table<String, String, Circuit> initialCircuits = HashBasedTable.create();
@@ -94,7 +95,7 @@ public enum AutomataUtils {
             if (!acceptingCircuits.isEmpty() && initialCircuits.containsColumn(fin)) {
 
                 initialCircuits.column(fin).forEach((start, initial) -> {
-                    acceptingCircuits.forEach((acc) -> printRoute(buchi, initial, acc));
+                    acceptingCircuits.forEach((acc) -> counters.add(printRoute(buchi, initial, acc)));
                 });
 
                 return false;
@@ -213,14 +214,14 @@ public enum AutomataUtils {
         return builder.build();
     }
 
-    private String convertAtomsToFormula(Set<Atom> atoms){
-        if(atoms.isEmpty()){
+    private String convertAtomsToFormula(Set<Atom> atoms) {
+        if (atoms.isEmpty()) {
             return Atom._1.toString();
-        }
-        else{
+        } else {
             return BinaryOp.concat(BinaryOp.OpType.AND, new ArrayList<>(atoms)).toString();
         }
     }
+
     /**
      * Computes direct product of two Buchi automata
      *
@@ -259,7 +260,7 @@ public enum AutomataUtils {
             if (cpath.path.contains(dest)) {
                 isCycling = true;
             }
-            
+
             if (buchi.getFinalStates().contains(dest) && !allPathes.values().contains(npath)) {
                 allPathes.put(cpath.path.get(0), dest, cpath.clone());
             }
@@ -291,12 +292,15 @@ public enum AutomataUtils {
         });
     }
 
-    private void printRoute(BuchiAutomaton<?> buchi, Circuit initital, Circuit accpeting) {
+    private String printRoute(BuchiAutomaton<?> buchi, Circuit initital, Circuit accpeting) {
         StringBuilder counter = new StringBuilder("Counterexpample: L = ");
         printRoutePart(initital, counter, buchi);
         counter.append('(');
         printRoutePart(accpeting, counter, buchi);
-        logger.info(counter.append(")").toString());
+        String rt = counter.append(")").toString();
+
+        logger.info(rt);
+        return rt;
     }
 
     private void printRoutePart(Circuit route, StringBuilder strbuilder, BuchiAutomaton<?> buchi) {

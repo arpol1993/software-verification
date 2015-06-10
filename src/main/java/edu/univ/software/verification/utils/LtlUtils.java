@@ -264,7 +264,7 @@ public enum LtlUtils {
     }
 
     private Set<Set<String>> getSymbolsBoolean(LtlFormula formula) throws IllegalArgumentException {
-        List<String> symbols = Lists.newArrayList(formula.fetchSymbols());
+        List<String> symbols = Lists.newArrayList(formula.getPropositions(true));
 
         if (symbols.size() > MAX_PREDICATE_SYMBOLS_ALLOWED) {
             throw new IllegalArgumentException(String.format(

@@ -25,6 +25,7 @@ import edu.univ.software.verification.model.MullerAutomaton;
 import edu.univ.software.verification.utils.AutomataUtils;
 import edu.univ.software.verification.utils.LtlParser;
 import edu.univ.software.verification.utils.LtlUtils;
+import java.util.HashSet;
 
 /**
  *
@@ -59,7 +60,7 @@ public class ApplicationRunner {
 
         BuchiAutomaton<?> productResult = AutomataUtils.INSTANCE.product(buchiAutomatonForSystem, 
                                                                          buchiAutomatonForSpecification);
-        return AutomataUtils.INSTANCE.emptinessCheck(productResult);
+        return AutomataUtils.INSTANCE.emptinessCheck(productResult, new HashSet<>());
 
     }
     

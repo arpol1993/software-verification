@@ -161,11 +161,11 @@ public class UnaryOpTest {
     public void testFetchSymbols() throws Exception {
         //given
         LtlFormula mockedLtlFormula = mock(LtlFormula.class);
-        when(mockedLtlFormula.fetchSymbols()).thenReturn(Sets.newHashSet("a"));
+        when(mockedLtlFormula.getPropositions(false)).thenReturn(Sets.newHashSet("a"));
 
         //when
         UnaryOp unaryOp = UnaryOp.build(UnaryOp.OpType.NEG, mockedLtlFormula);
-        Set<String> actual = unaryOp.fetchSymbols();
+        Set<String> actual = unaryOp.getPropositions(false);
 
         //then
         assertEquals(Sets.newHashSet("a"), actual);

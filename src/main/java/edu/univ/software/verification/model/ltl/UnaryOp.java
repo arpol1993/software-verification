@@ -86,10 +86,10 @@ public class UnaryOp implements LtlFormula {
     }
 
     @Override
-    public Set<String> fetchSymbols() {
-        return operand.fetchSymbols();
+    public Set<String> getPropositions(boolean isPositive) {
+        return (!isPositive && opType == OpType.NEG &&  operand instanceof Atom)
+                ? operand.getPropositions(true) : operand.getPropositions(isPositive);
     }
-       
 
     @Override
     public LtlFormula clone() {
