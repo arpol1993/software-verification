@@ -104,7 +104,7 @@ public class BinaryOp implements LtlFormula {
             case IMPL:
                 return build(OpType.OR, opLeft.invert().normalized(), opRight.normalized());
             default:
-                return this.clone();
+                return build(opType, opLeft.normalized(), opRight.normalized());
         }
     }
 

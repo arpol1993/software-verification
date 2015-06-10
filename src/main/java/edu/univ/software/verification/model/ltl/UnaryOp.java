@@ -73,7 +73,7 @@ public class UnaryOp implements LtlFormula {
             case F:
                 return BinaryOp.build(BinaryOp.OpType.U, Atom._1, operand.normalized());
             default:
-                return this.clone();
+                return UnaryOp.build(opType, operand.normalized());
         }
     }
 
