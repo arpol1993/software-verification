@@ -3,13 +3,20 @@ package edu.univ.software.verification.model.kripke;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+
 import edu.univ.software.verification.model.KripkeState;
 import edu.univ.software.verification.model.KripkeStructure;
 import edu.univ.software.verification.model.ltl.Atom;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
 
 /**
  * Default Kripke structure implementation
@@ -38,22 +45,24 @@ public class BasicStructure implements KripkeStructure {
         return states.get(label);
     }
     
+    //<editor-fold defaultstate="collapsed" desc="Getters & Setters">
     @Override
     public Set<KripkeState> getStates() {
         return ImmutableSet.copyOf(states.values());
     }
-
+    
     public void setStates(Map<String, KripkeState> states) {
         this.states = ImmutableMap.copyOf(states);
     }
-
+    
     public Map<String, Set<String>> getTransitions() {
         return ImmutableMap.copyOf(transitions);
     }
-
+    
     public void setTransitions(Map<String, Set<String>> transitions) {
         this.transitions = ImmutableMap.copyOf(transitions);
     }
+    //</editor-fold>
 
     @Override
     public boolean hasTransition(String from, String to) {

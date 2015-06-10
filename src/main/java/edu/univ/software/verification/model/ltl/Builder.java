@@ -2,6 +2,7 @@ package edu.univ.software.verification.model.ltl;
 
 import edu.univ.software.verification.exceptions.InvalidBuilderUsage;
 import edu.univ.software.verification.model.LtlFormula;
+
 import java.util.LinkedList;
 
 /**

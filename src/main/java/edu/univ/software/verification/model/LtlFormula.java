@@ -49,10 +49,10 @@ public interface LtlFormula extends Cloneable {
     
     /**
      * Fetch all used positive propositional symbols in formula
-     * @param isPositive if true fetches only positive symbols, negative otherwise
+     * @param isPositive fetch negative or positive propositions if not null, all otherwise
      * @return Set of symbols
      */
-    public Set<String> getPropositions(boolean isPositive);    
+    public Set<String> getPropositions(Boolean isPositive);    
     
     /**
      * Create clone of LTL formula

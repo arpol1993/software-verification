@@ -1,6 +1,14 @@
 package edu.univ.software.verification.serializers;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
 import edu.univ.software.verification.model.KripkeState;
 import edu.univ.software.verification.model.kripke.BasicState;
 import edu.univ.software.verification.model.kripke.BasicStructure;
@@ -12,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class BasicStructureSerializer implements JsonSerializer<BasicStructure>, JsonDeserializer<BasicStructure> {
+
     @Override
     public BasicStructure deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         BasicStructure structure = new BasicStructure();

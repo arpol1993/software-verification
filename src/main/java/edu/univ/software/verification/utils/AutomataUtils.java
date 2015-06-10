@@ -2,7 +2,6 @@ package edu.univ.software.verification.utils;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import edu.univ.software.verification.model.AutomatonState;
 
 import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.KripkeState;
@@ -16,7 +15,6 @@ import edu.univ.software.verification.model.ltl.BinaryOp;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -230,10 +228,8 @@ public enum AutomataUtils {
      * @param b second Buchi automaton
      * @return Buchi automaton with the result of the product
      */
-    public <T extends Serializable> BuchiAutomaton<T> product(BuchiAutomaton<T> a, BuchiAutomaton b) {
-        DirectProduct bdp = new DirectProduct(a, b);
-
-        return bdp.product();
+    public <T extends Serializable> BuchiAutomaton<T> product(BuchiAutomaton<T> a, BuchiAutomaton<T> b) {
+        return new DirectProduct<>(a, b).product();
     }
 
     private int finalIndexOf(Set<Set<String>> finalStates, String state) {

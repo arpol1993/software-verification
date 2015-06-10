@@ -1,6 +1,5 @@
 package edu.univ.software.verification.utils;
 
-import com.google.common.collect.Table;
 import edu.univ.software.verification.model.AutomatonState;
 import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.fa.BasicBuchiAutomaton;
@@ -14,6 +13,7 @@ import java.util.Set;
 
 /**
  * Util class for the Buchi automata's direct product
+ *
  * @author Serhii Biletskij
  * @param <T> Type of internal states data
  */
@@ -61,15 +61,18 @@ public class DirectProduct<T extends Serializable> {
      * exiting chart betweens states
      */
     private final HashMap<String, HashMap<String, Set<String>>> createdTransitions;
+    
     /**
      * using to not add exiting vertex into automaton and get jung once all
      * outgoing transitins
      */
     private final ArrayList<String> createdStates;
+    
     /**
      * using to not add exiting vertex into automaton
      */
     private final ArrayList<String> allFinal;
+    
     /**
      * using to temprorary save all initian states in result automaton and later
      * to transform it into simple state and dublicate transitins from (0,0,0)
@@ -131,17 +134,15 @@ public class DirectProduct<T extends Serializable> {
                 Map<String, Set<String>> toB = B.getTransitionsFrom(current.getBState());
 
                 // Iterate througth all possible combinations of states
-                for (String fromA : toA.keySet()) {
-                    for (String fromB : toB.keySet()) {
-                        for (String symbolA : toA.get(fromA)) {
-                            for (String symbolB : toB.get(fromB)) {
-                                if (symbolA.equals(symbolB)) {
-                                    processTransition(symbolA, current, fromA, fromB);
-                                }
-                            }
-                        }
-                    }
-                }
+                toA.keySet().stream().forEach((fromA) -> {
+                    toB.keySet().stream().forEach((fromB) -> {
+                        toA.get(fromA).stream().forEach((symbolA) -> {
+                            toB.get(fromB).stream().filter((symbolB) -> (symbolA.equals(symbolB))).forEach((_item) -> {
+                                processTransition(symbolA, current, fromA, fromB);
+                            });
+                        });
+                    });
+                });
             }
 
             /**
@@ -225,7 +226,7 @@ public class DirectProduct<T extends Serializable> {
         }
 
         /**
-         * is new final dtate
+         * is new final state
          */
         if (iter == 2 && !allFinal.contains(to)) {
             resultBuilder.withFinalState(to);

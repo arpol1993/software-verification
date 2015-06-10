@@ -1,11 +1,17 @@
 package edu.univ.software.verification.model.ltl;
 
-import com.google.gson.*;
+import com.google.common.collect.Sets;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
 import edu.univ.software.verification.model.LtlFormula;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
-
 import java.util.Objects;
 import java.util.Set;
 
@@ -16,7 +22,6 @@ import java.util.Set;
 public class Atom implements LtlFormula {
 
     public static enum AtomType {
-
         VAR,
         _0,
         _1
@@ -115,14 +120,8 @@ public class Atom implements LtlFormula {
     }
 
     @Override
-    public Set<String> getPropositions(boolean isPositive) {
-        Set<String> res = new HashSet<>();
-
-        if (type == AtomType.VAR && isPositive) {
-            res.add(name);
-        }
-
-        return res;
+    public Set<String> getPropositions(Boolean isPositive) {
+        return (type == AtomType.VAR && (isPositive == null || isPositive)) ? Sets.newHashSet(name) : Sets.newHashSet();
     }
 
     @Override

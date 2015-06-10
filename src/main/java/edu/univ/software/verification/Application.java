@@ -3,6 +3,7 @@ package edu.univ.software.verification;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.KripkeStructure;
 import edu.univ.software.verification.model.MullerAutomaton;
@@ -18,6 +19,7 @@ import edu.univ.software.verification.serializers.BasicStateSerializer;
 import edu.univ.software.verification.serializers.BasicStructureSerializer;
 import edu.univ.software.verification.utils.AutomataUtils;
 import edu.univ.software.verification.utils.LtlParser;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -250,7 +252,7 @@ public class Application {
                 .withTransition("1", "2")
                 .build();
 
-        BuchiAutomaton buchiAutomaton = AutomataUtils.INSTANCE.convert(ks);
+        BuchiAutomaton<?> buchiAutomaton = AutomataUtils.INSTANCE.convert(ks);
         logger.info("---Kripke model --> Buchi automaton test---");
 
 

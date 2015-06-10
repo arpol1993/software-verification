@@ -2,7 +2,6 @@
 package edu.univ.software.verification.model;
 
 import com.google.common.collect.Table;
-import edu.univ.software.verification.model.fa.BasicState;
 
 import java.io.Serializable;
 import java.util.Collection;

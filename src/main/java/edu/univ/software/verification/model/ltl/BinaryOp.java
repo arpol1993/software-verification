@@ -1,8 +1,8 @@
 package edu.univ.software.verification.model.ltl;
 
 import edu.univ.software.verification.model.LtlFormula;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -38,7 +38,6 @@ public class BinaryOp implements LtlFormula {
     }
 
     public static enum OpType {
-
         OR, // logical or
         AND, // logical and
         IMPL,
@@ -124,15 +123,11 @@ public class BinaryOp implements LtlFormula {
     }
 
     @Override
-    public Set<String> getPropositions(boolean isPositive) {
-        Set<String> left = opLeft.getPropositions(isPositive);
-        Set<String> right = opRight.getPropositions(isPositive);
+    public Set<String> getPropositions(Boolean isPositive) {
+        Set<String> ps = opLeft.getPropositions(isPositive);
+        ps.addAll(opRight.getPropositions(isPositive));
 
-        right.stream().forEach((symbol) -> {
-            left.add(symbol);
-        });
-
-        return left;
+        return ps;
     }
 
     @Override

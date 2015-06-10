@@ -48,6 +48,11 @@ public class BasicMullerAutomaton<T extends Serializable> extends AbstractAutoma
         return finalStateSets;
     }
     //</editor-fold>
+
+    @Override
+    public String toString() {
+        return "BasicMullerAutomaton{" + "states=" + states + ", transitions=" + transitions + ", finalStateSets=" + finalStateSets + '}';
+    }
     
     public static class BasicBuilder<T extends Serializable> extends AbstractAutomaton.AbstractBuilder<T, BasicBuilder<T>> implements MullerAutomaton.Builder<T> {
 

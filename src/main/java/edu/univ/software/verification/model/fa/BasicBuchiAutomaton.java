@@ -47,6 +47,11 @@ public class BasicBuchiAutomaton<T extends Serializable> extends AbstractAutomat
         return finalStates;
     }
     //</editor-fold>
+
+    @Override
+    public String toString() {
+        return "BasicBuchiAutomaton{" + "states=" + states + ", transitions=" + transitions + ", finalStates=" + finalStates + '}';
+    }
     
     public static class BasicBuilder<T extends Serializable> extends AbstractAutomaton.AbstractBuilder<T, BasicBuilder<T>> implements BuchiAutomaton.Builder<T> {
 

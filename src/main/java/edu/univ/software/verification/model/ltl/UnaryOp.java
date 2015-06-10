@@ -1,6 +1,7 @@
 package edu.univ.software.verification.model.ltl;
 
 import edu.univ.software.verification.model.LtlFormula;
+
 import java.util.Objects;
 import java.util.Set;
 
@@ -86,8 +87,8 @@ public class UnaryOp implements LtlFormula {
     }
 
     @Override
-    public Set<String> getPropositions(boolean isPositive) {
-        return (!isPositive && opType == OpType.NEG &&  operand instanceof Atom)
+    public Set<String> getPropositions(Boolean isPositive) {
+        return (isPositive != null && !isPositive && opType == OpType.NEG && operand instanceof Atom)
                 ? operand.getPropositions(true) : operand.getPropositions(isPositive);
     }
 
