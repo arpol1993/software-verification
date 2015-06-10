@@ -34,6 +34,7 @@ public class Application {
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private static final Gson serializer;
+    private static final ApplicationRunner applicationRunner = new ApplicationRunner();
 
     static {
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -298,7 +299,6 @@ public class Application {
 
     private static void applicationRunnerDemo() {
         logger.info("---------------------------");
-        ApplicationRunner applicationRunner = new ApplicationRunner();
         logger.info("Is system answer the specification? " + applicationRunner.verify("src/main/resources/automaton_data/export_kripke.json", ""));
         logger.info("---------------------------");
     }
@@ -325,6 +325,12 @@ public class Application {
         logger.info("Inv. & Norm.(REP): {}", LtlParser.parseString(f.invert().normalized().toString()));
         logger.info("------------------------");
     }
+    
+    private static void verificationMicrowaveOven() {
+        logger.info("---------------------MICROWAVE OVEN VERIFICATION-----------------");
+        logger.info("Verification result: " + (applicationRunner.verify("src/main/resources/automaton_data/micro-oven.json", "G cooking ") ? "confirmed" : "declined"));
+        logger.info("-----------------------------------------------------------------");
+    }
 
     public static void main(String[] args) {
         kripkeStructureDemo();
@@ -335,5 +341,6 @@ public class Application {
         productBuchiAutomatonDemo();
 
         applicationRunnerDemo();
+        verificationMicrowaveOven();
     }
 }

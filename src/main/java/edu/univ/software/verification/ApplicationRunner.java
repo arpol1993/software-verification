@@ -56,7 +56,7 @@ public class ApplicationRunner {
         BuchiAutomaton<Set<Atom>> buchiAutomatonForSystem = AutomataUtils.INSTANCE.convert(ks);
 
         LtlFormula specification = LtlParser.parseString(ltlFormula);
-        MullerAutomaton<Set<Atom>> ma = LtlUtils.INSTANCE.convertToAutomata(specification);
+        MullerAutomaton<Set<Atom>> ma = LtlUtils.INSTANCE.convertToAutomata(specification.invert().normalized());
         BuchiAutomaton<Set<Atom>> buchiAutomatonForSpecification = AutomataUtils.INSTANCE.convert(ma);
 
         BuchiAutomaton<Set<Atom>> productResult = AutomataUtils.INSTANCE.product(buchiAutomatonForSystem, 

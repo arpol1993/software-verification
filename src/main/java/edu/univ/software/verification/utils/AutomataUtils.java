@@ -185,24 +185,20 @@ public enum AutomataUtils {
      */
     public BuchiAutomaton<Set<Atom>> convert(KripkeStructure kripke) {
         BuchiAutomaton.Builder<Set<Atom>> builder = BasicBuchiAutomaton.<Set<Atom>>builder();
-        String initStateForBuchiAutomaton = "0";
-        Integer stateCounter = 1;
+        String initStateForBuchiAutomaton = "init";
         builder.withState(initStateForBuchiAutomaton, true).withFinalState(initStateForBuchiAutomaton);
         for (KripkeState state : kripke.getStates()) {
-            builder.withState(stateCounter.toString())
-                    .withFinalState(stateCounter.toString());
+            builder.withState(state.getLabel())
+                    .withFinalState(state.getLabel());
             if (state.isInitial()) {
-                builder.withTransition(initStateForBuchiAutomaton, stateCounter.toString(), state.getAtoms());
+                builder.withTransition(initStateForBuchiAutomaton, state.getLabel(), state.getAtoms());
             }
-            stateCounter++;
         }
 
         for (KripkeState stateFrom : kripke.getStates()) {
             for (KripkeState stateTo : kripke.getStates()) {
                 if (kripke.hasTransition(stateFrom.getLabel(), stateTo.getLabel())) {
-                    builder.withTransition(Integer.toString(Integer.parseInt(stateFrom.getLabel()) + 1),
-                            Integer.toString(Integer.parseInt(stateTo.getLabel()) + 1),
-                            stateTo.getAtoms());
+                    builder.withTransition(stateFrom.getLabel(), stateTo.getLabel(), stateTo.getAtoms());
                 }
             }
         }

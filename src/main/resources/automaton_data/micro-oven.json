@@ -1,0 +1,59 @@
+{
+  "states": [
+    {
+      "name": "S1",
+      "initial": true,
+      "atoms": []
+    },
+    {
+      "name": "S2",
+      "initial": false,
+      "atoms": [
+        "close"
+      ]
+    },
+    {
+      "name": "S3",
+      "initial": false,
+      "atoms": [
+        "close",
+        "start",
+        "cooking"
+      ]
+    },
+    {
+      "name": "S4",
+      "initial": false,
+      "atoms": [
+        "start"
+      ]
+    }
+    
+  ],
+  "transitions": [
+    {
+      "source": "S1",
+      "destinations": [
+        "S2", "S4"
+      ]
+    },
+    {
+      "source": "S2",
+      "destinations": [
+        "S1", "S3"
+      ]
+    },
+    {
+      "source": "S3",
+      "destinations": [
+        "S2", "S3"
+      ]
+    },
+    {
+      "source": "S4",
+      "destinations": [
+        "S2"
+      ]
+    }
+  ]
+}
