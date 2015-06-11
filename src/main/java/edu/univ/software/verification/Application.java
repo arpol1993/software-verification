@@ -332,10 +332,21 @@ public class Application {
         logger.info("---------------------MICROWAVE OVEN VERIFICATION-----------------");
         ApplicationRunner applicationRunner = new ApplicationRunner();
         applicationRunner.initKripkeModel("src/main/resources/automaton_data/micro-oven.json");
-        logger.info("Verification result: " + (applicationRunner.verify("G ((!close && !start) && cooking)", new HashSet<>()) ? "confirmed" : "declined"));
+        logger.info("Verification result: " + (applicationRunner.verify("G ((!close && start) -> F cooking)", new HashSet<>()) ? "confirmed" : "declined"));
         logger.info("-----------------------------------------------------------------");
     }
 
+//    TWO STAGE ELEVATOR
+//G (move -> F (first || second)) - PASS
+//G (move -> F (first && !second)) - FAILS
+//(G F move && (!first || !second)) - PASS
+//(G F second && (!move || !first)) - FAILS
+//
+//DEV TEAM
+//(G F bug && (!test || !feature)) - FAILS
+//(G !bug && (!test || !feature)) - FAILS
+//(G (bug -> F (!bug && !test) && (!test || !feature)) - FAILS
+    
     public static void main(String[] args) {
         kripkeStructureDemo();
         ltlDemo();
