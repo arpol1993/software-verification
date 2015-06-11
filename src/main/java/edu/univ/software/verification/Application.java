@@ -34,7 +34,7 @@ public class Application {
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private static final Gson serializer;
-    private static final ApplicationRunner applicationRunner = new ApplicationRunner();
+    private static final ApplicationRunner applicationRunner = ApplicationRunner.getInstance();
 
     static {
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -297,13 +297,13 @@ public class Application {
         logger.info("---------------------------");
     }
 
-    private static void applicationRunnerDemo() {
-        logger.info("---------------------------");
-        ApplicationRunner applicationRunner = new ApplicationRunner();
-        applicationRunner.initKripkeModel("src/main/resources/automaton_data/export_kripke.json");
-        logger.info("Is system answer the specification? " + applicationRunner.verify("", Sets.newHashSet()));
-        logger.info("---------------------------");
-    }
+//    private static void applicationRunnerDemo() {
+//        logger.info("---------------------------");
+//        ApplicationRunner applicationRunner = ApplicationRunner;
+//        applicationRunner.initKripkeModel("src/main/resources/automaton_data/export_kripke.json");
+//        logger.info("Is system answer the specification? " + applicationRunner.verify("", Sets.newHashSet()));
+//        logger.info("---------------------------");
+//    }
 
     private static void ltlDemo() {
         Atom atomB = new Atom("b");
@@ -328,13 +328,13 @@ public class Application {
         logger.info("------------------------");
     }
     
-    private static void verificationMicrowaveOven() {
-        logger.info("---------------------MICROWAVE OVEN VERIFICATION-----------------");
-        ApplicationRunner applicationRunner = new ApplicationRunner();
-        applicationRunner.initKripkeModel("src/main/resources/automaton_data/micro-oven.json");
-        logger.info("Verification result: " + (applicationRunner.verify("G ((!close && start) -> F cooking)", new HashSet<>()) ? "confirmed" : "declined"));
-        logger.info("-----------------------------------------------------------------");
-    }
+//    private static void verificationMicrowaveOven() {
+//        logger.info("---------------------MICROWAVE OVEN VERIFICATION-----------------");
+//        ApplicationRunner applicationRunner = new ApplicationRunner();
+//        applicationRunner.initKripkeModel("src/main/resources/automaton_data/micro-oven.json");
+//        logger.info("Verification result: " + (applicationRunner.verify("G ((!close && start) -> F cooking)", new HashSet<>()) ? "confirmed" : "declined"));
+//        logger.info("-----------------------------------------------------------------");
+//    }
 
 //    TWO STAGE ELEVATOR
 //G (move -> F (first || second)) - PASS
@@ -356,6 +356,6 @@ public class Application {
         //productBuchiAutomatonDemo();
 
         //applicationRunnerDemo();
-        verificationMicrowaveOven();
+//        verificationMicrowaveOven();
     }
 }
