@@ -300,7 +300,7 @@ public class Application {
     private static void applicationRunnerDemo() {
         logger.info("---------------------------");
         ApplicationRunner applicationRunner = new ApplicationRunner();
-        applicationRunner.initKripkeModel("src/main/resources/automaton_data/export_kripke.json");
+//        applicationRunner.initKripkeModel("src/main/resources/automaton_data/export_kripke.json");
         logger.info("Is system answer the specification? " + applicationRunner.verify("", Sets.newHashSet()));
         logger.info("---------------------------");
     }
@@ -331,7 +331,7 @@ public class Application {
     private static void verificationMicrowaveOven() {
         logger.info("---------------------MICROWAVE OVEN VERIFICATION-----------------");
         ApplicationRunner applicationRunner = new ApplicationRunner();
-        applicationRunner.initKripkeModel("src/main/resources/automaton_data/micro-oven.json");
+//        applicationRunner.initKripkeModel("src/main/resources/automaton_data/micro-oven.json");
         logger.info("Verification result: " + (applicationRunner.verify("G ((!close && !start) && cooking)", new HashSet<>()) ? "confirmed" : "declined"));
         logger.info("-----------------------------------------------------------------");
     }

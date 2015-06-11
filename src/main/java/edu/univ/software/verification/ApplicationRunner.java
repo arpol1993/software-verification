@@ -48,14 +48,10 @@ public class ApplicationRunner {
         serializer = gsonBuilder.create();
     }
 
-    public void initKripkeModel(String kripkeStructureFileName) {
-        try {
+    public void initKripkeModel(String kripkeStructureFileName) throws IOException {
             Path importPath = Paths.get(kripkeStructureFileName);
             String data = new String(Files.readAllBytes(importPath));
             kripkeStructure = serializer.fromJson(data, BasicStructure.class);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to import automaton data from file", e);
-        }
     }
 
     public boolean verify(String ltlFormula, Set<String> counterexamples) {
