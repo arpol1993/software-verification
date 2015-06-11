@@ -176,7 +176,7 @@ public enum LtlUtils {
         // set of atomic propositions for given LTL formula
         Set<String> atomicPs = formula.getPropositions(null);
 
-        //transitions definition
+        // transitions definition
         for (GraphNode current : nodes) {
             Set<String> positivePs = getPositivePropositions(current);
             Set<String> negativePs = getNegativePropositions(current);
@@ -197,16 +197,27 @@ public enum LtlUtils {
             }
         }
 
-        //final states
-        nodes.stream().flatMap(n -> n.getOldFormulas().stream()).distinct().filter(f -> isBinaryOp(f, ImmutableSet.of(BinaryOp.OpType.U, BinaryOp.OpType.R))).map(f -> (BinaryOp) f).forEach((BinaryOp f) -> {
-            Set<String> finalStateSet = nodes.stream().filter((GraphNode n) -> {
-                return !n.getOldFormulas().contains(f) || n.getOldFormulas().contains(f.getOpRight());
-            }).map(GraphNode::getId).collect(Collectors.toSet());
+        // check subformulas for Until operator presence
+        Set<BinaryOp> untilFs = nodes.stream().flatMap(n -> n.getOldFormulas().stream()).distinct().filter(f -> isBinaryOp(f, ImmutableSet.of(BinaryOp.OpType.U))).map(f -> (BinaryOp) f).collect(Collectors.toSet());
+
+        // final states initialization
+        if (untilFs.isEmpty()) {
+            Set<String> finalStateSet = nodes.stream().map(GraphNode::getId).collect(Collectors.toSet());
 
             if (!finalStateSet.isEmpty()) {
                 automatonBuilder.withFinalStateSet(finalStateSet);
             }
-        });
+        } else {
+            untilFs.forEach((BinaryOp f) -> {
+                Set<String> finalStateSet = nodes.stream().filter((GraphNode n) -> {
+                    return !n.getOldFormulas().contains(f) || n.getOldFormulas().contains(f.getOpRight());
+                }).map(GraphNode::getId).collect(Collectors.toSet());
+
+                if (!finalStateSet.isEmpty()) {
+                    automatonBuilder.withFinalStateSet(finalStateSet);
+                }
+            });
+        }
 
         return automatonBuilder.build();
     }
@@ -260,11 +271,11 @@ public enum LtlUtils {
                 throw new IllegalArgumentException(String.format("Unsupported formula '%s' supplied to New1", formula));
         }
     }
-    
+
     private Set<String> getPositivePropositions(GraphNode node) {
         return node.getOldFormulas().stream().filter(f -> isAtom(f, ImmutableSet.of(Atom.AtomType.VAR))).map(f -> ((Atom) f).getName()).collect(Collectors.toSet());
     }
-    
+
     private Set<String> getNegativePropositions(GraphNode node) {
         return node.getOldFormulas().stream().filter(this::isInvertedPredicateSymbol).map(f -> ((Atom) ((UnaryOp) f).getOperand()).getName()).collect(Collectors.toSet());
     }
