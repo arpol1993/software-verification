@@ -332,7 +332,7 @@ public class Application {
         logger.info("---------------------MICROWAVE OVEN VERIFICATION-----------------");
         ApplicationRunner applicationRunner = new ApplicationRunner();
         applicationRunner.initKripkeModel("src/main/resources/automaton_data/micro-oven.json");
-        logger.info("Verification result: " + (applicationRunner.verify("F !cooking ", new HashSet<>()) ? "confirmed" : "declined"));
+        logger.info("Verification result: " + (applicationRunner.verify("G ((!close && !start) && cooking)", new HashSet<>()) ? "confirmed" : "declined"));
         logger.info("-----------------------------------------------------------------");
     }
 
@@ -342,7 +342,7 @@ public class Application {
         buchiAutomatonDemo();
         mullerAutomatonDemo();
         kripkeStructureToBuchiAutomatonDemo();
-        productBuchiAutomatonDemo();
+        //productBuchiAutomatonDemo();
 
         //applicationRunnerDemo();
         verificationMicrowaveOven();
