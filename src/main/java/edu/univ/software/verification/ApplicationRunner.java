@@ -33,8 +33,10 @@ import java.util.Set;
  */
 public class ApplicationRunner {
     private static final Gson serializer;
+    private static ApplicationRunner instance;
 
     private KripkeStructure kripkeStructure;
+    private LtlFormula specification;
     private BuchiAutomaton buchiAutomatonForSpecification;
     private BuchiAutomaton buchiAutomatonForSystem;
 
@@ -47,17 +49,25 @@ public class ApplicationRunner {
 
         serializer = gsonBuilder.create();
     }
+    
+    private ApplicationRunner(){}
+    
+    public static ApplicationRunner getInstance(){
+        if(instance==null){
+            instance = new ApplicationRunner();
+        }
+        return instance;
+    }
 
     public void initKripkeModel(String kripkeStructureFileName) throws IOException {
             Path importPath = Paths.get(kripkeStructureFileName);
             String data = new String(Files.readAllBytes(importPath));
             kripkeStructure = serializer.fromJson(data, BasicStructure.class);
+            buchiAutomatonForSystem = AutomataUtils.INSTANCE.convert(kripkeStructure);
     }
 
     public boolean verify(String ltlFormula, Set<String> counterexamples) {
-        buchiAutomatonForSystem = AutomataUtils.INSTANCE.convert(kripkeStructure);
-
-        LtlFormula specification = LtlParser.parseString(ltlFormula);
+        specification = LtlParser.parseString(ltlFormula);
         MullerAutomaton<?> ma = LtlUtils.INSTANCE.convertToAutomata(specification.invert().normalized());
         buchiAutomatonForSpecification = AutomataUtils.INSTANCE.convert(ma);
 
@@ -74,6 +84,8 @@ public class ApplicationRunner {
         return  buchiAutomatonForSpecification;
     }
 
-
+    public boolean checkAllSymbols(Set<String> symbolsSet){
+        return Math.pow(2, specification.getPropositions(null).size()) == symbolsSet.size();
+    }
     
 }
