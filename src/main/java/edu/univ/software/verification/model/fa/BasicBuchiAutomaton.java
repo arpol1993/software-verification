@@ -10,6 +10,7 @@ import edu.univ.software.verification.model.BuchiAutomaton;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -47,10 +48,37 @@ public class BasicBuchiAutomaton<T> extends AbstractAutomaton<T> implements Buch
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="hashCode + equals + toString">
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        
+        hash = 37 * hash + super.hashCode();
+        hash = 37 * hash + Objects.hashCode(this.finalStates);
+        
+        return hash;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        
+        if (!(o instanceof BasicBuchiAutomaton) || !super.equals(o)) {
+            return false;
+        }
+        
+        final BasicBuchiAutomaton<?> other = (BasicBuchiAutomaton<?>) o;
+        
+        return Objects.equals(this.finalStates, other.finalStates);
+    }
+    
     @Override
     public String toString() {
         return "BasicBuchiAutomaton{" + "states=" + states + ", transitions=" + transitions + ", finalStates=" + finalStates + '}';
     }
+    //</editor-fold>
     
     public static class BasicBuilder<T> extends AbstractAutomaton.AbstractBuilder<T, BasicBuilder<T>> implements BuchiAutomaton.Builder<T> {
 

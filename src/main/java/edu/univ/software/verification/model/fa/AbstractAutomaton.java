@@ -14,6 +14,7 @@ import edu.univ.software.verification.model.AutomatonState;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -119,6 +120,34 @@ public abstract class AbstractAutomaton<T> implements Automaton<T> {
     public boolean hasTransition(String from, String to) {
         return getTransitionSymbols(from, to) != null;
     }
+
+    //<editor-fold defaultstate="collapsed" desc="hashCode + equals">
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        
+        hash = 59 * hash + Objects.hashCode(this.states);
+        hash = 59 * hash + Objects.hashCode(this.transitions);
+        
+        return hash;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        
+        if (!(o instanceof AbstractAutomaton)) {
+            return false;
+        }
+        
+        final AbstractAutomaton<?> other = (AbstractAutomaton<?>) o;
+        
+        return  Objects.equals(this.states, other.states) &&
+                Objects.equals(this.transitions, other.transitions);
+    }
+    //</editor-fold>
     
     protected static abstract class AbstractBuilder<T, S extends Automaton.Builder<T>> {
         protected static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);

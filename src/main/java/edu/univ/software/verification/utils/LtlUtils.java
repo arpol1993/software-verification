@@ -110,10 +110,7 @@ public enum LtlUtils {
 
     private void processFormula(LtlFormula formula, GraphNode node, Set<GraphNode> nodes, AtomicInteger idGen) {
         if (formula instanceof Atom || isInvertedPredicateSymbol(formula)) {
-            if (isAtom(formula, ImmutableSet.of(Atom.AtomType._0)) || node.getOldFormulas().contains(formula.invert().normalized())) {
-                // discard current node
-                nodes.remove(node);
-            } else {
+            if (!isAtom(formula, ImmutableSet.of(Atom.AtomType._0)) && !node.getOldFormulas().contains(formula.invert().normalized())) {
                 // mark this formula processed
                 node.builder().addOldFormula(formula).update();
 
@@ -415,7 +412,7 @@ class GraphNode {
 
     @Override
     public String toString() {
-        return "GraphNode{" + "id=" + id + ", newFormulas=" + newFormulas + ", oldFormulas=" + oldFormulas + ", nextFormulas=" + nextFormulas + '}';
+        return "GraphNode{" + "id=" + id + ", newFormulas=" + newFormulas + ", oldFormulas=" + oldFormulas + ", nextFormulas=" + nextFormulas + ", incoming=" + incoming + '}';
     }
     //</editor-fold>
 

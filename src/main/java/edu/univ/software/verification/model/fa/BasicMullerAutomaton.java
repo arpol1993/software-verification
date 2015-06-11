@@ -11,6 +11,7 @@ import edu.univ.software.verification.model.MullerAutomaton;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -48,10 +49,37 @@ public class BasicMullerAutomaton<T> extends AbstractAutomaton<T> implements Mul
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="hashCode + equals + toString">
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        
+        hash = 59 * hash + super.hashCode();
+        hash = 59 * hash + Objects.hashCode(this.finalStateSets);
+        
+        return hash;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        
+        if (!(o instanceof BasicMullerAutomaton) || !super.equals(o)) {
+            return false;
+        }
+        
+        final BasicMullerAutomaton<?> other = (BasicMullerAutomaton<?>) o;
+        
+        return Objects.equals(this.finalStateSets, other.finalStateSets);
+    }
+    
     @Override
     public String toString() {
         return "BasicMullerAutomaton{" + "states=" + states + ", transitions=" + transitions + ", finalStateSets=" + finalStateSets + '}';
     }
+    //</editor-fold>
     
     public static class BasicBuilder<T> extends AbstractAutomaton.AbstractBuilder<T, BasicBuilder<T>> implements MullerAutomaton.Builder<T> {
 
