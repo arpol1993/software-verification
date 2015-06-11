@@ -17,39 +17,39 @@ import java.util.Set;
  * @param <T> transition symbol type
  */
 public class DirectProduct<T> {
-
+    
     private static class CurrentProductState {
-
+        
         private String astate;
         private String bstate;
         private Integer iter;
-
+        
         public CurrentProductState(String astate, String bstate, Integer iter) {
             this.astate = astate;
             this.bstate = bstate;
             this.iter = iter;
         }
-
+        
         public String getAState() {
             return astate;
         }
-
+        
         public void setAState(String v1) {
             this.astate = v1;
         }
-
+        
         public String getBState() {
             return bstate;
         }
-
+        
         public void setBState(String v2) {
             this.bstate = v2;
         }
-
+        
         public Integer getIteration() {
             return iter;
         }
-
+        
         public void setIteration(Integer iter) {
             this.iter = iter;
         }
@@ -60,35 +60,35 @@ public class DirectProduct<T> {
      * exiting chart betweens states
      */
     private final HashMap<String, HashMap<String, Set<T>>> createdTransitions;
-    
+
     /**
      * using to not add exiting vertex into automaton and get jung once all
      * outgoing transitins
      */
     private final ArrayList<String> createdStates;
-    
+
     /**
      * using to not add exiting vertex into automaton
      */
     private final ArrayList<String> allFinal;
-    
+
     /**
      * using to temprorary save all initian states in result automaton and later
      * to transform it into simple state and dublicate transitins from (0,0,0)
      * to out states from this initial state
      */
     private final ArrayList<String> allInitial;
-
+    
     private final ArrayList<CurrentProductState> stack;
-
+    
     private final BuchiAutomaton.Builder<T> resultBuilder;
-
+    
     private final BuchiAutomaton<T> A, B;
-
+    
     private BuchiAutomaton<T> prod;
-
+    
     private boolean isComputed;
-
+    
     public DirectProduct(BuchiAutomaton<T> A, BuchiAutomaton<T> B) {
         this.A = A;
         this.B = B;
@@ -100,12 +100,12 @@ public class DirectProduct<T> {
         allFinal = new ArrayList<>();
         createdStates = new ArrayList<>();
         createdTransitions = new HashMap<>();
-
+        
         isComputed = false;
     }
-
+    
     public BuchiAutomaton<T> product() throws IllegalArgumentException {
-
+        
         if (isComputed) {
             return prod;
         }
@@ -126,7 +126,7 @@ public class DirectProduct<T> {
                     createdStates.add(to);
                 }
             });
-
+            
             while (stack.size() > 0) {
                 CurrentProductState current = stack.remove(0);
                 Map<String, Set<T>> toA = A.getTransitionsFrom(current.getAState());
@@ -151,17 +151,19 @@ public class DirectProduct<T> {
             String superInit = "init";
             resultBuilder.withState(superInit, true);
             for (String current : allInitial) {
-                for (String vertexTo : createdTransitions.get(current).keySet()) {
-                    resultBuilder.withTransition(superInit, vertexTo, createdTransitions.get(current).get(vertexTo));
+                if (createdTransitions.containsKey(current)) {
+                    for (String vertexTo : createdTransitions.get(current).keySet()) {
+                        resultBuilder.withTransition(superInit, vertexTo, createdTransitions.get(current).get(vertexTo));
+                    }
                 }
             }
         } else {
             return BasicBuchiAutomaton.<T>builder().build();
         }
-
+        
         prod = resultBuilder.build();
         isComputed = true;
-
+        
         return prod;
     }
 
@@ -189,7 +191,7 @@ public class DirectProduct<T> {
         } else if (current.getIteration() == 1 && B.getFinalStates().contains(fromB)) {
             iter = 2;
         }
-
+        
         String to = String.format("(%s,%s,%d)", fromA, fromB, iter);
         String from = String.format("(%s,%s,%d)", current.getAState(), current.getBState(), current.getIteration());
 
@@ -206,7 +208,7 @@ public class DirectProduct<T> {
             resultBuilder.withState(to, false);
             createdStates.add(to);
         }
-
+        
         if (!createdTransitions.containsKey(from)) {
             HashMap<String, Set<T>> newTransition = new HashMap<>();
             Set<T> symbols = new HashSet<>();
@@ -218,10 +220,10 @@ public class DirectProduct<T> {
             Set<T> symbols = new HashSet<>();
             symbols.add(symbolA);
             createdTransitions.get(from).put(to, symbols);
-            resultBuilder.withTransition(from, to, symbols);
+            resultBuilder.withTransition(from, to, symbolA);
         } else if (!createdTransitions.get(from).get(to).contains(symbolA)) {
             createdTransitions.get(from).get(to).add(symbolA);
-            resultBuilder.withTransition(from, to, createdTransitions.get(from).get(to));
+            resultBuilder.withTransition(from, to, symbolA);
         }
 
         /**

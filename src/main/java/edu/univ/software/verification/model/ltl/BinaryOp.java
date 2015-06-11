@@ -38,6 +38,7 @@ public class BinaryOp implements LtlFormula {
     }
 
     public static enum OpType {
+
         OR, // logical or
         AND, // logical and
         IMPL,
@@ -92,10 +93,10 @@ public class BinaryOp implements LtlFormula {
             case OR:
                 return build(OpType.AND, opLeft.invert(), opRight.invert());
             case IMPL:
-                return build(OpType.AND, opLeft.clone(), opRight.invert());
+                return build(OpType.AND, opLeft, opRight.invert());
+            default:
+                throw new AssertionError(opType);
         }
-
-        return this.clone();
     }
 
     @Override

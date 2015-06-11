@@ -59,7 +59,7 @@ public class UnaryOp implements LtlFormula {
             case X:
                 return build(OpType.X, operand.invert());
             case NEG:
-                return operand.clone();
+                return operand;
         }
 
         return this.clone();

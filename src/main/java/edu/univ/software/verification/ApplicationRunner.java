@@ -62,7 +62,7 @@ public class ApplicationRunner {
         buchiAutomatonForSystem = AutomataUtils.INSTANCE.convert(kripkeStructure);
 
         LtlFormula specification = LtlParser.parseString(ltlFormula);
-        MullerAutomaton<?> ma = LtlUtils.INSTANCE.convertToAutomata(specification);
+        MullerAutomaton<?> ma = LtlUtils.INSTANCE.convertToAutomata(specification.invert().normalized());
         buchiAutomatonForSpecification = AutomataUtils.INSTANCE.convert(ma);
 
         BuchiAutomaton<?> productResult = AutomataUtils.INSTANCE.product(buchiAutomatonForSystem,
