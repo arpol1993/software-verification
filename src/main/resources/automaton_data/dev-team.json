@@ -1,0 +1,68 @@
+{
+  "states": [
+    {
+      "name": "S1",
+      "initial": true,
+      "atoms": []
+    },
+    {
+      "name": "S2",
+      "initial": false,
+      "atoms": [
+        "feature"
+      ]
+    },
+    {
+      "name": "S3",
+      "initial": false,
+      "atoms": [
+        "test"
+      ]
+    },
+    {
+      "name": "S4",
+      "initial": false,
+      "atoms": []
+    },
+    {
+      "name": "S5",
+      "initial": false,
+      "atoms": [
+        "bug",
+		"test"
+      ]
+    }      
+  ],
+  "transitions": [
+    {
+      "source": "S1",
+      "destinations": [
+        "S2"
+      ]
+    },
+    {
+      "source": "S2",
+      "destinations": [
+        "S3"
+      ]
+    },
+    {
+      "source": "S3",
+      "destinations": [
+        "S4", "S5"
+      ]
+    },
+    {
+      "source": "S4",
+      "destinations": [
+        "S2", "S4", "S5"
+      ]
+    },
+    {
+      "source": "S5",
+      "destinations": [
+        "S3"
+      ]
+    }
+  ]
+}

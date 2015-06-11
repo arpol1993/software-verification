@@ -1,0 +1,45 @@
+{
+  "states": [
+    {
+      "name": "S1",
+      "initial": true,
+      "atoms": [
+		"first"
+	  ]
+    },
+    {
+      "name": "S2",
+      "initial": false,
+      "atoms": [
+        "move"
+      ]
+    },
+    {
+      "name": "S3",
+      "initial": false,
+      "atoms": [
+        "second"
+      ]
+    }    
+  ],
+  "transitions": [
+    {
+      "source": "S1",
+      "destinations": [
+        "S2"
+      ]
+    },
+    {
+      "source": "S2",
+      "destinations": [
+        "S1", "S3"
+      ]
+    },
+    {
+      "source": "S3",
+      "destinations": [
+        "S2"
+      ]
+    }
+  ]
+}
