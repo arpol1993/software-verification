@@ -122,27 +122,4 @@ public class BasicStructure implements KripkeStructure {
             return new BasicStructure(states, transitions);
         }
     }
-
-//    class BasicStructureSerializer implements JsonSerializer<BasicStructure>, JsonDeserializer<BasicStructure>
-//    {
-//
-//        @Override
-//        public BasicStructure deserialize( JsonElement jsonElement, Type type,
-//                                           JsonDeserializationContext jsonDeserializationContext ) throws JsonParseException
-//        {
-//            return null;
-//        }
-//
-//        @Override
-//        public JsonElement serialize( BasicStructure basicStructure, Type type,
-//                                      JsonSerializationContext jsonSerializationContext )
-//        {
-//            List<JsonObject> states = new ArrayList<>(  );
-//            List<JsonObject> transitions = new ArrayList<>(  );
-//
-//            JsonObject jsonStructure = new JsonObject();
-//            jsonStructure.addProperty( "states",  );
-//            return null;
-//        }
-//    }
 }

@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.univ.software.verification;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.KripkeStructure;
 import edu.univ.software.verification.model.LtlFormula;
@@ -32,6 +28,7 @@ import java.util.Set;
  * @author Admin
  */
 public class ApplicationRunner {
+
     private static final Gson serializer;
     private static ApplicationRunner instance;
 
@@ -49,21 +46,22 @@ public class ApplicationRunner {
 
         serializer = gsonBuilder.create();
     }
-    
-    private ApplicationRunner(){}
-    
-    public static ApplicationRunner getInstance(){
-        if(instance==null){
+
+    private ApplicationRunner() {}
+
+    public static ApplicationRunner getInstance() {
+        if (instance == null) {
             instance = new ApplicationRunner();
         }
+        
         return instance;
     }
 
     public void initKripkeModel(String kripkeStructureFileName) throws IOException {
-            Path importPath = Paths.get(kripkeStructureFileName);
-            String data = new String(Files.readAllBytes(importPath));
-            kripkeStructure = serializer.fromJson(data, BasicStructure.class);
-            buchiAutomatonForSystem = AutomataUtils.INSTANCE.convert(kripkeStructure);
+        Path importPath = Paths.get(kripkeStructureFileName);
+        String data = new String(Files.readAllBytes(importPath));
+        kripkeStructure = serializer.fromJson(data, BasicStructure.class);
+        buchiAutomatonForSystem = AutomataUtils.INSTANCE.convert(kripkeStructure);
     }
 
     public boolean verify(String ltlFormula, Set<String> counterexamples) {
@@ -76,16 +74,15 @@ public class ApplicationRunner {
         return AutomataUtils.INSTANCE.emptinessCheck(productResult, counterexamples);
     }
 
-    public BuchiAutomaton getKripkeAutomaton(){
+    public BuchiAutomaton getKripkeAutomaton() {
         return buchiAutomatonForSystem;
     }
 
     public BuchiAutomaton getLastLTLAutomaton() {
-        return  buchiAutomatonForSpecification;
+        return buchiAutomatonForSpecification;
     }
 
-    public boolean checkAllSymbols(Set<String> symbolsSet){
+    public boolean checkAllSymbols(Set<String> symbolsSet) {
         return Math.pow(2, specification.getPropositions(null).size()) == symbolsSet.size();
     }
-    
 }

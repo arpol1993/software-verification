@@ -136,8 +136,5 @@ public class UnaryOp implements LtlFormula {
                 throw new AssertionError(opType.name());
 
         }
-
-        //return "LtlUnaryOp{" + "opType=" + opType + ", operand=" + operand.toString() + '}';
     }
-
 }

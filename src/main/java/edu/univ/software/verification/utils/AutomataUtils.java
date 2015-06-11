@@ -2,8 +2,8 @@ package edu.univ.software.verification.utils;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import edu.univ.software.verification.model.AutomatonState;
 
+import edu.univ.software.verification.model.AutomatonState;
 import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.KripkeState;
 import edu.univ.software.verification.model.KripkeStructure;
