@@ -201,6 +201,8 @@ public enum AutomataUtils {
                     builder.withTransition(stateFrom.getLabel(), stateTo.getLabel(), stateTo.getAtoms());
                 }
             }
+            
+            builder.withTransition(stateFrom.getLabel(), stateFrom.getLabel(), stateFrom.getAtoms());
         }
 
         return builder.build();

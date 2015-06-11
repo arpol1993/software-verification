@@ -218,10 +218,10 @@ public class DirectProduct<T> {
             Set<T> symbols = new HashSet<>();
             symbols.add(symbolA);
             createdTransitions.get(from).put(to, symbols);
-            resultBuilder.withTransition(from, to, symbols);
+            resultBuilder.withTransition(from, to, symbolA);
         } else if (!createdTransitions.get(from).get(to).contains(symbolA)) {
             createdTransitions.get(from).get(to).add(symbolA);
-            resultBuilder.withTransition(from, to, createdTransitions.get(from).get(to));
+            resultBuilder.withTransition(from, to, symbolA);
         }
 
         /**
