@@ -181,7 +181,5 @@ public class BinaryOp implements LtlFormula {
                 throw new AssertionError(opType.name());
 
         }
-        //return "LtlBinaryOp{" + "opType=" + opType + ", opLeft=" + opLeft.toString() + ", opRight=" + opRight.toString() + '}';
     }
-
 }

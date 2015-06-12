@@ -110,10 +110,7 @@ public enum LtlUtils {
 
     private void processFormula(LtlFormula formula, GraphNode node, Set<GraphNode> nodes, AtomicInteger idGen) {
         if (formula instanceof Atom || isInvertedPredicateSymbol(formula)) {
-            if (isAtom(formula, ImmutableSet.of(Atom.AtomType._0)) || node.getOldFormulas().contains(formula.invert().normalized())) {
-                // discard current node
-                nodes.remove(node);
-            } else {
+            if (!isAtom(formula, ImmutableSet.of(Atom.AtomType._0)) && !node.getOldFormulas().contains(formula.invert().normalized())) {
                 // mark this formula processed
                 node.builder().addOldFormula(formula).update();
 
@@ -179,7 +176,7 @@ public enum LtlUtils {
         // set of atomic propositions for given LTL formula
         Set<String> atomicPs = formula.getPropositions(null);
 
-        //transitions definition
+        // transitions definition
         for (GraphNode current : nodes) {
             Set<String> positivePs = getPositivePropositions(current);
             Set<String> negativePs = getNegativePropositions(current);
@@ -200,16 +197,27 @@ public enum LtlUtils {
             }
         }
 
-        //final states
-        nodes.stream().flatMap(n -> n.getOldFormulas().stream()).distinct().filter(f -> isBinaryOp(f, ImmutableSet.of(BinaryOp.OpType.U, BinaryOp.OpType.R))).map(f -> (BinaryOp) f).forEach((BinaryOp f) -> {
-            Set<String> finalStateSet = nodes.stream().filter((GraphNode n) -> {
-                return !n.getOldFormulas().contains(f) || n.getOldFormulas().contains(f.getOpRight());
-            }).map(GraphNode::getId).collect(Collectors.toSet());
+        // check subformulas for Until operator presence
+        Set<BinaryOp> untilFs = nodes.stream().flatMap(n -> n.getOldFormulas().stream()).distinct().filter(f -> isBinaryOp(f, ImmutableSet.of(BinaryOp.OpType.U))).map(f -> (BinaryOp) f).collect(Collectors.toSet());
+
+        // final states initialization
+        if (untilFs.isEmpty()) {
+            Set<String> finalStateSet = nodes.stream().map(GraphNode::getId).collect(Collectors.toSet());
 
             if (!finalStateSet.isEmpty()) {
                 automatonBuilder.withFinalStateSet(finalStateSet);
             }
-        });
+        } else {
+            untilFs.forEach((BinaryOp f) -> {
+                Set<String> finalStateSet = nodes.stream().filter((GraphNode n) -> {
+                    return !n.getOldFormulas().contains(f) || n.getOldFormulas().contains(f.getOpRight());
+                }).map(GraphNode::getId).collect(Collectors.toSet());
+
+                if (!finalStateSet.isEmpty()) {
+                    automatonBuilder.withFinalStateSet(finalStateSet);
+                }
+            });
+        }
 
         return automatonBuilder.build();
     }
@@ -263,11 +271,11 @@ public enum LtlUtils {
                 throw new IllegalArgumentException(String.format("Unsupported formula '%s' supplied to New1", formula));
         }
     }
-    
+
     private Set<String> getPositivePropositions(GraphNode node) {
         return node.getOldFormulas().stream().filter(f -> isAtom(f, ImmutableSet.of(Atom.AtomType.VAR))).map(f -> ((Atom) f).getName()).collect(Collectors.toSet());
     }
-    
+
     private Set<String> getNegativePropositions(GraphNode node) {
         return node.getOldFormulas().stream().filter(this::isInvertedPredicateSymbol).map(f -> ((Atom) ((UnaryOp) f).getOperand()).getName()).collect(Collectors.toSet());
     }
@@ -415,7 +423,7 @@ class GraphNode {
 
     @Override
     public String toString() {
-        return "GraphNode{" + "id=" + id + ", newFormulas=" + newFormulas + ", oldFormulas=" + oldFormulas + ", nextFormulas=" + nextFormulas + '}';
+        return "GraphNode{" + "id=" + id + ", newFormulas=" + newFormulas + ", oldFormulas=" + oldFormulas + ", nextFormulas=" + nextFormulas + ", incoming=" + incoming + '}';
     }
     //</editor-fold>
 
@@ -433,7 +441,7 @@ class GraphNode {
 
         public Builder addIncoming(String node) {
             if (!incoming.add(node)) {
-                logger.warn("Attempt to add duplicate incoming edge from '{}' to '{}'", node, this.id);
+                logger.debug("Attempt to add duplicate incoming edge from '{}' to '{}'", node, this.id);
             }
 
             return this;
@@ -511,7 +519,7 @@ class GraphNode {
 
         protected Builder addFormula(Set<LtlFormula> container, LtlFormula formula) {
             if (!container.add(formula)) {
-                logger.warn("Attempt to add duplicate formula '{}'", formula);
+                logger.debug("Attempt to add duplicate formula '{}'", formula);
             }
 
             return this;
@@ -525,7 +533,7 @@ class GraphNode {
 
         protected Builder removeFormula(Set<LtlFormula> container, LtlFormula formula) {
             if (!container.remove(formula)) {
-                logger.warn("Attempt to remove missing formula '{}'", formula);
+                logger.debug("Attempt to remove missing formula '{}'", formula);
             }
 
             return this;

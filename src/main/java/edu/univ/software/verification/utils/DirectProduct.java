@@ -150,13 +150,11 @@ public class DirectProduct<T> {
              */
             String superInit = "init";
             resultBuilder.withState(superInit, true);
-            for (String current : allInitial) {
-                if (createdTransitions.containsKey(current)) {
-                    for (String vertexTo : createdTransitions.get(current).keySet()) {
-                        resultBuilder.withTransition(superInit, vertexTo, createdTransitions.get(current).get(vertexTo));
-                    }
-                }
-            }
+            allInitial.stream().filter((current) -> (createdTransitions.containsKey(current))).forEach((current) -> {
+                createdTransitions.get(current).keySet().stream().forEach((vertexTo) -> {
+                    resultBuilder.withTransition(superInit, vertexTo, createdTransitions.get(current).get(vertexTo));
+                });
+            });
         } else {
             return BasicBuchiAutomaton.<T>builder().build();
         }

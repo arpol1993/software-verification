@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package edu.univ.software.verification;
+package edu.univ.software.verification.manager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.KripkeStructure;
 import edu.univ.software.verification.model.LtlFormula;
@@ -25,18 +21,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
- * @author Admin
+ * Created by Daryna_Ragimova on 6/12/2015.
  */
 public class ApplicationRunner {
-    private static final Gson serializer;
 
-    private KripkeStructure kripkeStructure;
-    private BuchiAutomaton buchiAutomatonForSpecification;
-    private BuchiAutomaton buchiAutomatonForSystem;
+    private static final Gson serializer;
 
     static {
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -48,7 +41,32 @@ public class ApplicationRunner {
         serializer = gsonBuilder.create();
     }
 
-    public void initKripkeModel(String kripkeStructureFileName) {
+    public static VerificationResult verify(String kripkeStructureFileName, String ltlFormula) {
+        KripkeStructure kripkeStructure = getKripkeStructureFromFile(kripkeStructureFileName);
+        BuchiAutomaton<Set<Atom>> buchiAutomatonForSystem = AutomataUtils.INSTANCE.convert(kripkeStructure);
+        LtlFormula specification = LtlParser.parseString(ltlFormula);
+        MullerAutomaton<Set<Atom>> ma = LtlUtils.INSTANCE.convertToAutomata(specification.invert().normalized());
+        BuchiAutomaton<Set<Atom>> buchiAutomatonForSpecification = AutomataUtils.INSTANCE.convert(ma);
+
+        BuchiAutomaton<Set<Atom>> productResult = AutomataUtils.INSTANCE.product(buchiAutomatonForSystem,
+                buchiAutomatonForSpecification);
+        Set<String> counterexamples = new HashSet<>();
+        boolean result = AutomataUtils.INSTANCE.emptinessCheck(productResult, counterexamples);
+
+        VerificationResultBuilder builder = new VerificationResultBuilder();
+        builder.withKripkeStructure(kripkeStructure);
+        builder.withBuchiAutomatonForSystem(buchiAutomatonForSystem);
+        builder.withSpecification(specification);
+        builder.withMullerAutomatonForSpecification(ma);
+        builder.withBuchiAutomatonForSpecification(buchiAutomatonForSpecification);
+        builder.withProductResult(productResult);
+        builder.withAnswer(result);
+        builder.withCounterExamples(counterexamples);
+        return builder.build();
+    }
+
+    private static KripkeStructure getKripkeStructureFromFile(String kripkeStructureFileName) {
+        KripkeStructure kripkeStructure;
         try {
             Path importPath = Paths.get(kripkeStructureFileName);
             String data = new String(Files.readAllBytes(importPath));
@@ -56,28 +74,7 @@ public class ApplicationRunner {
         } catch (IOException e) {
             throw new RuntimeException("Failed to import automaton data from file", e);
         }
+        return kripkeStructure;
     }
 
-    public boolean verify(String ltlFormula, Set<String> counterexamples) {
-        buchiAutomatonForSystem = AutomataUtils.INSTANCE.convert(kripkeStructure);
-
-        LtlFormula specification = LtlParser.parseString(ltlFormula);
-        MullerAutomaton<?> ma = LtlUtils.INSTANCE.convertToAutomata(specification.invert().normalized());
-        buchiAutomatonForSpecification = AutomataUtils.INSTANCE.convert(ma);
-
-        BuchiAutomaton<?> productResult = AutomataUtils.INSTANCE.product(buchiAutomatonForSystem,
-                buchiAutomatonForSpecification);
-        return AutomataUtils.INSTANCE.emptinessCheck(productResult, counterexamples);
-    }
-
-    public BuchiAutomaton getKripkeAutomaton(){
-        return buchiAutomatonForSystem;
-    }
-
-    public BuchiAutomaton getLastLTLAutomaton() {
-        return  buchiAutomatonForSpecification;
-    }
-
-
-    
 }
