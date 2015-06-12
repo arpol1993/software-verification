@@ -441,7 +441,7 @@ class GraphNode {
 
         public Builder addIncoming(String node) {
             if (!incoming.add(node)) {
-                logger.warn("Attempt to add duplicate incoming edge from '{}' to '{}'", node, this.id);
+                logger.debug("Attempt to add duplicate incoming edge from '{}' to '{}'", node, this.id);
             }
 
             return this;
@@ -519,7 +519,7 @@ class GraphNode {
 
         protected Builder addFormula(Set<LtlFormula> container, LtlFormula formula) {
             if (!container.add(formula)) {
-                logger.warn("Attempt to add duplicate formula '{}'", formula);
+                logger.debug("Attempt to add duplicate formula '{}'", formula);
             }
 
             return this;
@@ -533,7 +533,7 @@ class GraphNode {
 
         protected Builder removeFormula(Set<LtlFormula> container, LtlFormula formula) {
             if (!container.remove(formula)) {
-                logger.warn("Attempt to remove missing formula '{}'", formula);
+                logger.debug("Attempt to remove missing formula '{}'", formula);
             }
 
             return this;

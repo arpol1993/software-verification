@@ -21,10 +21,22 @@ public class LtlUtilsTest {
 
     @Test
     public void testComplexFormula() {
-        MullerAutomaton<Set<Atom>> ma = convertToAutomata("!(G (p -> X F q) && F p)");
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("!(G (p -> X F q) && F p)");
 
-        Assert.assertTrue("Invalid final state set", ma.getFinalStateSets().contains(
-                ImmutableSet.of("12", "23", "4", "20", "10")) && ma.getFinalStateSets().size() == 1);
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withStates(false, "12", "23", "3")
+                .withTransition("init", "12", ImmutableSet.of(symbol("p"), symbol("p", "q")))
+                .withTransition("init", "23", ImmutableSet.of(symbol(), symbol("q")))
+                .withTransition("init", "3", ImmutableSet.of(symbol(), symbol("p"), symbol("q"), symbol("p", "q")))
+                .withTransition("12", "12", ImmutableSet.of(symbol(), symbol("p")))
+                .withTransition("23", "23", ImmutableSet.of(symbol(), symbol("q")))
+                .withTransition("3", "3", ImmutableSet.of(symbol(), symbol("p"), symbol("q"), symbol("p", "q")))
+                .withTransition("3", "12", ImmutableSet.of(symbol("p"), symbol("p", "q")))
+                .withFinalStateSet("12", "23")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
     }
 
     @Test
@@ -48,14 +60,13 @@ public class LtlUtilsTest {
 
         MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
                 .withState("init", true)
-                .withStates(false, "1", "5", "6")
+                .withStates(false, "1", "5")
                 .withTransition("init", "1", ImmutableSet.of(symbol("a"), symbol("a", "b")))
                 .withTransition("init", "5", ImmutableSet.of(symbol("b"), symbol("a", "b")))
                 .withTransition("1", "1", ImmutableSet.of(symbol("a"), symbol("a", "b")))
                 .withTransition("1", "5", ImmutableSet.of(symbol("b"), symbol("a", "b")))
-                .withTransition("5", "6", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
-                .withTransition("6", "6", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
-                .withFinalStateSet("5", "6")
+                .withTransition("5", "5", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
+                .withFinalStateSet("5")
                 .build();
 
         Assert.assertEquals("Expected and actual automata are different", expected, actual);
@@ -81,11 +92,10 @@ public class LtlUtilsTest {
 
         MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
                 .withState("init", true)
-                .withStates(false, "2", "3")
+                .withState("2")
                 .withTransition("init", "2", symbol("a"))
-                .withTransition("2", "3", ImmutableSet.of(symbol(), symbol("a")))
-                .withTransition("3", "3", ImmutableSet.of(symbol(), symbol("a")))
-                .withFinalStateSet("2", "3")
+                .withTransition("2", "2", ImmutableSet.of(symbol(), symbol("a")))
+                .withFinalStateSet("2")
                 .build();
 
         Assert.assertEquals("Expected and actual automata are different", expected, actual);
@@ -108,14 +118,13 @@ public class LtlUtilsTest {
 
         MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
                 .withState("init", true)
-                .withStates(false, "1", "5", "6")
+                .withStates(false, "1", "5")
                 .withTransition("init", "1", ImmutableSet.of(symbol("b"), symbol("a", "b")))
                 .withTransition("init", "5", ImmutableSet.of(symbol("a", "b")))
                 .withTransition("1", "1", ImmutableSet.of(symbol("b"), symbol("a", "b")))
                 .withTransition("1", "5", ImmutableSet.of(symbol("a", "b")))
-                .withTransition("5", "6", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
-                .withTransition("6", "6", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
-                .withFinalStateSet("1", "5", "6")
+                .withTransition("5", "5", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
+                .withFinalStateSet("1", "5")
                 .build();
 
         Assert.assertEquals("Expected and actual automata are different", expected, actual);
@@ -153,12 +162,11 @@ public class LtlUtilsTest {
 
         MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
                 .withState("init", true)
-                .withStates(false, "0", "1", "2")
+                .withStates(false, "0", "1")
                 .withTransition("init", "0", ImmutableSet.of(symbol(), symbol("a")))
                 .withTransition("0", "1", symbol("a"))
-                .withTransition("1", "2", ImmutableSet.of(symbol(), symbol("a")))
-                .withTransition("2", "2", ImmutableSet.of(symbol(), symbol("a")))
-                .withFinalStateSet("0", "1", "2")
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withFinalStateSet("0", "1")
                 .build();
 
         Assert.assertEquals("Expected and actual automata are different", expected, actual);
@@ -184,14 +192,13 @@ public class LtlUtilsTest {
 
         MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
                 .withState("init", true)
-                .withStates(false, "1", "5", "6")
+                .withStates(false, "1", "5")
                 .withTransition("init", "1", ImmutableSet.of(symbol(), symbol("a")))
                 .withTransition("init", "5", symbol("a"))
                 .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a")))
                 .withTransition("1", "5", symbol("a"))
-                .withTransition("5", "6", ImmutableSet.of(symbol(), symbol("a")))
-                .withTransition("6", "6", ImmutableSet.of(symbol(), symbol("a")))
-                .withFinalStateSet("5", "6")
+                .withTransition("5", "5", ImmutableSet.of(symbol(), symbol("a")))
+                .withFinalStateSet("5")
                 .build();
 
         Assert.assertEquals("Expected and actual automata are different", expected, actual);
@@ -203,14 +210,13 @@ public class LtlUtilsTest {
 
         MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
                 .withState("init", true)
-                .withStates(false, "1", "5", "6")
+                .withStates(false, "1", "5")
                 .withTransition("init", "1", symbol())
                 .withTransition("init", "5", symbol())
                 .withTransition("1", "1", symbol())
                 .withTransition("1", "5", symbol())
-                .withTransition("5", "6", symbol())
-                .withTransition("6", "6", symbol())
-                .withFinalStateSet("1", "5", "6")
+                .withTransition("5", "5", symbol())
+                .withFinalStateSet("1", "5")
                 .build();
 
         Assert.assertEquals("Expected and actual automata are different", expected, actual);
@@ -236,14 +242,10 @@ public class LtlUtilsTest {
 
         MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
                 .withState("init", true)
-                .withStates(false, "3", "9")
-                .withTransition("init", "3", ImmutableSet.of(symbol("a"), symbol("a", "b")))
-                .withTransition("init", "9", ImmutableSet.of(symbol("b"), symbol("a", "b")))
-                .withTransition("3", "3", ImmutableSet.of(symbol("a"), symbol("a", "b")))
-                .withTransition("3", "9", ImmutableSet.of(symbol("b"), symbol("a", "b")))
-                .withTransition("9", "9", ImmutableSet.of(symbol("b"), symbol("a", "b")))
-                .withTransition("9", "3", ImmutableSet.of(symbol("a"), symbol("a", "b")))
-                .withFinalStateSet("3", "9")
+                .withState("3")
+                .withTransition("init", "3", ImmutableSet.of(symbol("a"), symbol("b"), symbol("a", "b")))
+                .withTransition("3", "3", ImmutableSet.of(symbol("a"), symbol("b"), symbol("a", "b")))
+                .withFinalStateSet("3")
                 .build();
 
         Assert.assertEquals("Expected and actual automata are different", expected, actual);
@@ -296,14 +298,10 @@ public class LtlUtilsTest {
 
         MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
                 .withState("init", true)
-                .withStates("3", "9")
-                .withTransition("init", "3", ImmutableSet.of(symbol(), symbol("b")))
-                .withTransition("init", "9", ImmutableSet.of(symbol("b"), symbol("a", "b")))
-                .withTransition("3", "3", ImmutableSet.of(symbol(), symbol("b")))
-                .withTransition("3", "9", ImmutableSet.of(symbol("b"), symbol("a", "b")))
-                .withTransition("9", "9", ImmutableSet.of(symbol("b"), symbol("a", "b")))
-                .withTransition("9", "3", ImmutableSet.of(symbol(), symbol("b")))
-                .withFinalStateSet("3", "9")
+                .withState("3")
+                .withTransition("init", "3", ImmutableSet.of(symbol(), symbol("b"), symbol("a", "b")))
+                .withTransition("3", "3", ImmutableSet.of(symbol(), symbol("b"), symbol("a", "b")))
+                .withFinalStateSet("3")
                 .build();
 
         Assert.assertEquals("Expected and actual automata are different", expected, actual);

@@ -30,7 +30,7 @@ public enum AutomataUtils {
 
     INSTANCE;
 
-    private static final Logger logger = LoggerFactory.getLogger(LtlUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(AutomataUtils.class);
 
     private static class Circuit {
 
@@ -281,7 +281,8 @@ public enum AutomataUtils {
         printRoutePart(accpeting, counter, buchi);
         String rt = counter.append(")").toString();
 
-        logger.info(rt);
+        logger.debug(rt);
+        
         return rt;
     }
 
