@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import edu.univ.software.verification.manager.ApplicationRunner;
 import edu.univ.software.verification.model.BuchiAutomaton;
 import edu.univ.software.verification.model.KripkeStructure;
 import edu.univ.software.verification.model.MullerAutomaton;
@@ -34,7 +35,6 @@ public class Application {
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private static final Gson serializer;
-    private static final ApplicationRunner applicationRunner = ApplicationRunner.getInstance();
 
     static {
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -297,14 +297,6 @@ public class Application {
         logger.info("---------------------------");
     }
 
-//    private static void applicationRunnerDemo() {
-//        logger.info("---------------------------");
-//        ApplicationRunner applicationRunner = ApplicationRunner;
-//        applicationRunner.initKripkeModel("src/main/resources/automaton_data/export_kripke.json");
-//        logger.info("Is system answer the specification? " + applicationRunner.verify("", Sets.newHashSet()));
-//        logger.info("---------------------------");
-//    }
-
     private static void ltlDemo() {
         Atom atomB = new Atom("b");
         Atom atomA = new Atom("a");
@@ -327,26 +319,7 @@ public class Application {
         logger.info("Inv. & Norm.(REP): {}", LtlParser.parseString(f.invert().normalized().toString()));
         logger.info("------------------------");
     }
-    
-//    private static void verificationMicrowaveOven() {
-//        logger.info("---------------------MICROWAVE OVEN VERIFICATION-----------------");
-//        ApplicationRunner applicationRunner = new ApplicationRunner();
-//        applicationRunner.initKripkeModel("src/main/resources/automaton_data/micro-oven.json");
-//        logger.info("Verification result: " + (applicationRunner.verify("G ((!close && start) -> F cooking)", new HashSet<>()) ? "confirmed" : "declined"));
-//        logger.info("-----------------------------------------------------------------");
-//    }
 
-//    TWO STAGE ELEVATOR
-//G (move -> F (first || second)) - PASS
-//G (move -> F (first && !second)) - FAILS
-//(G F move && (!first || !second)) - PASS
-//(G F second && (!move || !first)) - FAILS
-//
-//DEV TEAM
-//(G F bug && (!test || !feature)) - FAILS
-//(G !bug && (!test || !feature)) - FAILS
-//(G (bug -> F (!bug && !test) && (!test || !feature)) - FAILS
-    
     public static void main(String[] args) {
         kripkeStructureDemo();
         ltlDemo();
@@ -355,7 +328,5 @@ public class Application {
         kripkeStructureToBuchiAutomatonDemo();
         //productBuchiAutomatonDemo();
 
-        //applicationRunnerDemo();
-//        verificationMicrowaveOven();
-    }
+     }
 }
