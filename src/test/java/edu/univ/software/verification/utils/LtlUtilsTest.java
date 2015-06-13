@@ -337,6 +337,299 @@ public class LtlUtilsTest {
         Assert.assertEquals("Expected and actual automata are different", expected, actual);
     }
 
+    @Test
+    public void testOrVarFalseFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("(a || 0)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withState("1")
+                .withTransition("init", "1", symbol("a"))
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withFinalStateSet("1")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testOrVarTrueFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("(a || 1)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withState("1")
+                .withTransition("init", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withFinalStateSet("1")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testAndVarVarFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("(a && b)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withState("0")
+                .withTransition("init", "0", ImmutableSet.of(symbol("a", "b")))
+                .withTransition("0", "0", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
+                .withFinalStateSet("0")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testAndVarFalseFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("(a && 0)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testAndVarTrueFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("(a && 1)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withState("0")
+                .withTransition("init", "0", symbol("a"))
+                .withTransition("0", "0", ImmutableSet.of(symbol(), symbol("a")))
+                .withFinalStateSet("0")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testImplVarVarFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("(a -> b)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withState("1")
+                .withTransition("init", "1", ImmutableSet.of(symbol(), symbol("b"), symbol("a", "b")))
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
+                .withFinalStateSet("1")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testImplVarFalseFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("(a -> 0)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withState("1")
+                .withTransition("init", "1", ImmutableSet.of(symbol()))
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withFinalStateSet("1")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testImplVarTrueFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("(a -> 1)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withState("1")
+                .withTransition("init", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withFinalStateSet("1")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testNegVarFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("!a ");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withState("0")
+                .withTransition("init", "0", ImmutableSet.of(symbol()))
+                .withTransition("0", "0", ImmutableSet.of(symbol(), symbol("a")))
+                .withFinalStateSet("0")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testNegFalseFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("!0 ");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withState("0")
+                .withTransition("init", "0", ImmutableSet.of(symbol()))
+                .withTransition("0", "0", ImmutableSet.of(symbol()))
+                .withFinalStateSet("0")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testDiamondVarVarFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("F (a || b)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withState("1")
+                .withState("6")
+                .withTransition("init", "1", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
+                .withTransition("init", "6", ImmutableSet.of(symbol("a"), symbol("b"), symbol("a", "b")))
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
+                .withTransition("1", "6", ImmutableSet.of(symbol("a"), symbol("b"), symbol("a", "b")))
+                .withTransition("6", "6", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
+                .withFinalStateSet("6")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testDiamondVarTrueFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("F (a || 1)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withState("1")
+                .withState("6")
+                .withTransition("init", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withTransition("init", "6", ImmutableSet.of(symbol(), symbol("a")))
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withTransition("1", "6", ImmutableSet.of(symbol(), symbol("a")))
+                .withTransition("6", "6", ImmutableSet.of(symbol(), symbol("a")))
+                .withFinalStateSet("6")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testDiamondVarFalseFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("F (a || 0)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withStates(false, "1", "6")
+                .withTransition("init", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withTransition("init", "6", ImmutableSet.of(symbol("a")))
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withTransition("1", "6", ImmutableSet.of(symbol("a")))
+                .withTransition("6", "6", ImmutableSet.of(symbol(), symbol("a")))
+                .withFinalStateSet("6")
+                .build();
+
+
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testDiamondAndVarVarFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("F (a && b)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withState("1")
+                .withState("5")
+                .withTransition("init", "1", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
+                .withTransition("init", "5", ImmutableSet.of(symbol("a", "b")))
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
+                .withTransition("1", "5", ImmutableSet.of(symbol("a", "b")))
+                .withTransition("5", "5", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
+                .withFinalStateSet("5")
+                .build();
+
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testDiamondAndVarFalseFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("F (a && 0)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withState("1")
+                .withTransition("init", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testDiamondImplVarVarFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("F (a -> b)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withStates(false, "1", "6")
+                .withTransition("init", "1", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
+                .withTransition("init", "6", ImmutableSet.of(symbol(), symbol("b"), symbol("a", "b")))
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
+                .withTransition("1", "6", ImmutableSet.of(symbol(), symbol("b"), symbol("a", "b")))
+                .withTransition("6", "6", ImmutableSet.of(symbol(), symbol("a"), symbol("b"), symbol("a", "b")))
+                .withFinalStateSet("6")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testDiamondImplVarFalseFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("F (a -> 0)");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withStates(false, "1", "6")
+                .withTransition("init", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withTransition("init", "6", ImmutableSet.of(symbol()))
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withTransition("1", "6", ImmutableSet.of(symbol()))
+                .withTransition("6", "6", ImmutableSet.of(symbol(), symbol("a")))
+                .withFinalStateSet("6")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+    @Test
+    public void testDiamondNegVarFormula() {
+        MullerAutomaton<Set<Atom>> actual = convertToAutomata("F !a ");
+
+        MullerAutomaton<Set<Atom>> expected = BasicMullerAutomaton.<Set<Atom>>builder()
+                .withState("init", true)
+                .withStates(false, "1", "5")
+                .withTransition("init", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withTransition("init", "5", ImmutableSet.of(symbol()))
+                .withTransition("1", "1", ImmutableSet.of(symbol(), symbol("a")))
+                .withTransition("1", "5", ImmutableSet.of(symbol()))
+                .withTransition("5", "5", ImmutableSet.of(symbol(), symbol("a")))
+                .withFinalStateSet("5")
+                .build();
+
+        Assert.assertEquals("Expected and actual automata are different", expected, actual);
+    }
+
+
     private MullerAutomaton<Set<Atom>> convertToAutomata(String formula) {
         return LtlUtils.INSTANCE.convertToAutomata(LtlParser.parseString(formula).invert().invert().normalized());
     }
