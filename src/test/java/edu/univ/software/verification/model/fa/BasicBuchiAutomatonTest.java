@@ -20,6 +20,7 @@ public class BasicBuchiAutomatonTest {
                 .withStates("2")
                 .withStates("3")
                 .withStates("5")
+                .withStates("6")
                 .withState("4", true)
                 .withTransition("1", "2", Sets.newHashSet("a", "b"))
                 .withTransition("4", "2", Sets.newHashSet("a", "b"))
@@ -29,6 +30,8 @@ public class BasicBuchiAutomatonTest {
                 .withTransition("3", "2", "a")
                 .withTransition("5", "2", "a")
                 .withTransition("5", "3", "b")
+                .withTransition("6", "2", "a")
+                .withTransition("6", "3", "b")
                 .withFinalState("3")
                 .build();
         return buchiAutomaton;
