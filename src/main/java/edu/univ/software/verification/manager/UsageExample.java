@@ -24,7 +24,6 @@ import java.nio.file.Paths;
  */
 public class UsageExample {
     private static final Logger logger = LoggerFactory.getLogger(UsageExample.class);
-    private static final ApplicationRunner runner = new ApplicationRunner();
 
     private static final Gson serializer;
 
@@ -66,7 +65,7 @@ public class UsageExample {
         KripkeStructure kripkeStructure = getKripkeStructureFromFile(fileName);
         LtlFormula ltlFormula = LtlParser.parseString(specification);
         logger.info("Formula: " + specification);
-        logger.info("Verification result: " + (runner.verify(kripkeStructure, ltlFormula).isConfirmed() ? "confirmed" : "declined"));
+        logger.info("Verification result: " + (ApplicationRunner.verify(kripkeStructure, ltlFormula).isConfirmed() ? "confirmed" : "declined"));
     }
 
     private static KripkeStructure getKripkeStructureFromFile(String kripkeStructureFileName) {

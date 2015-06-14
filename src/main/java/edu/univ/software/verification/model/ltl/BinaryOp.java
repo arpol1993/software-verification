@@ -37,7 +37,7 @@ public class BinaryOp implements LtlFormula {
         return formulas.get(0);
     }
 
-    public static enum OpType {
+    public enum OpType {
 
         OR, // logical or
         AND, // logical and
@@ -155,13 +155,8 @@ public class BinaryOp implements LtlFormula {
         }
 
         final BinaryOp other = (BinaryOp) obj;
-        if (this.opType != other.opType) {
-            return false;
-        }
-        if (!Objects.equals(this.opLeft, other.opLeft)) {
-            return false;
-        }
-        return Objects.equals(this.opRight, other.opRight);
+
+        return this.opType == other.opType && Objects.equals(this.opLeft, other.opLeft) && Objects.equals(this.opRight, other.opRight);
     }
 
     @Override

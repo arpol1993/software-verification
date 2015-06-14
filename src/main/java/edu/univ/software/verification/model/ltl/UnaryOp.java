@@ -15,7 +15,7 @@ public class UnaryOp implements LtlFormula {
         return new UnaryOp(opType, operand);
     }
 
-    public static enum OpType {
+    public enum OpType {
 
         NEG, // logical negation
         X, // neXt
@@ -115,10 +115,8 @@ public class UnaryOp implements LtlFormula {
         }
 
         final UnaryOp other = (UnaryOp) obj;
-        if (this.opType != other.opType) {
-            return false;
-        }
-        return Objects.equals(this.operand, other.operand);
+
+        return this.opType == other.opType && Objects.equals(this.operand, other.operand);
     }
 
     @Override

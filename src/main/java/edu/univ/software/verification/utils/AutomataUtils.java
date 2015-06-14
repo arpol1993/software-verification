@@ -84,23 +84,21 @@ public enum AutomataUtils {
         buchi.getInitialStates().forEach((s) -> buildInitialTraces(buchi, Circuit.forState(s.getLabel()), initialCircuits));
 
         //Stage 2. Find all circular routes that includes final states
-        boolean isEmpty = buchi.getFinalStates().stream().map((fin) -> {
+
+        return buchi.getFinalStates().stream().map((fin) -> {
             List<Circuit> acceptingCircuits = new LinkedList<>();
             buildAcceptingTraces(buchi, Circuit.forState(fin), acceptingCircuits);
 
             if (!acceptingCircuits.isEmpty() && initialCircuits.containsColumn(fin)) {
 
-                initialCircuits.column(fin).forEach((start, initial) -> {
-                    acceptingCircuits.forEach((acc) -> counters.add(printRoute(buchi, initial, acc)));
-                });
+                initialCircuits.column(fin).forEach((start, initial) ->
+                        acceptingCircuits.forEach((acc) -> counters.add(printRoute(buchi, initial, acc))));
 
                 return false;
             } else {
                 return true;
             }
         }).noneMatch((b) -> !b);
-
-        return isEmpty;
     }
 
     /**
@@ -112,13 +110,12 @@ public enum AutomataUtils {
      * @return LGBA (Muller) automaton
      */
     public <T> MullerAutomaton<T> convert(BuchiAutomaton<T> buchi) {
-        MullerAutomaton<T> mullerAutomaton = BasicMullerAutomaton.<T>builder()
+
+        return BasicMullerAutomaton.<T>builder()
                 .withStates(buchi.getStates())
                 .withTransitions(buchi.getTransitions())
                 .withFinalStateSet(buchi.getFinalStates())
                 .build();
-
-        return mullerAutomaton;
     }
 
     /**
@@ -179,7 +176,6 @@ public enum AutomataUtils {
     /**
      * Converts Kripke structure into Buchi automaton
      *
-     * @param <T> Type of special state's data
      * @param kripke Kripke structure to convert into Buchi automaton
      * @return Buchi automaton
      */

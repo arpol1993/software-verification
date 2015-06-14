@@ -133,15 +133,12 @@ public class DirectProduct<T> {
                 Map<String, Set<T>> toB = B.getTransitionsFrom(current.getBState());
 
                 // Iterate througth all possible combinations of states
-                toA.keySet().stream().forEach((fromA) -> {
-                    toB.keySet().stream().forEach((fromB) -> {
-                        toA.get(fromA).stream().forEach((symbolA) -> {
-                            toB.get(fromB).stream().filter((symbolB) -> (symbolA.equals(symbolB))).forEach((_item) -> {
-                                processTransition(symbolA, current, fromA, fromB);
-                            });
-                        });
-                    });
-                });
+                toA.keySet().stream().forEach((fromA) ->
+                        toB.keySet().stream().forEach((fromB) ->
+                                toA.get(fromA).stream().forEach((symbolA) ->
+                                        toB.get(fromB).stream().filter((symbolB) ->
+                                                (symbolA.equals(symbolB))).forEach((_item) ->
+                                                processTransition(symbolA, current, fromA, fromB)))));
             }
 
             /**
@@ -150,11 +147,9 @@ public class DirectProduct<T> {
              */
             String superInit = "init";
             resultBuilder.withState(superInit, true);
-            allInitial.stream().filter((current) -> (createdTransitions.containsKey(current))).forEach((current) -> {
-                createdTransitions.get(current).keySet().stream().forEach((vertexTo) -> {
-                    resultBuilder.withTransition(superInit, vertexTo, createdTransitions.get(current).get(vertexTo));
-                });
-            });
+            allInitial.stream().filter((current) -> (createdTransitions.containsKey(current))).forEach((current) ->
+                    createdTransitions.get(current).keySet().stream().forEach((vertexTo) ->
+                            resultBuilder.withTransition(superInit, vertexTo, createdTransitions.get(current).get(vertexTo))));
         } else {
             return BasicBuchiAutomaton.<T>builder().build();
         }
