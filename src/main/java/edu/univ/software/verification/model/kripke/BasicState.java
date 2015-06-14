@@ -42,10 +42,10 @@ public class BasicState implements KripkeState {
         this(label, atoms, DEFAULT_INITIAL);
     }
     
-    public BasicState(String label, Collection<? extends Atom> atoms, boolean intital) {
+    public BasicState(String label, Collection<? extends Atom> atoms, boolean initial) {
         this.label = label;
         this.atoms = ImmutableSet.copyOf(atoms);
-        this.initial = intital;
+        this.initial = initial;
     }
     //</editor-fold>
 

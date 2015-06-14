@@ -19,7 +19,7 @@ public interface Automaton<T> {
      * @param label unique state identifier
      * @return corresponding state if one is present, null otherwise
      */
-    public AutomatonState getState(String label);
+    AutomatonState getState(String label);
     
     /**
      * Checks for automaton state presence
@@ -27,21 +27,21 @@ public interface Automaton<T> {
      * @param label unique state identifier
      * @return whether state with given label is present
      */
-    public boolean hasState(String label);
+    boolean hasState(String label);
     
     /**
      * Get all automaton state mappings
      * 
      * @return list of automaton states
      */
-    public Set<AutomatonState> getStates();
+    Set<AutomatonState> getStates();
     
     /**
      * Get initial automaton states
      * 
      * @return set of all initial states 
      */
-    public Set<AutomatonState> getInitialStates();
+    Set<AutomatonState> getInitialStates();
     
     /**
      * Gets outgoing transitions for specified state 
@@ -49,7 +49,7 @@ public interface Automaton<T> {
      * @param from transition starting state
      * @return mapping of ending states to transition symbols
      */
-    public Map<String, Set<T>> getTransitionsFrom(String from);
+    Map<String, Set<T>> getTransitionsFrom(String from);
     
     /**
      * Gets incoming transitions for specified state
@@ -58,7 +58,7 @@ public interface Automaton<T> {
      * @param to transition ending state
      * @return mapping of starting states to transition symbols
      */
-    public Map<String, Set<T>> getTransitionsTo(String to);
+    Map<String, Set<T>> getTransitionsTo(String to);
     
     /**
      * Gets transition symbols for particular pair of states
@@ -68,7 +68,7 @@ public interface Automaton<T> {
      * 
      * @return transition symbols if transition is defined, null otherwise
      */
-    public Set<T> getTransitionSymbols(String from, String to);
+    Set<T> getTransitionSymbols(String from, String to);
     
     /**
      * Checks for transition presence between a pair of states
@@ -78,16 +78,16 @@ public interface Automaton<T> {
      * 
      * @return whether transition is defined
      */
-    public boolean hasTransition(String from, String to);
+    boolean hasTransition(String from, String to);
     
     /**
      * Gets all automaton transition mappings
      * 
      * @return table of automaton transitions
      */
-    public Table<String, String, Set<T>> getTransitions();
+    Table<String, String, Set<T>> getTransitions();
     
-    public interface Builder<T> {
+    interface Builder<T> {
         // no methods yet
     }
 }

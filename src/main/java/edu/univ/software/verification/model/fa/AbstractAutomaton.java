@@ -87,7 +87,7 @@ public abstract class AbstractAutomaton<T> implements Automaton<T> {
      */
     @Override
     public Set<AutomatonState> getInitialStates() {
-        return states.values().stream().filter(s -> s.isInitial()).collect(Collectors.toSet());
+        return states.values().stream().filter(AutomatonState::isInitial).collect(Collectors.toSet());
     }
 
     /**
@@ -184,9 +184,7 @@ public abstract class AbstractAutomaton<T> implements Automaton<T> {
         }
 
         public S withStates(Collection<AutomatonState> states) {
-            states.stream().forEach((AutomatonState s) -> {
-                withState(s.getLabel(), s.isInitial());
-            });
+            states.stream().forEach((AutomatonState s) -> withState(s.getLabel(), s.isInitial()));
 
             return getBuilder();
         }
@@ -209,9 +207,8 @@ public abstract class AbstractAutomaton<T> implements Automaton<T> {
         }
 
         public S withTransitions(Table<String, String, Set<T>> transitions) {
-            transitions.cellSet().stream().forEach(cell -> {
-                withTransition(cell.getRowKey(), cell.getColumnKey(), cell.getValue());
-            });
+            transitions.cellSet().stream().forEach(cell ->
+                    withTransition(cell.getRowKey(), cell.getColumnKey(), cell.getValue()));
 
             return getBuilder();
         }

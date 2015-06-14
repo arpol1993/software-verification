@@ -58,11 +58,6 @@ public class VerificationResultBuilder {
         return this;
     }
 
-    public VerificationResultBuilder withCounterExamples(ImmutableSet<String> counterExamples) {
-        this.counterExamples = counterExamples;
-        return this;
-    }
-
     public VerificationResultBuilder withCounterExamples(Set<String> counterExamples) {
         this.counterExamples = ImmutableSet.copyOf(counterExamples);
         return this;

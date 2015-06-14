@@ -188,7 +188,7 @@ public enum LtlUtils {
             Set<Set<Atom>> transitions = getPropositionsBoolean(insignificantPs).stream().map((Set<String> x) -> {
                 x.addAll(positivePs);
 
-                return x.stream().map(s -> Atom.forName(s)).collect(Collectors.toSet());
+                return x.stream().map(Atom::forName).collect(Collectors.toSet());
             }).collect(Collectors.toSet());
 
             // add transitions to automaton
@@ -209,9 +209,8 @@ public enum LtlUtils {
             }
         } else {
             untilFs.forEach((BinaryOp f) -> {
-                Set<String> finalStateSet = nodes.stream().filter((GraphNode n) -> {
-                    return !n.getOldFormulas().contains(f) || n.getOldFormulas().contains(f.getOpRight());
-                }).map(GraphNode::getId).collect(Collectors.toSet());
+                Set<String> finalStateSet = nodes.stream().filter((GraphNode n) ->
+                        !n.getOldFormulas().contains(f) || n.getOldFormulas().contains(f.getOpRight())).map(GraphNode::getId).collect(Collectors.toSet());
 
                 if (!finalStateSet.isEmpty()) {
                     automatonBuilder.withFinalStateSet(finalStateSet);

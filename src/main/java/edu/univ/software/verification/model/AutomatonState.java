@@ -10,19 +10,19 @@ public interface AutomatonState {
     /**
      * Default state initial type
      */
-    public static final boolean DEFAULT_INITIAL = false;
+    boolean DEFAULT_INITIAL = false;
     
     /**
      * Unique state identifier
      * 
      * @return automaton state label
      */
-    public String getLabel();
+    String getLabel();
     
     /**
      * Checks whether state is initial
      * 
      * @return true if state is initial, false otherwise
      */
-    public boolean isInitial();
+    boolean isInitial();
 }
