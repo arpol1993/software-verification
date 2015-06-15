@@ -13,11 +13,11 @@ public class Builder {
 
     private interface OpStub {
 
-        public LtlFormula build();
+        LtlFormula build();
 
-        public boolean tryPassOperand(OpStub op);
+        boolean tryPassOperand(OpStub op);
 
-        public boolean isCompleted();
+        boolean isCompleted();
     }
 
     //<editor-fold defaultstate="collapsed" desc="Stubs implementations">
@@ -173,8 +173,8 @@ public class Builder {
         return this;
     }
 
-    public Builder placeAtom(Atom.AtomType atype, String name) throws InvalidBuilderUsage {
-        AtomOpStub stub = new AtomOpStub(atype, name);
+    public Builder placeAtom(Atom.AtomType atomType, String name) throws InvalidBuilderUsage {
+        AtomOpStub stub = new AtomOpStub(atomType, name);
         if (root == null) {
             root = stub;
             return this;

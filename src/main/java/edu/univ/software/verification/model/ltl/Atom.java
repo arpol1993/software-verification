@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class Atom implements LtlFormula {
 
-    public static enum AtomType {
+    public enum AtomType {
 
         VAR,
         _0,
@@ -73,10 +73,7 @@ public class Atom implements LtlFormula {
 
         final Atom other = (Atom) obj;
 
-        if (!Objects.equals(this.type, other.type)) {
-            return false;
-        }
-        return Objects.equals(this.name, other.name);
+        return Objects.equals(this.type, other.type) && Objects.equals(this.name, other.name);
     }
 
     @Override

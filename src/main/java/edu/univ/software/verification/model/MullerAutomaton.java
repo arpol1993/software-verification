@@ -18,21 +18,21 @@ public interface MullerAutomaton<T> extends Automaton<T> {
      * 
      * @return set of final state sets
      */
-    public Set<Set<String>> getFinalStateSets();
+    Set<Set<String>> getFinalStateSets();
     
-    public interface Builder<T> extends Automaton.Builder<T> {
-        public Builder<T> withState(String label);
-        public Builder<T> withState(String label, boolean initial);
-        public Builder<T> withStates(String... labels);
-        public Builder<T> withStates(boolean initial, String... labels);
-        public Builder<T> withStates(boolean initial, Collection<String> labels);
-        public Builder<T> withStates(Collection<AutomatonState> states);
-        public Builder<T> withTransition(String from, String to, T symbol);
-        public Builder<T> withTransition(String from, String to, Collection<T> symbols);
-        public Builder<T> withTransitions(Table<String, String, Set<T>> transitions);
-        public Builder<T> withFinalStateSet(String... states);
-        public Builder<T> withFinalStateSet(Collection<String> states) throws IllegalArgumentException;
-        public Builder<T> withFinalStateSets(Collection<Set<String>> finalStateSets);
-        public MullerAutomaton<T> build();
+    interface Builder<T> extends Automaton.Builder<T> {
+        Builder<T> withState(String label);
+        Builder<T> withState(String label, boolean initial);
+        Builder<T> withStates(String... labels);
+        Builder<T> withStates(boolean initial, String... labels);
+        Builder<T> withStates(boolean initial, Collection<String> labels);
+        Builder<T> withStates(Collection<AutomatonState> states);
+        Builder<T> withTransition(String from, String to, T symbol);
+        Builder<T> withTransition(String from, String to, Collection<T> symbols);
+        Builder<T> withTransitions(Table<String, String, Set<T>> transitions);
+        Builder<T> withFinalStateSet(String... states);
+        Builder<T> withFinalStateSet(Collection<String> states) throws IllegalArgumentException;
+        Builder<T> withFinalStateSets(Collection<Set<String>> finalStateSets);
+        MullerAutomaton<T> build();
     }
 }

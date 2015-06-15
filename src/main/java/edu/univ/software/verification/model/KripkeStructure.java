@@ -19,14 +19,14 @@ public interface KripkeStructure {
      * @param label state identifier
      * @return corresponding state if present, null otherwise
      */
-    public KripkeState getState(String label);
+    KripkeState getState(String label);
     
     /**
      * Retrieves all kripke structure states
      * 
      * @return set of present states
      */
-    public Set<KripkeState> getStates();
+    Set<KripkeState> getStates();
     
     /**
      * Check for transition presence between <code>from</code>
@@ -37,16 +37,16 @@ public interface KripkeStructure {
      * 
      * @return whether transition is present
      */
-    public boolean hasTransition(String from, String to);
+    boolean hasTransition(String from, String to);
     
     /**
      * Utilitarian builder for Kripke structure
      */
-    public static interface Builder {
-        public Builder withState(String label);
-        public Builder withState(String label, Collection<? extends Atom> atoms);
-        public Builder withState(String label, Collection<? extends Atom> atoms, boolean initial);
-        public Builder withTransition(String from, String to);
-        public KripkeStructure build();
+    interface Builder {
+        Builder withState(String label);
+        Builder withState(String label, Collection<? extends Atom> atoms);
+        Builder withState(String label, Collection<? extends Atom> atoms, boolean initial);
+        Builder withTransition(String from, String to);
+        KripkeStructure build();
     }
 }
