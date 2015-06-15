@@ -52,8 +52,15 @@ public class LtlParser {
             
             boolean isCurrId = false;
             int idStart = 0;
+            int bracketsCount = 0;
 
-            for (int i = 0; i < formulaString.length(); i++) {
+            for (int i = 0; i <= formulaString.length(); i++) {
+                
+                if (i == formulaString.length()) {
+                    if (isCurrId) { builder.placeAtom(Atom.AtomType.VAR, formulaString.substring(idStart, i)); }
+                    continue;
+                }
+                
                 char token = formulaString.charAt(i);
                 boolean isLast = i == formulaString.length() - 1;
                 
@@ -65,9 +72,12 @@ public class LtlParser {
 
                 switch (token) {
                     case LB:
+                        bracketsCount++;
                         builder.withBinary();
                         break;
                     case RB:
+                        bracketsCount--;
+                        if (bracketsCount < 0) { System.out.println("Invalid brackets found!"); }
                         //builder.endBinary();
                         break;
                     case _0:

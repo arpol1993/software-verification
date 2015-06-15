@@ -127,11 +127,11 @@ public class UnaryOp implements LtlFormula {
             case NEG:
                 return "!" + operand.toString();
             case X:
-                return "X" + operand.toString();
+                return "X " + operand.toString();
             case G:
-                return "G" + operand.toString();
+                return "G " + operand.toString();
             case F:
-                return "F" + operand.toString();
+                return "F " + operand.toString();
             default:
                 throw new AssertionError(opType.name());
 
